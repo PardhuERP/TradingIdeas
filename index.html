@@ -45,6 +45,10 @@ h1 {
   font-weight: bold;
 }
 
+  <div style="text-align:center; margin:6px 0;">
+  <button class="btn" onclick="refreshData()">🔄 Refresh</button>
+</div>
+
 /* Sections */
 .section {
   margin: 14px 10px;
@@ -275,6 +279,14 @@ function openCandle(o,h,l,c){
 
   document.getElementById("candleModal").style.display="block";
 }
+  function refreshData() {
+  fetch(API_URL + "?t=" + Date.now()) // cache buster
+    .then(r => r.json())
+    .then(d => {
+      API_DATA = d;
+      showTab(CURRENT);
+    });
+  }
 
 function closeModal(){
   document.getElementById("candleModal").style.display="none";
