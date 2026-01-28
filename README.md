@@ -1,0 +1,2 @@
+# TradingIdeas
+Learning purpose only
