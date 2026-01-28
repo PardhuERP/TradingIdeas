@@ -1,21 +1,98 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Stats</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<title>Stats Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  background:#0f172a;
+  color:#fff;
+  font-family:Arial;
+  margin:0;
+}
+header{
+  background:#020617;
+  padding:10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+a{
+  color:#38bdf8;
+  text-decoration:none;
+}
+.container{
+  padding:12px;
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap:12px;
+}
+.card{
+  background:#020617;
+  border:1px solid #334155;
+  border-radius:8px;
+  padding:12px;
+  text-align:center;
+}
+.card h4{
+  margin:0;
+  font-size:13px;
+  color:#94a3b8;
+}
+.card p{
+  margin:6px 0 0;
+  font-size:18px;
+  font-weight:bold;
+}
+.green{ color:#22c55e; }
+.red{ color:#ef4444; }
+</style>
 </head>
+
 <body>
 
 <header>
-  <h2>Stats Dashboard</h2>
+  <h3>Stats Dashboard</h3>
   <a href="index.html">⬅ Back</a>
 </header>
 
-<div id="stats"></div>
+<div class="container" id="statsBox">
+  <!-- Cards injected here -->
+</div>
 
-<script src="js/config.js"></script>
-<script src="js/stats.js"></script>
+<script>
+const API = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
+
+async function loadStats(){
+  const res = await fetch(API + "?sheet=Stats_Dashboard");
+  const data = await res.json();
+
+  if(!data || !data.length) return;
+
+  const stats = data[0];
+  const box = document.getElementById("statsBox");
+  box.innerHTML = "";
+
+  Object.keys(stats).forEach(key=>{
+    const value = stats[key];
+    let cls = "";
+
+    if(String(value).includes("-")) cls="red";
+    if(!isNaN(value) && Number(value) > 0) cls="green";
+
+    box.innerHTML += `
+      <div class="card">
+        <h4>${key}</h4>
+        <p class="${cls}">${value}</p>
+      </div>
+    `;
+  });
+}
+
+loadStats();
+</script>
+
 </body>
 </html>
