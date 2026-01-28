@@ -63,8 +63,12 @@ textarea{ height:70px; }
 <label>Day</label>
 <input id="Day" type="text" placeholder="Monday">
 
-<label>Symbol</label>
-<input id="Symbol" type="text">
+  <label>Symbol</label>
+<input id="Symbol" type="text" onblur="generateTradeID()">
+
+<label>Trade ID</label>
+<input id="TradeID" type="text" readonly>
+
 
 <label>Segment</label>
 <select id="Segment">
