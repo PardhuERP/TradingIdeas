@@ -17,7 +17,7 @@ h2{
   margin:12px 0;
 }
 .form{
-  padding:10px;
+  padding:12px;
 }
 label{
   font-size:12px;
@@ -35,12 +35,18 @@ input, select, textarea{
 textarea{ height:70px; }
 .btn{
   width:100%;
-  padding:10px;
+  padding:12px;
   background:#00bcd4;
   color:#000;
   font-weight:bold;
   border:none;
   border-radius:6px;
+}
+.status{
+  text-align:center;
+  font-size:12px;
+  margin-top:6px;
+  color:#00ff99;
 }
 </style>
 </head>
@@ -52,63 +58,112 @@ textarea{ height:70px; }
 <div class="form">
 
 <label>Date</label>
-<input type="date">
+<input id="Date" type="date">
+
+<label>Day</label>
+<input id="Day" type="text" placeholder="Monday">
 
 <label>Symbol</label>
-<input type="text" placeholder="e.g. RELIANCE">
+<input id="Symbol" type="text">
 
 <label>Segment</label>
-<select>
-  <option>Cash</option>
-  <option>CE</option>
-  <option>PE</option>
-  <option>Futures</option>
+<select id="Segment">
+  <option>Cash</option><option>CE</option><option>PE</option><option>Futures</option>
 </select>
 
 <label>Strategy</label>
-<select>
-  <option>BTST</option>
-  <option>Intraday</option>
-  <option>Positional</option>
+<select id="Strategy">
+  <option>BTST</option><option>Intraday</option><option>Positional</option>
 </select>
 
 <label>Entry Time</label>
-<input type="time">
+<input id="EntryTime" type="time">
 
 <label>Entry Price</label>
-<input type="number">
+<input id="EntryPrice" type="number">
 
 <label>Quantity</label>
-<input type="number">
+<input id="Quantity" type="number">
 
 <label>Direction</label>
-<select>
-  <option>Buy</option>
-  <option>Sell</option>
-</select>
+<select id="Direction"><option>Buy</option><option>Sell</option></select>
+
+<label>Market Close Bias</label>
+<select id="MarketBias"><option>Demand</option><option>Supply</option><option>Neutral</option></select>
+
+<label>Closing Near</label>
+<select id="ClosingNear"><option>High</option><option>Low</option><option>Middle</option></select>
+
+<label>Volume at Close</label>
+<select id="VolumeAtClose"><option>High</option><option>Normal</option><option>Low</option></select>
+
+<label>Reason for Entry</label>
+<textarea id="ReasonForEntry"></textarea>
+
+<label>Next Day Open</label>
+<select id="NextDayOpen"><option>Gap Up</option><option>Flat</option><option>Gap Down</option></select>
+
+<label>Open Price</label>
+<input id="OpenPrice" type="number">
+
+<label>Opening Volume</label>
+<select id="OpeningVolume"><option>High</option><option>Low</option></select>
+
+<label>First 5-min Behaviour</label>
+<select id="First5Min"><option>Break</option><option>Reject</option><option>Sideways</option></select>
+
+<label>Exit Time</label>
+<input id="ExitTime" type="time">
 
 <label>Exit Price</label>
-<input type="number">
+<input id="ExitPrice" type="number">
 
 <label>Exit Reason</label>
-<select>
-  <option>Profit</option>
-  <option>Neutral</option>
-  <option>Loss</option>
-  <option>No Volume</option>
-</select>
+<select id="ExitReason"><option>Profit</option><option>Neutral</option><option>Loss</option><option>No Volume</option></select>
+
+<label>P&amp;L (₹)</label>
+<input id="PnL" type="number">
+
+<label>P&amp;L Type</label>
+<select id="PnLType"><option>Profit</option><option>Neutral</option><option>Loss</option></select>
+
+<label>Followed Rules?</label>
+<select id="FollowedRules"><option>Yes</option><option>No</option></select>
+
+<label>Emotional State</label>
+<select id="EmotionalState"><option>Calm</option><option>Fear</option><option>Greed</option></select>
 
 <label>Lesson Learned</label>
-<textarea></textarea>
+<textarea id="LessonLearned"></textarea>
 
 <label>Rating (1–5)</label>
-<select>
-  <option>1</option><option>2</option><option>3</option>
-  <option>4</option><option>5</option>
-</select>
+<select id="Rating"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
 
-<button class="btn">Save Trade</button>
+<button class="btn" onclick="saveTrade()">💾 Save Trade</button>
+<div class="status" id="status"></div>
 
 </div>
+
+<script>
+const API_URL = "YOUR_GAS_WEB_APP_URL";
+
+function saveTrade(){
+  const data = {};
+  document.querySelectorAll("input,select,textarea").forEach(el=>{
+    data[el.id] = el.value;
+  });
+
+  fetch(API_URL,{
+    method:"POST",
+    body: JSON.stringify(data)
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    document.getElementById("status").innerText = "✅ Trade Saved";
+    document.querySelectorAll("input,textarea").forEach(el=>el.value="");
+  });
+}
+</script>
+
 </body>
 </html>
