@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Trading Ideas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+</head>
+<body>
+
+<header>
+  <h2>Trading Ideas</h2>
+  <nav>
+    <button onclick="loadTab('NIFTY50')">3:00 PM</button>
+    <button onclick="loadTab('NIFTY50_1')">3:15 PM</button>
+    <button onclick="loadTab('NIFTY50_2')">3:27 PM Final</button>
+    <a href="trade.html">➕ Trade</a>
+    <a href="stats.html">📊 Stats</a>
+  </nav>
+</header>
+
+<table id="marketTable">
+  <thead>
+    <tr>
+      <th>Stock</th>
+      <th>Change%</th>
+      <th>Volume</th>
+      <th>Value</th>
+      <th>CE/PE</th>
+      <th>Candle</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<!-- Candle Modal -->
+<div id="candleModal" class="modal">
+  <div class="modal-content">
+    <span onclick="closeModal()" class="close">&times;</span>
+    <div id="candleChart" style="height:300px;"></div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/market.js"></script>
+</body>
+</html>
