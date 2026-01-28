@@ -8,40 +8,44 @@
 <style>
   body {
     margin: 0;
-    background: #0e0e0e;
-    color: #fff;
+    background: #0b0b0b;
+    color: #ffffff;
     font-family: Arial, sans-serif;
   }
 
   h1 {
-    text-align: center;
-    padding: 15px;
     margin: 0;
+    padding: 14px;
+    text-align: center;
     background: #000;
     font-size: 18px;
+    letter-spacing: 0.5px;
   }
 
-  .section {
-    padding: 10px;
+  h3 {
+    margin: 12px 10px 6px;
+    font-size: 14px;
+    color: #ccc;
   }
 
   table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
     background: #111;
+    margin-bottom: 18px;
   }
 
   th, td {
-    padding: 10px;
+    padding: 9px 6px;
+    font-size: 12px;
     text-align: center;
     border-bottom: 1px solid #222;
-    font-size: 13px;
   }
 
   th {
     background: #1a1a1a;
     color: #ddd;
+    font-weight: 600;
   }
 
   tr:hover {
@@ -52,43 +56,41 @@
     background: #00bcd4;
     color: #000;
     border: none;
-    padding: 6px 12px;
+    padding: 5px 10px;
     border-radius: 4px;
-    cursor: pointer;
+    font-size: 11px;
     font-weight: bold;
+    cursor: pointer;
   }
 
   /* Modal */
   .modal {
     display: none;
     position: fixed;
-    z-index: 10;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background: rgba(0,0,0,0.85);
+    z-index: 10;
   }
 
-  .modal-content {
+  .modal-box {
     background: #111;
-    margin: 10% auto;
+    width: 92%;
+    max-width: 360px;
+    margin: 18% auto;
     padding: 10px;
-    width: 90%;
-    max-width: 400px;
     border-radius: 6px;
   }
 
   .close {
     float: right;
-    font-size: 20px;
+    font-size: 18px;
     cursor: pointer;
     color: #aaa;
   }
 
   canvas {
     background: #000;
-    margin-top: 10px;
+    margin-top: 8px;
   }
 </style>
 </head>
@@ -97,42 +99,40 @@
 
 <h1>📈 Live Stock Scanner</h1>
 
-<div class="section">
-  <h3>CE</h3>
-  <table id="ceTable">
-    <thead>
-      <tr>
-        <th>Stock</th>
-        <th>% Change</th>
-        <th>Volume</th>
-        <th>Value</th>
-        <th>CE</th>
-        <th>Candle</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+<h3>CE</h3>
+<table id="ceTable">
+  <thead>
+    <tr>
+      <th>Stock</th>
+      <th>%Chg</th>
+      <th>Vol</th>
+      <th>Val</th>
+      <th>CE</th>
+      <th>Candle</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
 
-  <h3>PE</h3>
-  <table id="peTable">
-    <thead>
-      <tr>
-        <th>Stock</th>
-        <th>% Change</th>
-        <th>Volume</th>
-        <th>Value</th>
-        <th>PE</th>
-        <th>Candle</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
+<h3>PE</h3>
+<table id="peTable">
+  <thead>
+    <tr>
+      <th>Stock</th>
+      <th>%Chg</th>
+      <th>Vol</th>
+      <th>Val</th>
+      <th>PE</th>
+      <th>Candle</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
 
 <!-- Candle Modal -->
 <div id="candleModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal()">&times;</span>
+  <div class="modal-box">
+    <span class="close" onclick="closeModal()">×</span>
     <canvas id="candleCanvas" width="300" height="200"></canvas>
   </div>
 </div>
@@ -141,31 +141,31 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
 
 fetch(API_URL)
-  .then(r => r.json())
+  .then(res => res.json())
   .then(data => {
     const rows = data.NIFTY50 || [];
-    buildCETable(rows);
-    buildPETable(rows);
+    renderCE(rows);
+    renderPE(rows);
   });
 
-function buildCETable(rows) {
-  const tbody = document.querySelector("#ceTable tbody");
-  tbody.innerHTML = "";
+function renderCE(rows) {
+  const tb = document.querySelector("#ceTable tbody");
+  tb.innerHTML = "";
 
   rows
-    .filter(r => r["StockName"] && r["StockName"] !== "#N/A")
-    .sort((a,b) => (b["Change%"] || 0) - (a["Change%"] || 0))
+    .filter(r => r.CE_StockName)
+    .sort((a,b) => (b.CE_Change || 0) - (a.CE_Change || 0))
     .forEach(r => {
-      tbody.innerHTML += `
+      tb.innerHTML += `
         <tr>
-          <td>${r["StockName"]}</td>
-          <td>${r["Change%"]}</td>
-          <td>${r["Volume"]}</td>
-          <td>${r["Value"]}</td>
-          <td>${r["CE"]}</td>
+          <td>${r.CE_StockName}</td>
+          <td>${r.CE_Change ?? ""}</td>
+          <td>${r.CE_Volume ?? ""}</td>
+          <td>${r.CE_Value ?? ""}</td>
+          <td>${r.CE ?? ""}</td>
           <td>
             <button class="btn"
-              onclick="openCandle(${r["Open"]},${r["High"]},${r["Low"]},${r["Close"]})">
+              onclick="openCandle(${r.CE_Open},${r.CE_High},${r.CE_Low},${r.CE_Close})">
               View
             </button>
           </td>
@@ -173,24 +173,24 @@ function buildCETable(rows) {
     });
 }
 
-function buildPETable(rows) {
-  const tbody = document.querySelector("#peTable tbody");
-  tbody.innerHTML = "";
+function renderPE(rows) {
+  const tb = document.querySelector("#peTable tbody");
+  tb.innerHTML = "";
 
   rows
-    .filter(r => r["StockName"] && r["StockName"] !== "#N/A")
-    .sort((a,b) => (b["Change%"] || 0) - (a["Change%"] || 0))
+    .filter(r => r.PE_StockName)
+    .sort((a,b) => (b.PE_Change || 0) - (a.PE_Change || 0))
     .forEach(r => {
-      tbody.innerHTML += `
+      tb.innerHTML += `
         <tr>
-          <td>${r["StockName"]}</td>
-          <td>${r["Change%"]}</td>
-          <td>${r["Volume"]}</td>
-          <td>${r["Value"]}</td>
-          <td>${r["PE"]}</td>
+          <td>${r.PE_StockName}</td>
+          <td>${r.PE_Change ?? ""}</td>
+          <td>${r.PE_Volume ?? ""}</td>
+          <td>${r.PE_Value ?? ""}</td>
+          <td>${r.PE ?? ""}</td>
           <td>
             <button class="btn"
-              onclick="openCandle(${r["Open"]},${r["High"]},${r["Low"]},${r["Close"]})">
+              onclick="openCandle(${r.PE_Open},${r.PE_High},${r.PE_Low},${r.PE_Close})">
               View
             </button>
           </td>
@@ -199,10 +199,11 @@ function buildPETable(rows) {
 }
 
 function openCandle(o,h,l,c) {
-  const modal = document.getElementById("candleModal");
   const canvas = document.getElementById("candleCanvas");
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  if (!o || !h || !l || !c) return;
 
   const midX = canvas.width / 2;
   const scale = 140 / (h - l);
@@ -215,9 +216,9 @@ function openCandle(o,h,l,c) {
   ctx.stroke();
 
   ctx.fillStyle = c >= o ? "#00ff00" : "#ff3333";
-  ctx.fillRect(midX - 15, y(Math.max(o,c)), 30, Math.abs(y(o)-y(c)));
+  ctx.fillRect(midX - 14, y(Math.max(o,c)), 28, Math.abs(y(o)-y(c)));
 
-  modal.style.display = "block";
+  document.getElementById("candleModal").style.display = "block";
 }
 
 function closeModal() {
