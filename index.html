@@ -6,114 +6,115 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <style>
-body{
-  margin:0;
-  background: radial-gradient(circle at top,#121212 0%,#000 65%);
-  color:#fff;
+body {
+  margin: 0;
+  background: radial-gradient(circle at top, #111 0%, #000 60%);
+  color: #fff;
   font-family: Arial, sans-serif;
 }
 
-h1{
-  margin:0;
-  padding:14px;
-  text-align:center;
-  background:#000;
-  font-size:18px;
-  letter-spacing:.5px;
+h1 {
+  margin: 0;
+  padding: 14px;
+  text-align: center;
+  background: #000;
+  font-size: 18px;
+  letter-spacing: 0.5px;
 }
 
-.section{
-  margin:14px 10px 22px;
-  border-radius:12px;
-  overflow:hidden;
-  box-shadow:0 8px 20px rgba(0,0,0,.6);
+.section {
+  margin: 14px 10px;
 }
 
-.section.ce{
-  border-top:4px solid #00ff99;
-  background:linear-gradient(180deg,#0f2e1f 0%,#0b0b0b 75%);
+.section-title {
+  padding: 6px 10px;
+  font-size: 14px;
+  font-weight: bold;
+  border-left: 4px solid;
+  margin-bottom: 6px;
 }
 
-.section.pe{
-  border-top:4px solid #ff9800;
-  background:linear-gradient(180deg,#2e1f0f 0%,#0b0b0b 75%);
+.ce-title { border-color: #00ff99; }
+.pe-title { border-color: #ff9800; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
 }
 
-.section-title{
-  padding:8px 12px;
-  font-size:14px;
-  font-weight:bold;
-  color:#ddd;
+/* CE */
+#ceTable {
+  background: linear-gradient(180deg, #0f2e1f 0%, #0b0b0b 70%);
+}
+#ceTable thead {
+  background: rgba(0,255,153,0.15);
 }
 
-table{
-  width:100%;
-  border-collapse:collapse;
+/* PE */
+#peTable {
+  background: linear-gradient(180deg, #2e1f0f 0%, #0b0b0b 70%);
+}
+#peTable thead {
+  background: rgba(255,152,0,0.15);
 }
 
-th{
-  padding:8px 4px;
-  font-size:11px;
-  font-weight:600;
-  background:#1a1a1a;
-  color:#ccc;
-  border-bottom:1px solid #222;
+th, td {
+  padding: 9px 6px;
+  font-size: 12px;
+  text-align: center;
+  border-bottom: 1px solid #222;
 }
 
-td{
-  padding:10px 4px;
-  font-size:12px;
-  text-align:center;
-  border-bottom:1px solid #222;
+th {
+  font-weight: bold;
+  color: #ddd;
 }
 
-#ceTable tr:hover{
-  background:rgba(0,255,153,.08);
-}
+#ceTable tr:hover { background: rgba(0,255,153,0.08); }
+#peTable tr:hover { background: rgba(255,152,0,0.08); }
 
-#peTable tr:hover{
-  background:rgba(255,152,0,.08);
-}
-
-.btn{
-  background:#00bcd4;
-  color:#000;
-  border:none;
-  padding:5px 10px;
-  border-radius:5px;
-  font-size:11px;
-  font-weight:bold;
-  cursor:pointer;
+.btn {
+  background: #00bcd4;
+  color: #000;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 /* Modal */
-.modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.85);
-  z-index:10;
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 10;
 }
 
-.modal-box{
-  background:#111;
-  width:92%;
-  max-width:360px;
-  margin:20% auto;
-  padding:10px;
-  border-radius:8px;
+.modal-box {
+  background: #111;
+  width: 92%;
+  max-width: 360px;
+  margin: 18% auto;
+  padding: 10px;
+  border-radius: 6px;
 }
 
-.close{
-  float:right;
-  font-size:18px;
-  cursor:pointer;
-  color:#aaa;
+.close {
+  float: right;
+  font-size: 18px;
+  cursor: pointer;
+  color: #aaa;
 }
 
-canvas{
-  background:#000;
-  margin-top:8px;
+canvas {
+  background: #000;
+  margin-top: 8px;
 }
 </style>
 </head>
@@ -122,8 +123,8 @@ canvas{
 
 <h1>📈 Live Stock Scanner</h1>
 
-<div class="section ce">
-  <div class="section-title">CE</div>
+<div class="section">
+  <div class="section-title ce-title">CE</div>
   <table id="ceTable">
     <thead>
       <tr>
@@ -139,8 +140,8 @@ canvas{
   </table>
 </div>
 
-<div class="section pe">
-  <div class="section-title">PE</div>
+<div class="section">
+  <div class="section-title pe-title">PE</div>
   <table id="peTable">
     <thead>
       <tr>
@@ -156,99 +157,91 @@ canvas{
   </table>
 </div>
 
+<!-- Candle Modal -->
+<div id="candleModal" class="modal">
+  <div class="modal-box">
+    <span class="close" onclick="closeModal()">×</span>
+    <canvas id="candleCanvas" width="300" height="200"></canvas>
+  </div>
+</div>
+
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
 
-/* number formatter → 00.00 */
-function fmt(v) {
-  if (v === null || v === undefined || v === "") return "";
-  if (isNaN(v)) return v;
+function fmt(v){
+  if(v===null||v===undefined||v==="") return "";
+  if(isNaN(v)) return v;
   return Number(v).toFixed(2);
 }
 
 fetch(API_URL)
-  .then(res => res.json())
-  .then(data => {
-    const rows = data.NIFTY50 || [];
-    renderCE(rows);
-    renderPE(rows);
+.then(r=>r.json())
+.then(d=>{
+  const rows=d.NIFTY50||[];
+  renderCE(rows);
+  renderPE(rows);
+});
+
+function renderCE(rows){
+  const tb=document.querySelector("#ceTable tbody");
+  tb.innerHTML="";
+  rows.filter(r=>r.CE_StockName)
+  .sort((a,b)=>(b.CE_Change||0)-(a.CE_Change||0))
+  .forEach(r=>{
+    tb.innerHTML+=`
+    <tr>
+      <td>${r.CE_StockName}</td>
+      <td>${fmt(r.CE_Change)}</td>
+      <td>${fmt(r.CE_Volume)}</td>
+      <td>${fmt(r.CE_Value)}</td>
+      <td>${fmt(r.CE)}</td>
+      <td><button class="btn" onclick="openCandle(${r.CE_Open},${r.CE_High},${r.CE_Low},${r.CE_Close})">View</button></td>
+    </tr>`;
   });
-
-function renderCE(rows) {
-  const tb = document.querySelector("#ceTable tbody");
-  tb.innerHTML = "";
-
-  rows
-    .filter(r => r.CE_StockName)
-    .sort((a,b) => (b.CE_Change || 0) - (a.CE_Change || 0))
-    .forEach(r => {
-      tb.innerHTML += `
-        <tr>
-          <td>${r.CE_StockName}</td>
-          <td>${fmt(r.CE_Change)}</td>
-          <td>${fmt(r.CE_Volume)}</td>
-          <td>${fmt(r.CE_Value)}</td>
-          <td>${fmt(r.CE)}</td>
-          <td>
-            <button class="btn"
-              onclick="openCandle(${r.CE_Open},${r.CE_High},${r.CE_Low},${r.CE_Close})">
-              View
-            </button>
-          </td>
-        </tr>`;
-    });
 }
 
-function renderPE(rows) {
-  const tb = document.querySelector("#peTable tbody");
-  tb.innerHTML = "";
-
-  rows
-    .filter(r => r.PE_StockName)
-    .sort((a,b) => (b.PE_Change || 0) - (a.PE_Change || 0))
-    .forEach(r => {
-      tb.innerHTML += `
-        <tr>
-          <td>${r.PE_StockName}</td>
-          <td>${fmt(r.PE_Change)}</td>
-          <td>${fmt(r.PE_Volume)}</td>
-          <td>${fmt(r.PE_Value)}</td>
-          <td>${fmt(r.PE)}</td>
-          <td>
-            <button class="btn"
-              onclick="openCandle(${r.PE_Open},${r.PE_High},${r.PE_Low},${r.PE_Close})">
-              View
-            </button>
-          </td>
-        </tr>`;
-    });
+function renderPE(rows){
+  const tb=document.querySelector("#peTable tbody");
+  tb.innerHTML="";
+  rows.filter(r=>r.PE_StockName)
+  .sort((a,b)=>(b.PE_Change||0)-(a.PE_Change||0))
+  .forEach(r=>{
+    tb.innerHTML+=`
+    <tr>
+      <td>${r.PE_StockName}</td>
+      <td>${fmt(r.PE_Change)}</td>
+      <td>${fmt(r.PE_Volume)}</td>
+      <td>${fmt(r.PE_Value)}</td>
+      <td>${fmt(r.PE)}</td>
+      <td><button class="btn" onclick="openCandle(${r.PE_Open},${r.PE_High},${r.PE_Low},${r.PE_Close})">View</button></td>
+    </tr>`;
+  });
 }
 
-function openCandle(o,h,l,c) {
-  const canvas = document.getElementById("candleCanvas");
-  const ctx = canvas.getContext("2d");
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+function openCandle(o,h,l,c){
+  const cv=document.getElementById("candleCanvas");
+  const ctx=cv.getContext("2d");
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(!o||!h||!l||!c) return;
 
-  if (!o || !h || !l || !c) return;
+  const mid=cv.width/2;
+  const scale=140/(h-l);
+  const y=p=>cv.height-(p-l)*scale-20;
 
-  const midX = canvas.width / 2;
-  const scale = 140 / (h - l);
-  const y = p => canvas.height - (p - l) * scale - 20;
-
-  ctx.strokeStyle = "#fff";
+  ctx.strokeStyle="#fff";
   ctx.beginPath();
-  ctx.moveTo(midX, y(h));
-  ctx.lineTo(midX, y(l));
+  ctx.moveTo(mid,y(h));
+  ctx.lineTo(mid,y(l));
   ctx.stroke();
 
-  ctx.fillStyle = c >= o ? "#00ff00" : "#ff3333";
-  ctx.fillRect(midX - 14, y(Math.max(o,c)), 28, Math.abs(y(o)-y(c)));
+  ctx.fillStyle=c>=o?"#00ff00":"#ff3333";
+  ctx.fillRect(mid-14,y(Math.max(o,c)),28,Math.abs(y(o)-y(c)));
 
-  document.getElementById("candleModal").style.display = "block";
+  document.getElementById("candleModal").style.display="block";
 }
 
-function closeModal() {
-  document.getElementById("candleModal").style.display = "none";
+function closeModal(){
+  document.getElementById("candleModal").style.display="none";
 }
 </script>
 
