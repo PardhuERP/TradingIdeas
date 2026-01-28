@@ -1,24 +1,66 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Trade Entry</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<title>Trade Entry</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  background:#0f172a;
+  color:#fff;
+  font-family:Arial;
+  margin:0;
+}
+header{
+  background:#020617;
+  padding:10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+a{
+  color:#38bdf8;
+  text-decoration:none;
+}
+form{
+  padding:12px;
+}
+input, select, textarea, button{
+  width:100%;
+  margin-bottom:10px;
+  padding:8px;
+  border-radius:5px;
+  border:none;
+  font-size:14px;
+}
+textarea{
+  resize:vertical;
+}
+button{
+  background:#22c55e;
+  color:#000;
+  font-weight:bold;
+}
+</style>
 </head>
+
 <body>
 
 <header>
-  <h2>New Trade</h2>
+  <h3>New Trade</h3>
   <a href="index.html">⬅ Back</a>
 </header>
 
 <form id="tradeForm">
-  <input name="Date" type="date" required>
-  <input name="Day" placeholder="Day">
-  <input name="Symbol" placeholder="Symbol" required>
+
+  <input type="date" name="Date" required>
+  <input type="text" name="Day" placeholder="Day">
+
+  <input type="text" name="Symbol" placeholder="Symbol" required>
 
   <select name="Segment">
+    <option value="">Segment</option>
     <option>Cash</option>
     <option>CE</option>
     <option>PE</option>
@@ -26,30 +68,96 @@
   </select>
 
   <select name="Strategy">
+    <option value="">Strategy</option>
     <option>BTST</option>
     <option>Intraday</option>
     <option>Positional</option>
   </select>
 
-  <input name="Entry Time" placeholder="Entry Time">
-  <input name="Entry Price" type="number">
-  <input name="Quantity" type="number">
+  <input type="text" name="Entry Time" placeholder="Entry Time">
+  <input type="number" name="Entry Price" placeholder="Entry Price">
+  <input type="number" name="Quantity" placeholder="Quantity">
 
   <select name="Direction">
+    <option value="">Direction</option>
     <option>Buy</option>
     <option>Sell</option>
   </select>
 
-  <textarea name="Reason for Entry" placeholder="Reason"></textarea>
+  <input type="text" name="Market Close Bias" placeholder="Market Close Bias">
+  <input type="text" name="Closing Near" placeholder="Closing Near">
+  <input type="text" name="Volume at Close" placeholder="Volume at Close">
 
-  <input name="Exit Time" placeholder="Exit Time">
-  <input name="Exit Price" type="number">
-  <input name="P&L (₹)" type="number">
+  <textarea name="Reason for Entry" placeholder="Reason for Entry"></textarea>
 
-  <button type="submit">Save Trade</button>
+  <select name="Next Day Open">
+    <option value="">Next Day Open</option>
+    <option>Gap Up</option>
+    <option>Flat</option>
+    <option>Gap Down</option>
+  </select>
+
+  <input type="number" name="Open Price" placeholder="Open Price">
+  <input type="text" name="Opening Volume" placeholder="Opening Volume">
+  <input type="text" name="First 5-min Behaviour" placeholder="First 5-min Behaviour">
+
+  <input type="text" name="Exit Time" placeholder="Exit Time">
+  <input type="number" name="Exit Price" placeholder="Exit Price">
+
+  <select name="Exit Reason">
+    <option value="">Exit Reason</option>
+    <option>Profit</option>
+    <option>Neutral</option>
+    <option>Loss</option>
+    <option>No Volume</option>
+  </select>
+
+  <input type="number" name="P&L (₹)" placeholder="P&L ₹">
+
+  <select name="P&L Type">
+    <option value="">P&L Type</option>
+    <option>Profit</option>
+    <option>Neutral</option>
+    <option>Loss</option>
+  </select>
+
+  <select name="Followed Rules?">
+    <option value="">Followed Rules?</option>
+    <option>Yes</option>
+    <option>No</option>
+  </select>
+
+  <select name="Emotional State">
+    <option value="">Emotional State</option>
+    <option>Calm</option>
+    <option>Fear</option>
+    <option>Greed</option>
+  </select>
+
+  <textarea name="Lesson Learned" placeholder="Lesson Learned"></textarea>
+
+  <input type="number" name="Rating (1–5)" placeholder="Rating (1–5)" min="1" max="5">
+
+  <button type="submit">💾 Save Trade</button>
+
 </form>
 
-<script src="js/config.js"></script>
-<script src="js/trade.js"></script>
+<script>
+const API = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
+
+document.getElementById("tradeForm").addEventListener("submit", async function(e){
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(this));
+
+  await fetch(API,{
+    method:"POST",
+    body: JSON.stringify(data)
+  });
+
+  alert("✅ Trade saved successfully");
+  this.reset();
+});
+</script>
+
 </body>
 </html>
