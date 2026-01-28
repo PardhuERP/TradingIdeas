@@ -151,7 +151,11 @@ textarea{ height:70px; }
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
 
-  function generateTradeID(){
+/* Generate TradeID ONLY ONCE */
+function generateTradeID(){
+  const tradeIdEl = document.getElementById("TradeID");
+  if (tradeIdEl.value) return; // already generated
+
   const symbol = document.getElementById("Symbol").value || "TRADE";
   const ts = new Date();
   const id =
@@ -162,9 +166,15 @@ const API_URL = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyW
     String(ts.getHours()).padStart(2,"0") +
     String(ts.getMinutes()).padStart(2,"0");
 
-  document.getElementById("TradeID").value = id;
+  tradeIdEl.value = id;
 }
+
+/* Save Trade */
 function saveTrade(){
+  if (!document.getElementById("TradeID").value) {
+    generateTradeID(); // safety
+  }
+
   const data = {};
   document.querySelectorAll("input,select,textarea").forEach(el=>{
     data[el.id] = el.value;
@@ -177,7 +187,15 @@ function saveTrade(){
   .then(r=>r.json())
   .then(res=>{
     document.getElementById("status").innerText = "✅ Trade Saved";
-    document.querySelectorAll("input,textarea").forEach(el=>el.value="");
+
+    /* Clear ONLY editable fields, keep TradeID */
+    document.querySelectorAll("input:not(#TradeID), textarea").forEach(el=>{
+      el.value = "";
+    });
+
+    setTimeout(()=>{
+      document.getElementById("status").innerText = "";
+    }, 2000);
   });
 }
 </script>
