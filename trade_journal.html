@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Trade Journal | Educational purpose only</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  background:#0b0b0b;
+  color:#fff;
+  font-family:Arial;
+}
+h2{
+  text-align:center;
+  margin:12px 0;
+}
+.form{
+  padding:10px;
+}
+label{
+  font-size:12px;
+  color:#aaa;
+}
+input, select, textarea{
+  width:100%;
+  margin:6px 0 12px;
+  padding:8px;
+  background:#1a1a1a;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+}
+textarea{ height:70px; }
+.btn{
+  width:100%;
+  padding:10px;
+  background:#00bcd4;
+  color:#000;
+  font-weight:bold;
+  border:none;
+  border-radius:6px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>📘 Trade Journal</h2>
+
+<div class="form">
+
+<label>Date</label>
+<input type="date">
+
+<label>Symbol</label>
+<input type="text" placeholder="e.g. RELIANCE">
+
+<label>Segment</label>
+<select>
+  <option>Cash</option>
+  <option>CE</option>
+  <option>PE</option>
+  <option>Futures</option>
+</select>
+
+<label>Strategy</label>
+<select>
+  <option>BTST</option>
+  <option>Intraday</option>
+  <option>Positional</option>
+</select>
+
+<label>Entry Time</label>
+<input type="time">
+
+<label>Entry Price</label>
+<input type="number">
+
+<label>Quantity</label>
+<input type="number">
+
+<label>Direction</label>
+<select>
+  <option>Buy</option>
+  <option>Sell</option>
+</select>
+
+<label>Exit Price</label>
+<input type="number">
+
+<label>Exit Reason</label>
+<select>
+  <option>Profit</option>
+  <option>Neutral</option>
+  <option>Loss</option>
+  <option>No Volume</option>
+</select>
+
+<label>Lesson Learned</label>
+<textarea></textarea>
+
+<label>Rating (1–5)</label>
+<select>
+  <option>1</option><option>2</option><option>3</option>
+  <option>4</option><option>5</option>
+</select>
+
+<button class="btn">Save Trade</button>
+
+</div>
+</body>
+</html>
