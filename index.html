@@ -141,45 +141,71 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
 
 fetch(API_URL)
-  .then(res => res.json())
+  .then(r => r.json())
   .then(data => {
-    buildTable(data.NIFTY50, "ceTable", "CE");
-    buildTable(data.NIFTY50, "peTable", "PE");
+    const rows = data.NIFTY50 || [];
+    buildCETable(rows);
+    buildPETable(rows);
   });
 
-function buildTable(rows, tableId, type) {
-  const tbody = document.querySelector(`#${tableId} tbody`);
+function buildCETable(rows) {
+  const tbody = document.querySelector("#ceTable tbody");
   tbody.innerHTML = "";
 
   rows
-    .filter(r => r.StockName && r.StockName !== "#N/A")
-    .sort((a, b) => b.ChangePercent - a.ChangePercent)
+    .filter(r => r["StockName"] && r["StockName"] !== "#N/A")
+    .sort((a,b) => (b["Change%"] || 0) - (a["Change%"] || 0))
     .forEach(r => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${r.StockName}</td>
-        <td>${r.ChangePercent}</td>
-        <td>${r.Volume}</td>
-        <td>${r.Value}</td>
-        <td>${type === "CE" ? r.CE : r.PE}</td>
-        <td><button class="btn" onclick='openCandle(${JSON.stringify(
-          type === "CE"
-            ? [r.OpenCE, r.HighCE, r.LowCE, r.CloseCE]
-            : [r.OpenPE, r.HighPE, r.LowPE, r.ClosePE]
-        )})'>View</button></td>
-      `;
-      tbody.appendChild(tr);
+      tbody.innerHTML += `
+        <tr>
+          <td>${r["StockName"]}</td>
+          <td>${r["Change%"]}</td>
+          <td>${r["Volume"]}</td>
+          <td>${r["Value"]}</td>
+          <td>${r["CE"]}</td>
+          <td>
+            <button class="btn"
+              onclick="openCandle(${r["Open"]},${r["High"]},${r["Low"]},${r["Close"]})">
+              View
+            </button>
+          </td>
+        </tr>`;
     });
 }
 
-function openCandle([o, h, l, c]) {
+function buildPETable(rows) {
+  const tbody = document.querySelector("#peTable tbody");
+  tbody.innerHTML = "";
+
+  rows
+    .filter(r => r["StockName"] && r["StockName"] !== "#N/A")
+    .sort((a,b) => (b["Change%"] || 0) - (a["Change%"] || 0))
+    .forEach(r => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${r["StockName"]}</td>
+          <td>${r["Change%"]}</td>
+          <td>${r["Volume"]}</td>
+          <td>${r["Value"]}</td>
+          <td>${r["PE"]}</td>
+          <td>
+            <button class="btn"
+              onclick="openCandle(${r["Open"]},${r["High"]},${r["Low"]},${r["Close"]})">
+              View
+            </button>
+          </td>
+        </tr>`;
+    });
+}
+
+function openCandle(o,h,l,c) {
+  const modal = document.getElementById("candleModal");
   const canvas = document.getElementById("candleCanvas");
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
   const midX = canvas.width / 2;
-  const scale = 150 / (h - l);
-
+  const scale = 140 / (h - l);
   const y = p => canvas.height - (p - l) * scale - 20;
 
   ctx.strokeStyle = "#fff";
@@ -191,7 +217,7 @@ function openCandle([o, h, l, c]) {
   ctx.fillStyle = c >= o ? "#00ff00" : "#ff3333";
   ctx.fillRect(midX - 15, y(Math.max(o,c)), 30, Math.abs(y(o)-y(c)));
 
-  document.getElementById("candleModal").style.display = "block";
+  modal.style.display = "block";
 }
 
 function closeModal() {
