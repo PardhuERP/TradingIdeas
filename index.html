@@ -7,10 +7,7 @@
 
 <style>
   body {
-    margin: 0;
-    background: #0b0b0b;
-    color: #ffffff;
-    font-family: Arial, sans-serif;
+  background: radial-gradient(circle at top, #111 0%, #000 60%);
   }
 
   h1 {
@@ -23,10 +20,20 @@
   }
 
   h3 {
-    margin: 12px 10px 6px;
-    font-size: 14px;
-    color: #ccc;
-  }
+  margin: 14px 10px 8px;
+  padding: 6px 10px;
+  border-left: 4px solid;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+h3:first-of-type {
+  border-color: #00ff99; /* CE */
+}
+
+h3:last-of-type {
+  border-color: #ff9800; /* PE */
+}
 
   table {
     width: 100%;
@@ -34,6 +41,24 @@
     background: #111;
     margin-bottom: 18px;
   }
+
+  /* CE table styling */
+#ceTable {
+  background: linear-gradient(180deg, #0f2e1f 0%, #0b0b0b 70%);
+}
+
+/* PE table styling */
+#peTable {
+  background: linear-gradient(180deg, #2e1f0f 0%, #0b0b0b 70%);
+}
+
+  #ceTable tr:hover {
+  background: rgba(0, 255, 128, 0.08);
+}
+
+#peTable tr:hover {
+  background: rgba(255, 165, 0, 0.08);
+}
 
   td {
     padding: 9px 6px;
