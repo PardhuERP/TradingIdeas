@@ -1,88 +1,202 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Trading Ideas</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8" />
+<title>Live Stock Scanner</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <style>
-body{background:#0f172a;color:#fff;font-family:Arial;margin:0}
-header{background:#020617;padding:10px}
-button,a{margin:4px;padding:6px 10px;background:#2563eb;color:#fff;border:none;border-radius:5px;text-decoration:none}
-table{width:100%;border-collapse:collapse}
-th,td{border:1px solid #334155;padding:6px;text-align:center}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7)}
-.modal-content{background:#020617;margin:15% auto;padding:10px;width:90%}
-</style>
+  body {
+    margin: 0;
+    background: #0e0e0e;
+    color: #fff;
+    font-family: Arial, sans-serif;
+  }
 
-<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+  h1 {
+    text-align: center;
+    padding: 15px;
+    margin: 0;
+    background: #000;
+    font-size: 18px;
+  }
+
+  .section {
+    padding: 10px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background: #111;
+  }
+
+  th, td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #222;
+    font-size: 13px;
+  }
+
+  th {
+    background: #1a1a1a;
+    color: #ddd;
+  }
+
+  tr:hover {
+    background: #1c1c1c;
+  }
+
+  .btn {
+    background: #00bcd4;
+    color: #000;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  /* Modal */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 10;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.85);
+  }
+
+  .modal-content {
+    background: #111;
+    margin: 10% auto;
+    padding: 10px;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 6px;
+  }
+
+  .close {
+    float: right;
+    font-size: 20px;
+    cursor: pointer;
+    color: #aaa;
+  }
+
+  canvas {
+    background: #000;
+    margin-top: 10px;
+  }
+</style>
 </head>
 
 <body>
 
-<header>
-  <button onclick="loadTab('NIFTY50')">3:00 PM</button>
-  <button onclick="loadTab('NIFTY50_1')">3:15 PM</button>
-  <button onclick="loadTab('NIFTY50_2')">3:27 PM</button>
-  <a href="trade.html">➕ Trade</a>
-  <a href="stats.html">📊 Stats</a>
-</header>
+<h1>📈 Live Stock Scanner</h1>
 
-<table>
-<thead>
-<tr>
-<th>Stock</th><th>Chg%</th><th>Vol</th><th>Value</th><th>CE/PE</th><th>🕯</th>
-</tr>
-</thead>
-<tbody id="rows"></tbody>
-</table>
+<div class="section">
+  <h3>CE</h3>
+  <table id="ceTable">
+    <thead>
+      <tr>
+        <th>Stock</th>
+        <th>% Change</th>
+        <th>Volume</th>
+        <th>Value</th>
+        <th>CE</th>
+        <th>Candle</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-<div id="modal" class="modal" onclick="closeCandle()">
+  <h3>PE</h3>
+  <table id="peTable">
+    <thead>
+      <tr>
+        <th>Stock</th>
+        <th>% Change</th>
+        <th>Volume</th>
+        <th>Value</th>
+        <th>PE</th>
+        <th>Candle</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<!-- Candle Modal -->
+<div id="candleModal" class="modal">
   <div class="modal-content">
-    <div id="chart" style="height:300px"></div>
+    <span class="close" onclick="closeModal()">&times;</span>
+    <canvas id="candleCanvas" width="300" height="200"></canvas>
   </div>
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
 
-async function loadTab(sheet){
-  const res = await fetch(API+"?sheet="+sheet);
-  const data = await res.json();
-  const tb = document.getElementById("rows");
-  tb.innerHTML="";
-  data.forEach(r=>{
-    tb.innerHTML += `
-    <tr>
-      <td>${r.Z}</td>
-      <td>${r.AA}</td>
-      <td>${r.AB}</td>
-      <td>${r.AC}</td>
-      <td>${r.AH || r.AT}</td>
-      <td><button onclick='showCandle(${JSON.stringify(r)})'>🕯</button></td>
-    </tr>`;
+fetch(API_URL)
+  .then(res => res.json())
+  .then(data => {
+    buildTable(data.NIFTY50, "ceTable", "CE");
+    buildTable(data.NIFTY50, "peTable", "PE");
   });
+
+function buildTable(rows, tableId, type) {
+  const tbody = document.querySelector(`#${tableId} tbody`);
+  tbody.innerHTML = "";
+
+  rows
+    .filter(r => r.StockName && r.StockName !== "#N/A")
+    .sort((a, b) => b.ChangePercent - a.ChangePercent)
+    .forEach(r => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${r.StockName}</td>
+        <td>${r.ChangePercent}</td>
+        <td>${r.Volume}</td>
+        <td>${r.Value}</td>
+        <td>${type === "CE" ? r.CE : r.PE}</td>
+        <td><button class="btn" onclick='openCandle(${JSON.stringify(
+          type === "CE"
+            ? [r.OpenCE, r.HighCE, r.LowCE, r.CloseCE]
+            : [r.OpenPE, r.HighPE, r.LowPE, r.ClosePE]
+        )})'>View</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
 }
 
-function showCandle(r){
-  document.getElementById("modal").style.display="block";
-  document.getElementById("chart").innerHTML="";
-  const chart = LightweightCharts.createChart(chart,{layout:{background:{color:"#020617"},textColor:"#fff"}});
-  const s = chart.addCandlestickSeries();
-  s.setData([{
-    time:Math.floor(Date.now()/1000),
-    open:r.AI||r.AU,
-    high:r.AJ||r.AV,
-    low:r.AK||r.AW,
-    close:r.AL||r.AX
-  }]);
+function openCandle([o, h, l, c]) {
+  const canvas = document.getElementById("candleCanvas");
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  const midX = canvas.width / 2;
+  const scale = 150 / (h - l);
+
+  const y = p => canvas.height - (p - l) * scale - 20;
+
+  ctx.strokeStyle = "#fff";
+  ctx.beginPath();
+  ctx.moveTo(midX, y(h));
+  ctx.lineTo(midX, y(l));
+  ctx.stroke();
+
+  ctx.fillStyle = c >= o ? "#00ff00" : "#ff3333";
+  ctx.fillRect(midX - 15, y(Math.max(o,c)), 30, Math.abs(y(o)-y(c)));
+
+  document.getElementById("candleModal").style.display = "block";
 }
 
-function closeCandle(){
-  document.getElementById("modal").style.display="none";
+function closeModal() {
+  document.getElementById("candleModal").style.display = "none";
 }
-
-loadTab("NIFTY50");
 </script>
 
 </body>
