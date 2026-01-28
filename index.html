@@ -1,48 +1,89 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Trading Ideas</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="css/style.css">
-  <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+<meta charset="UTF-8">
+<title>Trading Ideas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{background:#0f172a;color:#fff;font-family:Arial;margin:0}
+header{background:#020617;padding:10px}
+button,a{margin:4px;padding:6px 10px;background:#2563eb;color:#fff;border:none;border-radius:5px;text-decoration:none}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid #334155;padding:6px;text-align:center}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7)}
+.modal-content{background:#020617;margin:15% auto;padding:10px;width:90%}
+</style>
+
+<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 </head>
+
 <body>
 
 <header>
-  <h2>Trading Ideas</h2>
-  <nav>
-    <button onclick="loadTab('NIFTY50')">3:00 PM</button>
-    <button onclick="loadTab('NIFTY50_1')">3:15 PM</button>
-    <button onclick="loadTab('NIFTY50_2')">3:27 PM Final</button>
-    <a href="trade.html">➕ Trade</a>
-    <a href="stats.html">📊 Stats</a>
-  </nav>
+  <button onclick="loadTab('NIFTY50')">3:00 PM</button>
+  <button onclick="loadTab('NIFTY50_1')">3:15 PM</button>
+  <button onclick="loadTab('NIFTY50_2')">3:27 PM</button>
+  <a href="trade.html">➕ Trade</a>
+  <a href="stats.html">📊 Stats</a>
 </header>
 
-<table id="marketTable">
-  <thead>
-    <tr>
-      <th>Stock</th>
-      <th>Change%</th>
-      <th>Volume</th>
-      <th>Value</th>
-      <th>CE/PE</th>
-      <th>Candle</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
+<table>
+<thead>
+<tr>
+<th>Stock</th><th>Chg%</th><th>Vol</th><th>Value</th><th>CE/PE</th><th>🕯</th>
+</tr>
+</thead>
+<tbody id="rows"></tbody>
 </table>
 
-<!-- Candle Modal -->
-<div id="candleModal" class="modal">
+<div id="modal" class="modal" onclick="closeCandle()">
   <div class="modal-content">
-    <span onclick="closeModal()" class="close">&times;</span>
-    <div id="candleChart" style="height:300px;"></div>
+    <div id="chart" style="height:300px"></div>
   </div>
 </div>
 
-<script src="js/config.js"></script>
-<script src="js/market.js"></script>
+<script>
+const API = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
+
+async function loadTab(sheet){
+  const res = await fetch(API+"?sheet="+sheet);
+  const data = await res.json();
+  const tb = document.getElementById("rows");
+  tb.innerHTML="";
+  data.forEach(r=>{
+    tb.innerHTML += `
+    <tr>
+      <td>${r.Z}</td>
+      <td>${r.AA}</td>
+      <td>${r.AB}</td>
+      <td>${r.AC}</td>
+      <td>${r.AH || r.AT}</td>
+      <td><button onclick='showCandle(${JSON.stringify(r)})'>🕯</button></td>
+    </tr>`;
+  });
+}
+
+function showCandle(r){
+  document.getElementById("modal").style.display="block";
+  document.getElementById("chart").innerHTML="";
+  const chart = LightweightCharts.createChart(chart,{layout:{background:{color:"#020617"},textColor:"#fff"}});
+  const s = chart.addCandlestickSeries();
+  s.setData([{
+    time:Math.floor(Date.now()/1000),
+    open:r.AI||r.AU,
+    high:r.AJ||r.AV,
+    low:r.AK||r.AW,
+    close:r.AL||r.AX
+  }]);
+}
+
+function closeCandle(){
+  document.getElementById("modal").style.display="none";
+}
+
+loadTab("NIFTY50");
+</script>
+
 </body>
 </html>
