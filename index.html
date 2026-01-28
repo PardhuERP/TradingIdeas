@@ -19,10 +19,33 @@ h1 {
   text-align: center;
   background: #000;
   font-size: 18px;
-  letter-spacing: 0.5px;
 }
 
-/* Section titles */
+/* Tabs */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+}
+
+.tab {
+  background: #1a1a1a;
+  color: #aaa;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.tab.active {
+  background: #00bcd4;
+  color: #000;
+  font-weight: bold;
+}
+
+/* Sections */
 .section {
   margin: 14px 10px;
 }
@@ -48,21 +71,15 @@ table {
   margin-bottom: 18px;
 }
 
-/* CE table */
 #ceTable {
   background: linear-gradient(180deg, #0f2e1f 0%, #0b0b0b 70%);
 }
-#ceTable thead {
-  background: rgba(0,255,153,0.15);
-}
+#ceTable thead { background: rgba(0,255,153,0.15); }
 
-/* PE table */
 #peTable {
   background: linear-gradient(180deg, #2e1f0f 0%, #0b0b0b 70%);
 }
-#peTable thead {
-  background: rgba(255,152,0,0.15);
-}
+#peTable thead { background: rgba(255,152,0,0.15); }
 
 th, td {
   padding: 9px 6px;
@@ -71,10 +88,7 @@ th, td {
   border-bottom: 1px solid #222;
 }
 
-th {
-  font-weight: bold;
-  color: #ddd;
-}
+th { color: #ddd; }
 
 #ceTable tr:hover { background: rgba(0,255,153,0.08); }
 #peTable tr:hover { background: rgba(255,152,0,0.08); }
@@ -127,6 +141,13 @@ canvas {
 
 <h1>📈 Live Stock Scanner</h1>
 
+<!-- Viewer Tabs -->
+<div class="tabs">
+  <button class="tab active" id="tab-NIFTY50" onclick="showTab('NIFTY50')">3:00 PM</button>
+  <button class="tab" id="tab-NIFTY50_1" onclick="showTab('NIFTY50_1')">3:15 PM</button>
+  <button class="tab" id="tab-NIFTY50_2" onclick="showTab('NIFTY50_2')">3:27 PM</button>
+</div>
+
 <div class="section">
   <div class="section-title ce-title">CE</div>
   <table id="ceTable">
@@ -172,26 +193,37 @@ canvas {
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
 
-/* number formatter */
-function fmt(v) {
-  if (v === null || v === undefined || v === "") return "";
-  if (isNaN(v)) return v;
+let API_DATA = {};
+let CURRENT = "NIFTY50";
+
+/* formatter */
+function fmt(v){
+  if(v===null||v===undefined||v==="") return "";
+  if(isNaN(v)) return v;
   return Number(v).toFixed(2);
 }
 
 fetch(API_URL)
-  .then(res => res.json())
-  .then(data => {
-    const rows = data.NIFTY50 || [];
-    renderCE(rows);
-    renderPE(rows);
-  });
+.then(r => r.json())
+.then(d => {
+  API_DATA = d;
+  showTab("NIFTY50"); // default
+});
 
-function renderCE(rows) {
+function showTab(name){
+  CURRENT = name;
+  document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+  document.getElementById("tab-" + name).classList.add("active");
+
+  const rows = API_DATA[name] || [];
+  renderCE(rows);
+  renderPE(rows);
+}
+
+function renderCE(rows){
   const tb = document.querySelector("#ceTable tbody");
   tb.innerHTML = "";
   rows.filter(r => r.CE_StockName)
-    .sort((a,b) => (b.CE_Change || 0) - (a.CE_Change || 0))
     .forEach(r => {
       tb.innerHTML += `
       <tr>
@@ -205,11 +237,10 @@ function renderCE(rows) {
     });
 }
 
-function renderPE(rows) {
+function renderPE(rows){
   const tb = document.querySelector("#peTable tbody");
   tb.innerHTML = "";
   rows.filter(r => r.PE_StockName)
-    .sort((a,b) => (b.PE_Change || 0) - (a.PE_Change || 0))
     .forEach(r => {
       tb.innerHTML += `
       <tr>
@@ -223,30 +254,30 @@ function renderPE(rows) {
     });
 }
 
-function openCandle(o,h,l,c) {
-  const canvas = document.getElementById("candleCanvas");
-  const ctx = canvas.getContext("2d");
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  if (!o || !h || !l || !c) return;
+function openCandle(o,h,l,c){
+  const cv = document.getElementById("candleCanvas");
+  const ctx = cv.getContext("2d");
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(!o||!h||!l||!c) return;
 
-  const midX = canvas.width / 2;
-  const scale = 140 / (h - l);
-  const y = p => canvas.height - (p - l) * scale - 20;
+  const mid = cv.width/2;
+  const scale = 140/(h-l);
+  const y = p => cv.height - (p-l)*scale - 20;
 
-  ctx.strokeStyle = "#fff";
+  ctx.strokeStyle="#fff";
   ctx.beginPath();
-  ctx.moveTo(midX, y(h));
-  ctx.lineTo(midX, y(l));
+  ctx.moveTo(mid,y(h));
+  ctx.lineTo(mid,y(l));
   ctx.stroke();
 
-  ctx.fillStyle = c >= o ? "#00ff00" : "#ff3333";
-  ctx.fillRect(midX - 14, y(Math.max(o,c)), 28, Math.abs(y(o)-y(c)));
+  ctx.fillStyle = c>=o ? "#00ff00" : "#ff3333";
+  ctx.fillRect(mid-14,y(Math.max(o,c)),28,Math.abs(y(o)-y(c)));
 
-  document.getElementById("candleModal").style.display = "block";
+  document.getElementById("candleModal").style.display="block";
 }
 
-function closeModal() {
-  document.getElementById("candleModal").style.display = "none";
+function closeModal(){
+  document.getElementById("candleModal").style.display="none";
 }
 </script>
 
