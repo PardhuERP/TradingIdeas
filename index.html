@@ -35,21 +35,27 @@
     margin-bottom: 18px;
   }
 
-  th, td {
+  td {
     padding: 9px 6px;
     font-size: 12px;
     text-align: center;
     border-bottom: 1px solid #222;
   }
 
-  th {
-    background: #1a1a1a;
-    color: #ddd;
-    font-weight: 600;
-  }
-
   tr:hover {
     background: #1c1c1c;
+  }
+
+  /* single header row (no duplication) */
+  table::before {
+    content: "Stock | %Chg | Vol | Val | Price | Candle";
+    display: block;
+    background: #1a1a1a;
+    color: #ddd;
+    font-size: 12px;
+    padding: 8px;
+    text-align: center;
+    border-bottom: 1px solid #222;
   }
 
   .btn {
@@ -101,31 +107,11 @@
 
 <h3>CE</h3>
 <table id="ceTable">
-  <thead>
-    <tr>
-      <th>Stock</th>
-      <th>%Chg</th>
-      <th>Vol</th>
-      <th>Val</th>
-      <th>CE</th>
-      <th>Candle</th>
-    </tr>
-  </thead>
   <tbody></tbody>
 </table>
 
 <h3>PE</h3>
 <table id="peTable">
-  <thead>
-    <tr>
-      <th>Stock</th>
-      <th>%Chg</th>
-      <th>Vol</th>
-      <th>Val</th>
-      <th>PE</th>
-      <th>Candle</th>
-    </tr>
-  </thead>
   <tbody></tbody>
 </table>
 
@@ -139,6 +125,13 @@
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
+
+/* number formatter → 00.00 */
+function fmt(v) {
+  if (v === null || v === undefined || v === "") return "";
+  if (isNaN(v)) return v;
+  return Number(v).toFixed(2);
+}
 
 fetch(API_URL)
   .then(res => res.json())
@@ -159,10 +152,10 @@ function renderCE(rows) {
       tb.innerHTML += `
         <tr>
           <td>${r.CE_StockName}</td>
-          <td>${r.CE_Change ?? ""}</td>
-          <td>${r.CE_Volume ?? ""}</td>
-          <td>${r.CE_Value ?? ""}</td>
-          <td>${r.CE ?? ""}</td>
+          <td>${fmt(r.CE_Change)}</td>
+          <td>${fmt(r.CE_Volume)}</td>
+          <td>${fmt(r.CE_Value)}</td>
+          <td>${fmt(r.CE)}</td>
           <td>
             <button class="btn"
               onclick="openCandle(${r.CE_Open},${r.CE_High},${r.CE_Low},${r.CE_Close})">
@@ -184,10 +177,10 @@ function renderPE(rows) {
       tb.innerHTML += `
         <tr>
           <td>${r.PE_StockName}</td>
-          <td>${r.PE_Change ?? ""}</td>
-          <td>${r.PE_Volume ?? ""}</td>
-          <td>${r.PE_Value ?? ""}</td>
-          <td>${r.PE ?? ""}</td>
+          <td>${fmt(r.PE_Change)}</td>
+          <td>${fmt(r.PE_Volume)}</td>
+          <td>${fmt(r.PE_Value)}</td>
+          <td>${fmt(r.PE)}</td>
           <td>
             <button class="btn"
               onclick="openCandle(${r.PE_Open},${r.PE_High},${r.PE_Low},${r.PE_Close})">
