@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Trade Entry</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <h2>New Trade</h2>
+  <a href="index.html">⬅ Back</a>
+</header>
+
+<form id="tradeForm">
+  <input name="Date" type="date" required>
+  <input name="Day" placeholder="Day">
+  <input name="Symbol" placeholder="Symbol" required>
+
+  <select name="Segment">
+    <option>Cash</option>
+    <option>CE</option>
+    <option>PE</option>
+    <option>Futures</option>
+  </select>
+
+  <select name="Strategy">
+    <option>BTST</option>
+    <option>Intraday</option>
+    <option>Positional</option>
+  </select>
+
+  <input name="Entry Time" placeholder="Entry Time">
+  <input name="Entry Price" type="number">
+  <input name="Quantity" type="number">
+
+  <select name="Direction">
+    <option>Buy</option>
+    <option>Sell</option>
+  </select>
+
+  <textarea name="Reason for Entry" placeholder="Reason"></textarea>
+
+  <input name="Exit Time" placeholder="Exit Time">
+  <input name="Exit Price" type="number">
+  <input name="P&L (₹)" type="number">
+
+  <button type="submit">Save Trade</button>
+</form>
+
+<script src="js/config.js"></script>
+<script src="js/trade.js"></script>
+</body>
+</html>
