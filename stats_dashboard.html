@@ -72,15 +72,19 @@ const API_URL = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyW
 fetch(API_URL + "?action=stats&t=" + Date.now())
   .then(r => r.json())
   .then(s => {
-    totalTrades.innerText = s.totalTrades;
-    totalProfit.innerText = s.totalProfit.toFixed(2);
-    totalLoss.innerText = s.totalLoss.toFixed(2);
-    netPnL.innerText = s.netPnL.toFixed(2);
-    winRate.innerText = s.winRate + "%";
-    avgProfit.innerText = s.avgProfit;
-    avgLoss.innerText = s.avgLoss;
-    btstWinRate.innerText = s.btstWinRate + "%";
-    demandCloseSuccess.innerText = s.demandCloseSuccess + "%";
+
+    // 🔑 EXACT MATCH WITH SHEET HEADERS
+    totalTrades.innerText        = s["Total Trades"] ?? 0;
+    totalProfit.innerText        = s["Total Profit"] ?? 0;
+    totalLoss.innerText          = s["Total Loss"] ?? 0;
+    netPnL.innerText             = s["Net P&L"] ?? 0;
+
+    winRate.innerText            = s["Win Rate"] ?? "0%";
+    avgProfit.innerText          = s["Avg Profit"] ?? 0;
+    avgLoss.innerText            = s["Avg Loss"] ?? 0;
+    btstWinRate.innerText        = s["BTST Win %"] ?? "0%";
+    demandCloseSuccess.innerText = s["Demand close success"] ?? "0%";
+
   });
 </script>
 
