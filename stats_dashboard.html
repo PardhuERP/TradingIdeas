@@ -12,6 +12,7 @@ body{
   color:#fff;
   font-family:Arial;
 }
+
 /* ===== TOP BAR ===== */
 .topbar{
   display:flex;
@@ -25,11 +26,14 @@ body{
   cursor:pointer;
   margin-right:10px;
 }
-  
 h2{
+  flex:1;
   text-align:center;
-  margin:12px 0;
+  margin:0;
+  font-size:16px;
 }
+
+/* ===== CARDS ===== */
 .grid{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -59,11 +63,11 @@ h2{
 
 <body>
 
-  <!-- ===== HEADER WITH BACK ===== -->
+<!-- ===== HEADER WITH BACK ===== -->
 <div class="topbar">
   <div class="back-btn" onclick="goBack()">⬅ Back</div>
-
-<h2>📊 Stats Dashboard</h2>
+  <h2>📊 Stats Dashboard</h2>
+</div>
 
 <div class="grid">
   <div class="card"><div class="label">Total Trades</div><div class="value" id="totalTrades">0</div></div>
@@ -87,22 +91,24 @@ h2{
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
 
+/* BACK */
+function goBack(){
+  window.location.href = "index.html";
+}
+
+/* LOAD STATS */
 fetch(API_URL + "?action=stats&t=" + Date.now())
   .then(r => r.json())
   .then(s => {
-
-    // 🔑 EXACT MATCH WITH SHEET HEADERS
     totalTrades.innerText        = s["Total Trades"] ?? 0;
     totalProfit.innerText        = s["Total Profit"] ?? 0;
     totalLoss.innerText          = s["Total Loss"] ?? 0;
     netPnL.innerText             = s["Net P&L"] ?? 0;
-
     winRate.innerText            = s["Win Rate"] ?? "0%";
     avgProfit.innerText          = s["Avg Profit"] ?? 0;
     avgLoss.innerText            = s["Avg Loss"] ?? 0;
     btstWinRate.innerText        = s["BTST Win %"] ?? "0%";
     demandCloseSuccess.innerText = s["Demand close success"] ?? "0%";
-
   });
 </script>
 
