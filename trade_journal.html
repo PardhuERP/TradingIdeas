@@ -151,6 +151,19 @@ textarea{ height:70px; }
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
 
+  function generateTradeID(){
+  const symbol = document.getElementById("Symbol").value || "TRADE";
+  const ts = new Date();
+  const id =
+    symbol.toUpperCase() + "_" +
+    ts.getFullYear() +
+    String(ts.getMonth()+1).padStart(2,"0") +
+    String(ts.getDate()).padStart(2,"0") + "_" +
+    String(ts.getHours()).padStart(2,"0") +
+    String(ts.getMinutes()).padStart(2,"0");
+
+  document.getElementById("TradeID").value = id;
+}
 function saveTrade(){
   const data = {};
   document.querySelectorAll("input,select,textarea").forEach(el=>{
