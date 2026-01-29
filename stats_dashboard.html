@@ -69,32 +69,6 @@ h2{
   <h2>📊 Stats Dashboard</h2>
 </div>
 
-  <!-- ===== FII / DII ===== -->
-<div class="grid">
-  <div class="card">
-    <div class="label">Today Net</div>
-    <div class="value" id="netToday">0</div>
-    <div class="label">FII: <span id="fiiToday"></span> | DII: <span id="diiToday"></span></div>
-  </div>
-
-  <div class="card">
-    <div class="label">Prev Day Net</div>
-    <div class="value" id="netPrev">0</div>
-    <div class="label">FII: <span id="fiiPrev"></span> | DII: <span id="diiPrev"></span></div>
-  </div>
-
-  <div class="card">
-    <div class="label">MTD Net</div>
-    <div class="value" id="netMTD">0</div>
-    <div class="label">FII: <span id="fiiMTD"></span> | DII: <span id="diiMTD"></span></div>
-  </div>
-
-  <div class="card">
-    <div class="label">Prev Month Net</div>
-    <div class="value" id="netPM">0</div>
-    <div class="label">FII: <span id="fiiPM"></span> | DII: <span id="diiPM"></span></div>
-  </div>
-</div>
 
 <div class="grid">
   <div class="card"><div class="label">Total Trades</div><div class="value" id="totalTrades">0</div></div>
@@ -136,33 +110,6 @@ fetch(API_URL + "?action=stats&t=" + Date.now())
     avgLoss.innerText            = s["Avg Loss"] ?? 0;
     btstWinRate.innerText        = s["BTST Win %"] ?? "0%";
     demandCloseSuccess.innerText = s["Demand close success"] ?? "0%";
-  });
-
-  function paint(el, v){
-  el.classList.remove("green","red","blue");
-  if (Number(v) > 0) el.classList.add("green");
-  else if (Number(v) < 0) el.classList.add("red");
-  else el.classList.add("blue");
-}
-
-fetch(API + "?action=fiidii&t=" + Date.now())
-  .then(r=>r.json())
-  .then(d=>{
-    fiiToday.textContent = d["FII_Today"];
-    diiToday.textContent = d["DII_Today"];
-    netToday.textContent = d["Net_Today"]; paint(netToday, d["Net_Today"]);
-
-    fiiPrev.textContent = d["FII_Prev"];
-    diiPrev.textContent = d["DII_Prev"];
-    netPrev.textContent = d["Net_Prev"]; paint(netPrev, d["Net_Prev"]);
-
-    fiiMTD.textContent = d["FII_MTD"];
-    diiMTD.textContent = d["DII_MTD"];
-    netMTD.textContent = d["Net_MTD"]; paint(netMTD, d["Net_MTD"]);
-
-    fiiPM.textContent = d["FII_PrevMonth"];
-    diiPM.textContent = d["DII_PrevMonth"];
-    netPM.textContent = d["Net_PrevMonth"]; paint(netPM, d["Net_PrevMonth"]);
   });
 </script>
 
