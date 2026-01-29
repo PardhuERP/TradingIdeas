@@ -12,54 +12,6 @@ body{
   color:#fff;
   font-family:Arial;
 }
-h2{
-  text-align:center;
-  margin:14px 0;
-  font-size:18px;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-  padding:12px;
-}
-
-.card{
-  background:#111;
-  border-radius:12px;
-  padding:14px;
-  box-shadow:0 6px 18px rgba(0,0,0,0.6);
-}
-
-.label{
-  font-size:12px;
-  color:#aaa;
-}
-.big{
-  font-size:22px;
-  font-weight:bold;
-  margin:6px 0;
-}
-
-.sub{
-  font-size:11px;
-  color:#ccc;
-}
-
-  .big{
-  font-size:24px;
-  font-weight:800;
-  letter-spacing:0.5px;
-}
-.sub{
-  font-size:12px;
-  opacity:0.85;
-}
-.green{ color:#00ff99; }
-.red{ color:#ff5252; }
-.blue{ color:#00bcd4; }
-
 .topbar{
   display:flex;
   align-items:center;
@@ -68,10 +20,38 @@ h2{
   background:#000;
 }
 .back{
-  font-size:14px;
-  cursor:pointer;
   color:#00bcd4;
+  cursor:pointer;
 }
+h2{
+  text-align:center;
+  margin:12px 0;
+}
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  padding:12px;
+}
+.card{
+  background:#111;
+  border-radius:12px;
+  padding:14px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.6);
+}
+.label{
+  font-size:12px;
+  color:#aaa;
+}
+.big{
+  font-size:26px;
+  font-weight:800;
+  margin:6px 0;
+  letter-spacing:0.5px;
+}
+.green{ color:#00ff99; }
+.red{ color:#ff5252; }
+.blue{ color:#00bcd4; }
 </style>
 </head>
 
@@ -86,44 +66,36 @@ h2{
 <h2>📊 Institutional Flow</h2>
 
 <div class="grid">
-
   <div class="card">
     <div class="label">Today</div>
     <div class="big" id="netToday">0</div>
-    <div class="sub">FII: <span id="fiiToday"></span></div>
-    <div class="sub">DII: <span id="diiToday"></span></div>
   </div>
 
   <div class="card">
     <div class="label">Previous Day</div>
     <div class="big" id="netPrev">0</div>
-    <div class="sub">FII: <span id="fiiPrev"></span></div>
-    <div class="sub">DII: <span id="diiPrev"></span></div>
   </div>
 
   <div class="card">
     <div class="label">Month Till Date</div>
     <div class="big" id="netMTD">0</div>
-    <div class="sub">FII: <span id="fiiMTD"></span></div>
-    <div class="sub">DII: <span id="diiMTD"></span></div>
   </div>
 
   <div class="card">
     <div class="label">Previous Month</div>
     <div class="big" id="netPM">0</div>
-    <div class="sub">FII: <span id="fiiPM"></span></div>
-    <div class="sub">DII: <span id="diiPM"></span></div>
   </div>
-
 </div>
 
 <script>
 const API = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
+
 function fmt2(v){
   const n = Number(v);
   if (isNaN(n)) return "0.00";
   return n.toFixed(2);
 }
+
 function paint(el, v){
   el.classList.remove("green","red","blue");
   if (Number(v) > 0) el.classList.add("green");
@@ -131,29 +103,21 @@ function paint(el, v){
   else el.classList.add("blue");
 }
 
-fetch(API + "?action=fiidii&t=" + Date.now())
+fetch(API + "?action=fii&t=" + Date.now())
   .then(r=>r.json())
   .then(d=>{
-  fiiToday.textContent = fmt2(d["FII_Today"]);
-  diiToday.textContent = fmt2(d["DII_Today"]);
-  netToday.textContent = fmt2(d["Net_Today"]);
-  paint(netToday, d["Net_Today"]);
+    netToday.textContent = fmt2(d.today);
+    paint(netToday, d.today);
 
-  fiiPrev.textContent = fmt2(d["FII_Prev"]);
-  diiPrev.textContent = fmt2(d["DII_Prev"]);
-  netPrev.textContent = fmt2(d["Net_Prev"]);
-  paint(netPrev, d["Net_Prev"]);
+    netPrev.textContent = fmt2(d.prev);
+    paint(netPrev, d.prev);
 
-  fiiMTD.textContent = fmt2(d["FII_MTD"]);
-  diiMTD.textContent = fmt2(d["DII_MTD"]);
-  netMTD.textContent = fmt2(d["Net_MTD"]);
-  paint(netMTD, d["Net_MTD"]);
+    netMTD.textContent = fmt2(d.mtd);
+    paint(netMTD, d.mtd);
 
-  fiiPM.textContent = fmt2(d["FII_PrevMonth"]);
-  diiPM.textContent = fmt2(d["DII_PrevMonth"]);
-  netPM.textContent = fmt2(d["Net_PrevMonth"]);
-  paint(netPM, d["Net_PrevMonth"]);
-});
+    netPM.textContent = fmt2(d.prevMonth);
+    paint(netPM, d.prevMonth);
+  });
 </script>
 
 </body>
