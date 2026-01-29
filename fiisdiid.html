@@ -47,6 +47,15 @@ h2{
   color:#ccc;
 }
 
+  .big{
+  font-size:24px;
+  font-weight:800;
+  letter-spacing:0.5px;
+}
+.sub{
+  font-size:12px;
+  opacity:0.85;
+}
 .green{ color:#00ff99; }
 .red{ color:#ff5252; }
 .blue{ color:#00bcd4; }
@@ -110,7 +119,11 @@ h2{
 
 <script>
 const API = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
-
+function fmt2(v){
+  const n = Number(v);
+  if (isNaN(n)) return "0.00";
+  return n.toFixed(2);
+}
 function paint(el, v){
   el.classList.remove("green","red","blue");
   if (Number(v) > 0) el.classList.add("green");
@@ -121,21 +134,26 @@ function paint(el, v){
 fetch(API + "?action=fiidii&t=" + Date.now())
   .then(r=>r.json())
   .then(d=>{
-    fiiToday.textContent = d["FII_Today"];
-    diiToday.textContent = d["DII_Today"];
-    netToday.textContent = d["Net_Today"]; paint(netToday, d["Net_Today"]);
+  fiiToday.textContent = fmt2(d["FII_Today"]);
+  diiToday.textContent = fmt2(d["DII_Today"]);
+  netToday.textContent = fmt2(d["Net_Today"]);
+  paint(netToday, d["Net_Today"]);
 
-    fiiPrev.textContent = d["FII_Prev"];
-    diiPrev.textContent = d["DII_Prev"];
-    netPrev.textContent = d["Net_Prev"]; paint(netPrev, d["Net_Prev"]);
+  fiiPrev.textContent = fmt2(d["FII_Prev"]);
+  diiPrev.textContent = fmt2(d["DII_Prev"]);
+  netPrev.textContent = fmt2(d["Net_Prev"]);
+  paint(netPrev, d["Net_Prev"]);
 
-    fiiMTD.textContent = d["FII_MTD"];
-    diiMTD.textContent = d["DII_MTD"];
-    netMTD.textContent = d["Net_MTD"]; paint(netMTD, d["Net_MTD"]);
+  fiiMTD.textContent = fmt2(d["FII_MTD"]);
+  diiMTD.textContent = fmt2(d["DII_MTD"]);
+  netMTD.textContent = fmt2(d["Net_MTD"]);
+  paint(netMTD, d["Net_MTD"]);
 
-    fiiPM.textContent = d["FII_PrevMonth"];
-    diiPM.textContent = d["DII_PrevMonth"];
-    netPM.textContent = d["Net_PrevMonth"]; paint(netPM, d["Net_PrevMonth"]);
+  fiiPM.textContent = fmt2(d["FII_PrevMonth"]);
+  diiPM.textContent = fmt2(d["DII_PrevMonth"]);
+  netPM.textContent = fmt2(d["Net_PrevMonth"]);
+  paint(netPM, d["Net_PrevMonth"]);
+});
   });
 </script>
 
