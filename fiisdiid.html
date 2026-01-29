@@ -57,34 +57,40 @@ h2{
 
 <body>
 
-<div class="topbar">
-  <div class="back" onclick="history.back()">⬅ Back</div>
-  <div>FII / DII Dashboard</div>
-  <div></div>
-</div>
-
-<h2>📊 Institutional Flow</h2>
-
 <div class="grid">
+
+  <!-- TODAY -->
   <div class="card">
     <div class="label" id="todayDate">--</div>
-    <div class="big" id="netToday">0</div>
+    <div class="big" id="todayNet">0</div>
+    <div class="sub">FII: <span id="todayFII"></span></div>
+    <div class="sub">DII: <span id="todayDII"></span></div>
   </div>
 
+  <!-- PREVIOUS DAY -->
   <div class="card">
-    <div class="label">Previous Day</div>
-    <div class="big" id="netPrev">0</div>
+    <div class="label" id="prevDate">--</div>
+    <div class="big" id="prevNet">0</div>
+    <div class="sub">FII: <span id="prevFII"></span></div>
+    <div class="sub">DII: <span id="prevDII"></span></div>
   </div>
 
+  <!-- MTD -->
   <div class="card">
-    <div class="label">Month Till Date</div>
-    <div class="big" id="netMTD">0</div>
+    <div class="label">MTD</div>
+    <div class="big" id="mtdNet">0</div>
+    <div class="sub">FII: <span id="mtdFII"></span></div>
+    <div class="sub">DII: <span id="mtdDII"></span></div>
   </div>
 
+  <!-- PREVIOUS MONTH -->
   <div class="card">
-    <div class="label">Previous Month</div>
-    <div class="big" id="netPM">0</div>
+    <div class="label">Prev Month</div>
+    <div class="big" id="pmNet">0</div>
+    <div class="sub">FII: <span id="pmFII"></span></div>
+    <div class="sub">DII: <span id="pmDII"></span></div>
   </div>
+
 </div>
 
 <script>
@@ -106,20 +112,19 @@ function paint(el, v){
 fetch(API + "?action=fii&t=" + Date.now())
   .then(r=>r.json())
   .then(d=>{
-  todayDate.textContent = d.date;
+  todayDate.textContent = d.todayDate;
+  todayNet.textContent = fmt2(d.todayNet); paint(todayNet,d.todayNet);
+  todayFII.textContent = fmt2(d.todayFII);
+  todayDII.textContent = fmt2(d.todayDII);
 
-  netToday.textContent = fmt2(d.today);
-  paint(netToday, d.today);
+  prevDate.textContent = d.prevDate;
+  prevNet.textContent = fmt2(d.prevNet); paint(prevNet,d.prevNet);
+  prevFII.textContent = fmt2(d.prevFII);
+  prevDII.textContent = fmt2(d.prevDII);
 
-    netPrev.textContent = fmt2(d.prev);
-    paint(netPrev, d.prev);
-
-    netMTD.textContent = fmt2(d.mtd);
-    paint(netMTD, d.mtd);
-
-    netPM.textContent = fmt2(d.prevMonth);
-    paint(netPM, d.prevMonth);
-  });
+  mtdNet.textContent = fmt2(d.mtdNet); paint(mtdNet,d.mtdNet);
+  pmNet.textContent = fmt2(d.pmNet); paint(pmNet,d.pmNet);
+});
 </script>
 
 </body>
