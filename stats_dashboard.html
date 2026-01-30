@@ -101,15 +101,17 @@ function goBack(){
 fetch(API_URL + "?action=stats&t=" + Date.now())
   .then(r => r.json())
   .then(s => {
-    totalTrades.innerText        = s["Total Trades"] ?? 0;
-    totalProfit.innerText        = s["Total Profit"] ?? 0;
-    totalLoss.innerText          = s["Total Loss"] ?? 0;
-    netPnL.innerText             = s["Net P&L"] ?? 0;
-    winRate.innerText            = s["Win Rate"] ?? "0%";
-    avgProfit.innerText          = s["Avg Profit"] ?? 0;
-    avgLoss.innerText            = s["Avg Loss"] ?? 0;
-    btstWinRate.innerText        = s["BTST Win %"] ?? "0%";
-    demandCloseSuccess.innerText = s["Demand close success"] ?? "0%";
+    const f2 = v => Number(v || 0).toFixed(2);
+
+totalTrades.innerText = s.totalTrades;
+totalProfit.innerText = f2(s.totalProfit);
+totalLoss.innerText = f2(s.totalLoss);
+netPnL.innerText = f2(s.netPnL);
+winRate.innerText = f2(s.winRate) + "%";
+avgProfit.innerText = f2(s.avgProfit);
+avgLoss.innerText = f2(s.avgLoss);
+btstWinRate.innerText = f2(s.btstWinRate) + "%";
+demandCloseSuccess.innerText = f2(s.demandCloseSuccess) + "%";
   });
 </script>
 
