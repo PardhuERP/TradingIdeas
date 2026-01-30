@@ -97,21 +97,32 @@ function goBack(){
   window.location.href = "index.html";
 }
 
+/* SAFE PICKER */
+function pick(obj, keys){
+  for(const k of keys){
+    if(obj[k] !== undefined) return obj[k];
+  }
+  return 0;
+}
+
+/* FORMAT */
+const f2 = v => Number(v || 0).toFixed(2);
+
 /* LOAD STATS */
 fetch(API_URL + "?action=stats&t=" + Date.now())
   .then(r => r.json())
   .then(s => {
-    const f2 = v => Number(v || 0).toFixed(2);
 
-totalTrades.innerText = s.totalTrades;
-totalProfit.innerText = f2(s.totalProfit);
-totalLoss.innerText = f2(s.totalLoss);
-netPnL.innerText = f2(s.netPnL);
-winRate.innerText = f2(s.winRate) + "%";
-avgProfit.innerText = f2(s.avgProfit);
-avgLoss.innerText = f2(s.avgLoss);
-btstWinRate.innerText = f2(s.btstWinRate) + "%";
-demandCloseSuccess.innerText = f2(s.demandCloseSuccess) + "%";
+    totalTrades.innerText = pick(s, ["totalTrades","Total Trades"]);
+    totalProfit.innerText = f2(pick(s, ["totalProfit","Total Profit"]));
+    totalLoss.innerText = f2(pick(s, ["totalLoss","Total Loss"]));
+    netPnL.innerText = f2(pick(s, ["netPnL","Net P&L","Net PnL"]));
+    winRate.innerText = f2(pick(s, ["winRate","Win Rate"])) + "%";
+    avgProfit.innerText = f2(pick(s, ["avgProfit","Avg Profit"]));
+    avgLoss.innerText = f2(pick(s, ["avgLoss","Avg Loss"]));
+    btstWinRate.innerText = f2(pick(s, ["btstWinRate","BTST Win %"])) + "%";
+    demandCloseSuccess.innerText = f2(pick(s, ["demandCloseSuccess","Demand close success","Demand Close Success"]))) + "%";
+
   });
 </script>
 
