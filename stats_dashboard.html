@@ -69,7 +69,6 @@ h2{
   <h2>📊 Stats Dashboard</h2>
 </div>
 
-
 <div class="grid">
   <div class="card"><div class="label">Total Trades</div><div class="value" id="totalTrades">0</div></div>
   <div class="card"><div class="label">Win Rate (%)</div><div class="value blue" id="winRate">0</div></div>
@@ -92,37 +91,30 @@ h2{
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
 
+function fmt2(v){
+  const n = Number(v);
+  if (isNaN(n)) return v || "0.00";
+  return n.toFixed(2);
+}
+
 /* BACK */
 function goBack(){
   window.location.href = "index.html";
 }
 
-/* SAFE PICKER */
-function pick(obj, keys){
-  for(const k of keys){
-    if(obj[k] !== undefined) return obj[k];
-  }
-  return 0;
-}
-
-/* FORMAT */
-const f2 = v => Number(v || 0).toFixed(2);
-
 /* LOAD STATS */
 fetch(API_URL + "?action=stats&t=" + Date.now())
   .then(r => r.json())
   .then(s => {
-
-    totalTrades.innerText = pick(s, ["totalTrades","Total Trades"]);
-    totalProfit.innerText = f2(pick(s, ["totalProfit","Total Profit"]));
-    totalLoss.innerText = f2(pick(s, ["totalLoss","Total Loss"]));
-    netPnL.innerText = f2(pick(s, ["netPnL","Net P&L","Net PnL"]));
-    winRate.innerText = f2(pick(s, ["winRate","Win Rate"])) + "%";
-    avgProfit.innerText = f2(pick(s, ["avgProfit","Avg Profit"]));
-    avgLoss.innerText = f2(pick(s, ["avgLoss","Avg Loss"]));
-    btstWinRate.innerText = f2(pick(s, ["btstWinRate","BTST Win %"])) + "%";
-    demandCloseSuccess.innerText = f2(pick(s, ["demandCloseSuccess","Demand close success","Demand Close Success"]))) + "%";
-
+    totalTrades.innerText        = s["Total Trades"] ?? 0;
+    totalProfit.innerText        = fmt2(s["Total Profit"]);
+    totalLoss.innerText          = fmt2(s["Total Loss"]);
+    netPnL.innerText             = fmt2(s["Net P&L"]);
+    winRate.innerText            = fmt2(s["Win Rate"]);
+    avgProfit.innerText          = fmt2(s["Avg Profit"]);
+    avgLoss.innerText            = fmt2(s["Avg Loss"]);
+    btstWinRate.innerText        = fmt2(s["BTST Win %"]);
+    demandCloseSuccess.innerText = fmt2(s["Demand close success"]);
   });
 </script>
 
