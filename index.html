@@ -6,212 +6,95 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <style>
-body {
-  margin: 0;
-  background: radial-gradient(circle at top, #111 0%, #000 60%);
-  color: #fff;
-  font-family: Arial, sans-serif;
+body{
+  margin:0;
+  background:radial-gradient(circle at top,#111 0%,#000 60%);
+  color:#fff;
+  font-family:Arial,sans-serif;
 }
 
-/* ===== TOP BAR ===== */
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  background: #000;
-  padding: 10px;
+/* TOP BAR */
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  background:#000;
+  padding:10px;
 }
+.menu-btn{
+  position:absolute;left:10px;font-size:22px;cursor:pointer;
+}
+.menu{
+  display:none;position:absolute;top:42px;left:10px;
+  background:#1a1a1a;border-radius:6px;min-width:160px;
+  box-shadow:0 6px 16px rgba(0,0,0,.7);z-index:20;
+}
+.menu div{
+  padding:10px;font-size:13px;border-bottom:1px solid #2a2a2a;cursor:pointer;
+}
+.menu div:hover{background:#2a2a2a}
 
-.menu-btn {
-  position: absolute;
-  left: 10px;
-  font-size: 22px;
-  cursor: pointer;
-  user-select: none;
-}
-
-.menu {
-  display: none;
-  position: absolute;
-  top: 42px;
-  left: 10px;
-  background: #1a1a1a;
-  border-radius: 6px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.7);
-  z-index: 20;
-  min-width: 160px;
-}
-
-.menu div {
-  padding: 10px 12px;
-  font-size: 13px;
-  cursor: pointer;
-  border-bottom: 1px solid #2a2a2a;
-}
-
-.menu div:last-child {
-  border-bottom: none;
-}
-
-.menu div:hover {
-  background: #2a2a2a;
-}
-
-/* ===== HEADER ===== */
-h1 {
-  margin: 0;
-  font-size: 17px;
-  text-align: center;
-}
-
-.sub {
-  display: block;
-  font-size: 12px;
-  font-weight: normal;
-  color: #aaa;
-  margin-top: 2px;
-}
+h1{margin:0;font-size:17px;text-align:center}
+.sub{display:block;font-size:12px;color:#aaa}
 
 /* Tabs */
-.tabs {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  padding: 10px;
+.tabs{display:flex;justify-content:center;gap:10px;padding:10px}
+.tab{
+  background:#1a1a1a;color:#aaa;border:none;padding:6px 14px;
+  border-radius:20px;font-size:12px;cursor:pointer;
 }
-
-.tab {
-  background: #1a1a1a;
-  color: #aaa;
-  border: none;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.tab.active {
-  background: #00bcd4;
-  color: #000;
-  font-weight: bold;
-}
+.tab.active{background:#00bcd4;color:#000;font-weight:bold}
 
 /* Refresh */
-.refresh-wrap {
-  text-align: center;
-  margin-bottom: 6px;
+.refresh-wrap{text-align:center;margin-bottom:6px}
+
+/* Section */
+.section{margin:10px}
+.section-title{
+  padding:6px 10px;font-size:14px;font-weight:bold;
+  border-left:4px solid;margin-bottom:6px
 }
+.ce-title{border-color:#00ff99}
+.pe-title{border-color:#ff9800}
 
-/* Sections */
-.section {
-  margin: 10px;
+/* ===== CARD LIST ===== */
+.list{display:flex;flex-direction:column;gap:8px}
+.row{
+  display:grid;
+  grid-template-columns:1.4fr .8fr .9fr .9fr .8fr auto;
+  gap:6px;align-items:center;
+  background:rgba(255,255,255,.05);
+  border-radius:10px;padding:10px;font-size:12px
 }
-
-.section-title {
-  padding: 6px 10px;
-  font-size: 14px;
-  font-weight: bold;
-  border-left: 4px solid;
-  margin-bottom: 6px;
-}
-
-.ce-title { border-color: #00ff99; }
-.pe-title { border-color: #ff9800; }
-
-/* Table wrapper (mobile fit) */
-.table-wrap {
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  min-width: 520px;
-  border-collapse: collapse;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
-  margin-bottom: 18px;
-}
-
-#ceTable {
-  background: linear-gradient(180deg, #0f2e1f 0%, #0b0b0b 70%);
-}
-#ceTable thead { background: rgba(0,255,153,0.15); }
-
-#peTable {
-  background: linear-gradient(180deg, #2e1f0f 0%, #0b0b0b 70%);
-}
-#peTable thead { background: rgba(255,152,0,0.15); }
-
-th, td {
-  padding: 8px 6px;
-  font-size: 12px;
-  text-align: center;
-  border-bottom: 1px solid #222;
-  white-space: nowrap;
-}
-
-th { color: #ddd; }
-
-#ceTable tr:hover { background: rgba(0,255,153,0.08); }
-#peTable tr:hover { background: rgba(255,152,0,0.08); }
+.row span{text-align:center}
+.row .stock{text-align:left;font-weight:bold}
+.ce .row{border-left:3px solid #00ff99}
+.pe .row{border-left:3px solid #ff9800}
+.head{background:rgba(255,255,255,.12);font-weight:bold}
 
 /* Button */
-.btn {
-  background: #00bcd4;
-  color: #000;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: bold;
-  cursor: pointer;
+.btn{
+  background:#00bcd4;color:#000;border:none;
+  padding:5px 8px;border-radius:6px;font-size:11px;font-weight:bold
 }
 
 /* Modal */
-.modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.85);
-  z-index: 10;
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:10}
+.modal-box{
+  background:#111;width:92%;max-width:360px;margin:18% auto;
+  padding:10px;border-radius:6px
 }
-
-.modal-box {
-  background: #111;
-  width: 92%;
-  max-width: 360px;
-  margin: 18% auto;
-  padding: 10px;
-  border-radius: 6px;
-}
-
-.close {
-  float: right;
-  font-size: 18px;
-  cursor: pointer;
-  color: #aaa;
-}
-
-canvas {
-  background: #000;
-  margin-top: 8px;
-}
+.close{float:right;font-size:18px;cursor:pointer;color:#aaa}
+canvas{background:#000;margin-top:8px}
 </style>
 </head>
 
 <body>
 
-<!-- ===== TOP BAR ===== -->
 <div class="topbar">
   <div class="menu-btn" onclick="toggleMenu()">°°°</div>
-
-  <h1>
-    📈 Live Stock Scanner
-    <span class="sub">Educational purpose only</span>
-  </h1>
-
+  <h1>📈 Live Stock Scanner <span class="sub">Educational purpose only</span></h1>
   <div class="menu" id="menu">
     <div onclick="openTradeJournal()">📘 Trade Journal</div>
     <div onclick="openStats()">📊 Stats Dashboard</div>
@@ -219,7 +102,6 @@ canvas {
   </div>
 </div>
 
-<!-- Tabs -->
 <div class="tabs">
   <button class="tab active" id="tab-NIFTY50" onclick="showTab('NIFTY50')">3:00 PM</button>
   <button class="tab" id="tab-NIFTY50_1" onclick="showTab('NIFTY50_1')">3:15 PM</button>
@@ -232,33 +114,14 @@ canvas {
 
 <div class="section">
   <div class="section-title ce-title">CE</div>
-  <div class="table-wrap">
-    <table id="ceTable">
-      <thead>
-        <tr>
-          <th>Stock</th><th>%Chg</th><th>Vol</th><th>Val</th><th>CE</th><th>Candle</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+  <div id="ceTable" class="list ce"></div>
 </div>
 
 <div class="section">
   <div class="section-title pe-title">PE</div>
-  <div class="table-wrap">
-    <table id="peTable">
-      <thead>
-        <tr>
-          <th>Stock</th><th>%Chg</th><th>Vol</th><th>Val</th><th>PE</th><th>Candle</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+  <div id="peTable" class="list pe"></div>
 </div>
 
-<!-- Candle Modal -->
 <div id="candleModal" class="modal">
   <div class="modal-box">
     <span class="close" onclick="closeModal()">×</span>
@@ -267,118 +130,82 @@ canvas {
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
+const API_URL="https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
+let API_DATA={},CURRENT="NIFTY50";
 
-let API_DATA = {};
-let CURRENT = "NIFTY50";
-
-/* ===== MENU ===== */
 function toggleMenu(){
-  const m = document.getElementById("menu");
-  m.style.display = m.style.display === "block" ? "none" : "block";
+  const m=document.getElementById("menu");
+  m.style.display=m.style.display==="block"?"none":"block";
 }
-
-document.addEventListener("click", e => {
-  if (!e.target.closest(".menu-btn") && !e.target.closest(".menu")) {
-    document.getElementById("menu").style.display = "none";
+document.addEventListener("click",e=>{
+  if(!e.target.closest(".menu-btn")&&!e.target.closest(".menu")){
+    document.getElementById("menu").style.display="none";
   }
 });
+function openTradeJournal(){location.href="trade_journal.html"}
+function openStats(){location.href="stats_dashboard.html"}
+function openFiisDiid(){location.href="fiisdiid.html"}
 
-/* DoT line Placeholders */
-function openTradeJournal(){
-  window.location.href = "trade_journal.html";
-}
-
-function openStats(){
-  window.location.href = "stats_dashboard.html";
-}
-  
-function openFiisDiid(){
-  window.location.href = "fiisdiid.html";
-  }
-
-/* ===== DATA ===== */
-function fmt(v){
-  if(v===null||v===undefined||v==="") return "";
-  if(isNaN(v)) return v;
-  return Number(v).toFixed(2);
-}
+function fmt(v){if(v===null||v===""||isNaN(v))return"";return Number(v).toFixed(2)}
 
 function fetchData(){
-  fetch(API_URL + "?t=" + Date.now())
-    .then(r => r.json())
-    .then(d => {
-      API_DATA = d;
-      showTab(CURRENT);
-    });
+  fetch(API_URL+"?t="+Date.now()).then(r=>r.json()).then(d=>{
+    API_DATA=d;showTab(CURRENT);
+  });
 }
 fetchData();
+function refreshData(){fetchData()}
 
-function refreshData(){ fetchData(); }
-
-function showTab(name){
-  CURRENT = name;
-  document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
-  document.getElementById("tab-" + name).classList.add("active");
-  const rows = API_DATA[name] || [];
-  renderCE(rows);
-  renderPE(rows);
+function showTab(n){
+  CURRENT=n;
+  document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+  document.getElementById("tab-"+n).classList.add("active");
+  const rows=API_DATA[n]||[];
+  renderCE(rows);renderPE(rows);
 }
 
 function renderCE(rows){
-  const tb=document.querySelector("#ceTable tbody");
-  tb.innerHTML="";
+  const box=document.getElementById("ceTable");
+  box.innerHTML=`<div class="row head"><span class="stock">Stock</span><span>%Chg</span><span>Vol</span><span>Val</span><span>CE</span><span></span></div>`;
   rows.filter(r=>r.CE_StockName).forEach(r=>{
-    tb.innerHTML+=`
-    <tr>
-      <td>${r.CE_StockName}</td>
-      <td>${fmt(r.CE_Change)}</td>
-      <td>${fmt(r.CE_Volume)}</td>
-      <td>${fmt(r.CE_Value)}</td>
-      <td>${fmt(r.CE)}</td>
-      <td><button class="btn" onclick="openCandle(${r.CE_Open},${r.CE_High},${r.CE_Low},${r.CE_Close})">View</button></td>
-    </tr>`;
+    box.innerHTML+=`
+    <div class="row">
+      <span class="stock">${r.CE_StockName}</span>
+      <span>${fmt(r.CE_Change)}</span>
+      <span>${fmt(r.CE_Volume)}</span>
+      <span>${fmt(r.CE_Value)}</span>
+      <span>${fmt(r.CE)}</span>
+      <button class="btn" onclick="openCandle(${r.CE_Open},${r.CE_High},${r.CE_Low},${r.CE_Close})">📊</button>
+    </div>`;
   });
 }
-
 function renderPE(rows){
-  const tb=document.querySelector("#peTable tbody");
-  tb.innerHTML="";
+  const box=document.getElementById("peTable");
+  box.innerHTML=`<div class="row head"><span class="stock">Stock</span><span>%Chg</span><span>Vol</span><span>Val</span><span>PE</span><span></span></div>`;
   rows.filter(r=>r.PE_StockName).forEach(r=>{
-    tb.innerHTML+=`
-    <tr>
-      <td>${r.PE_StockName}</td>
-      <td>${fmt(r.PE_Change)}</td>
-      <td>${fmt(r.PE_Volume)}</td>
-      <td>${fmt(r.PE_Value)}</td>
-      <td>${fmt(r.PE)}</td>
-      <td><button class="btn" onclick="openCandle(${r.PE_Open},${r.PE_High},${r.PE_Low},${r.PE_Close})">View</button></td>
-    </tr>`;
+    box.innerHTML+=`
+    <div class="row">
+      <span class="stock">${r.PE_StockName}</span>
+      <span>${fmt(r.PE_Change)}</span>
+      <span>${fmt(r.PE_Volume)}</span>
+      <span>${fmt(r.PE_Value)}</span>
+      <span>${fmt(r.PE)}</span>
+      <button class="btn" onclick="openCandle(${r.PE_Open},${r.PE_High},${r.PE_Low},${r.PE_Close})">📊</button>
+    </div>`;
   });
 }
 
 function openCandle(o,h,l,c){
-  const cv=document.getElementById("candleCanvas");
-  const ctx=cv.getContext("2d");
+  const cv=document.getElementById("candleCanvas"),ctx=cv.getContext("2d");
   ctx.clearRect(0,0,cv.width,cv.height);
-  if(!o||!h||!l||!c) return;
-  const mid=cv.width/2;
-  const scale=140/(h-l);
-  const y=p=>cv.height-(p-l)*scale-20;
-  ctx.strokeStyle="#fff";
-  ctx.beginPath();
-  ctx.moveTo(mid,y(h));
-  ctx.lineTo(mid,y(l));
-  ctx.stroke();
+  if(!o||!h||!l||!c)return;
+  const mid=cv.width/2,scale=140/(h-l),y=p=>cv.height-(p-l)*scale-20;
+  ctx.strokeStyle="#fff";ctx.beginPath();ctx.moveTo(mid,y(h));ctx.lineTo(mid,y(l));ctx.stroke();
   ctx.fillStyle=c>=o?"#00ff00":"#ff3333";
   ctx.fillRect(mid-14,y(Math.max(o,c)),28,Math.abs(y(o)-y(c)));
   document.getElementById("candleModal").style.display="block";
 }
-
-function closeModal(){
-  document.getElementById("candleModal").style.display="none";
-}
+function closeModal(){document.getElementById("candleModal").style.display="none"}
 </script>
-
 </body>
 </html>
