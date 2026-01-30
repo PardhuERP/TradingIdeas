@@ -22,17 +22,13 @@ body{
   background:#000;
   padding:10px;
 }
-.menu-btn{
-  position:absolute;left:10px;font-size:22px;cursor:pointer;
-}
+.menu-btn{position:absolute;left:10px;font-size:22px;cursor:pointer;}
 .menu{
   display:none;position:absolute;top:42px;left:10px;
   background:#1a1a1a;border-radius:6px;min-width:160px;
   box-shadow:0 6px 16px rgba(0,0,0,.7);z-index:20;
 }
-.menu div{
-  padding:10px;font-size:13px;border-bottom:1px solid #2a2a2a;cursor:pointer;
-}
+.menu div{padding:10px;font-size:13px;border-bottom:1px solid #2a2a2a;cursor:pointer;}
 .menu div:hover{background:#2a2a2a}
 
 h1{margin:0;font-size:17px;text-align:center}
@@ -62,7 +58,7 @@ h1{margin:0;font-size:17px;text-align:center}
 .list{display:flex;flex-direction:column;gap:8px}
 .row{
   display:grid;
-  grid-template-columns:1.6fr .8fr .9fr .9fr .1fr auto;
+  grid-template-columns: 1.6fr .9fr .9fr .9fr 1fr .7fr;
   gap:6px;align-items:center;
   background:rgba(255,255,255,.05);
   border-radius:10px;padding:10px;font-size:12px
@@ -179,6 +175,7 @@ function renderCE(rows){
     </div>`;
   });
 }
+
 function renderPE(rows){
   const box=document.getElementById("peTable");
   box.innerHTML=`<div class="row head"><span class="stock">Stock</span><span>%Chg</span><span>Vol</span><span>Val</span><span>PE</span><span></span></div>`;
