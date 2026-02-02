@@ -118,29 +118,37 @@ function paint(el, v){
 fetch(API + "?action=fiidii&t=" + Date.now())
   .then(r=>r.json())
   .then(d=>{
-  document.getElementById("todayDate").textContent =
-  new Date(d.TodayDate).toLocaleDateString("en-GB");
 
-fiiToday.textContent = fmt2(d.FII_Today);
-diiToday.textContent = fmt2(d.DII_Today);
-netToday.textContent = fmt2(d.Net_Today);
-paint(netToday, d.Net_Today);
+    // TODAY
+    document.getElementById("todayDate").textContent =
+      new Date(d.TodayDate).toLocaleDateString("en-GB");
+    todayFII.textContent = fmt2(d.FII_Today);
+    todayDII.textContent = fmt2(d.DII_Today);
+    todayNet.textContent = fmt2(d.Net_Today);
+    paint(todayNet, d.Net_Today);
 
-fiiPrev.textContent = fmt2(d.FII_Prev);
-diiPrev.textContent = fmt2(d.DII_Prev);
-netPrev.textContent = fmt2(d.Net_Prev);
-paint(netPrev, d.Net_Prev);
+    // PREVIOUS DAY
+    prevDate.textContent =
+      new Date(new Date(d.TodayDate).getTime() - 86400000)
+      .toLocaleDateString("en-GB");
+    prevFII.textContent = fmt2(d.FII_Prev);
+    prevDII.textContent = fmt2(d.DII_Prev);
+    prevNet.textContent = fmt2(d.Net_Prev);
+    paint(prevNet, d.Net_Prev);
 
-fiiMTD.textContent = fmt2(d.FII_MTD);
-diiMTD.textContent = fmt2(d.DII_MTD);
-netMTD.textContent = fmt2(d.Net_MTD);
-paint(netMTD, d.Net_MTD);
+    // MONTH TILL DATE
+    mtdFII.textContent = fmt2(d.FII_MTD);
+    mtdDII.textContent = fmt2(d.DII_MTD);
+    mtdNet.textContent = fmt2(d.Net_MTD);
+    paint(mtdNet, d.Net_MTD);
 
-fiiPM.textContent = fmt2(d.FII_PrevMonth);
-diiPM.textContent = fmt2(d.DII_PrevMonth);
-netPM.textContent = fmt2(d.Net_PrevMonth);
-paint(netPM, d.Net_PrevMonth);
-});
+    // PREVIOUS MONTH
+    pmFII.textContent = fmt2(d.FII_PrevMonth);
+    pmDII.textContent = fmt2(d.DII_PrevMonth);
+    pmNet.textContent = fmt2(d.Net_PrevMonth);
+    paint(pmNet, d.Net_PrevMonth);
+
+  });
 </script>
 
 </body>
