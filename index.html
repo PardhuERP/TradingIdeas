@@ -290,6 +290,13 @@ function renderPE(rows){const tb=document.querySelector("#peTable tbody");tb.inn
 
 function openCandle(o,h,l,c){const cv=document.getElementById("candleCanvas"),ctx=cv.getContext("2d");ctx.clearRect(0,0,cv.width,cv.height);if(!o||!h||!l||!c)return;const mid=cv.width/2,scale=140/(h-l),y=p=>cv.height-(p-l)*scale-20;ctx.strokeStyle="#fff";ctx.beginPath();ctx.moveTo(mid,y(h));ctx.lineTo(mid,y(l));ctx.stroke();ctx.fillStyle=c>=o?"#00ff00":"#ff3333";ctx.fillRect(mid-14,y(Math.max(o,c)),28,Math.abs(y(o)-y(c)));document.getElementById("candleModal").style.display="block";}  
 function closeModal(){document.getElementById("candleModal").style.display="none";}  
+
+  // ===== AUTO REFRESH FOR LIVE TAB =====
+setInterval(() => {
+  if (CURRENT === "NIFTY50_LIVE" || CURRENT === "NIFTY50_2") {
+    fetchData();
+  }
+}, 5000); // 5 seconds
 </script>  
 </body>  
 </html>
