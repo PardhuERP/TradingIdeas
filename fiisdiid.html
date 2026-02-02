@@ -115,7 +115,7 @@ function paint(el, v){
   else el.classList.add("blue");
 }
 
-fetch(API + "?action=fii&t=" + Date.now())
+fetch(API + "?action=fiidii&t=" + Date.now())
   .then(r=>r.json())
   .then(d=>{
   document.getElementById("todayDate").textContent =
