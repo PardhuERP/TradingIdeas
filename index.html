@@ -226,6 +226,7 @@ canvas {
 </div>  
 
 <div class="tabs">  
+  <button class="tab active" id="tab-NIFTY50_LIVE" onclick="showTab('NIFTY50_LIVE')">LIVE</button>
   <button class="tab active" id="tab-NIFTY50" onclick="showTab('NIFTY50')">3:00 PM</button>  
   <button class="tab" id="tab-NIFTY50_1" onclick="showTab('NIFTY50_1')">3:15 PM</button>  
   <button class="tab" id="tab-NIFTY50_2" onclick="showTab('NIFTY50_2')">3:27 PM</button>  
@@ -255,7 +256,7 @@ canvas {
 
 <script>  
 const API_URL="https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";  
-let API_DATA={},CURRENT="NIFTY50";  
+let API_DATA={},CURRENT="NIFTY50_LIVE";  
 
 function getStrikeMonth(){  
   const d=new Date();  
