@@ -45,7 +45,16 @@ new TradingView.widget({
   function openChart() {
   window.location.href = "?page=chart";
   }
-</script>
+  
+  function toggleMenu() {
+    document.getElementById("menu").classList.toggle("show");
+  }
+
+  function openChart() {
+    toggleMenu();
+    window.location.href = "?page=chart";
+  }
+  </script>
 
 </body>
 </html>
