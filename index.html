@@ -275,7 +275,11 @@ document.addEventListener("click",e=>{if(!e.target.closest(".menu-btn")&&!e.targ
 
 function openTradeJournal(){location.href="trade_journal.html";}  
 function openStats(){location.href="stats_dashboard.html";}  
-function openFiisDiid(){location.href="fiisdiid.html";}  
+function openFiisDiid(){location.href="fiisdiid.html";}
+function openChart() {
+  toggleMenu();
+  window.location.href = "?page=chart";
+}
 
 function fmt(v){if(v==null||v==="")return"";if(isNaN(v))return v;return Number(v).toFixed(2);}  
 
