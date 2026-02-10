@@ -221,8 +221,7 @@ canvas {
   <div class="menu" id="menu">  
     <div onclick="openTradeJournal()">📘 Trade Journal</div>  
     <div onclick="openStats()">📊 Stats Dashboard</div>  
-    <div onclick="openFiisDiid()">💰 Fiis Diis Dashboard</div>
-    <div onclick="openChart()">📈 Live Chart</div>
+    <div onclick="openFiisDiid()">💰 Fiis Diis Dashboard</div>  
   </div>  
 </div>  
 
@@ -256,7 +255,7 @@ canvas {
 <div id="candleModal" class="modal"><div class="modal-box"><span class="close" onclick="closeModal()">×</span><canvas id="candleCanvas" width="300" height="200"></canvas></div></div>  
 
 <script>  
- const API_URL="https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=stats"; 
+const API_URL="https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";  
 let API_DATA={},CURRENT="NIFTY50_LIVE";  
 
 function getStrikeMonth(){  
@@ -275,15 +274,11 @@ document.addEventListener("click",e=>{if(!e.target.closest(".menu-btn")&&!e.targ
 
 function openTradeJournal(){location.href="trade_journal.html";}  
 function openStats(){location.href="stats_dashboard.html";}  
-function openFiisDiid(){location.href="fiisdiid.html";}
-function openChart() {
-  toggleMenu();
-  window.location.href = "?page=chart";
-}
+function openFiisDiid(){location.href="fiisdiid.html";}  
 
 function fmt(v){if(v==null||v==="")return"";if(isNaN(v))return v;return Number(v).toFixed(2);}  
 
-function fetchData(){fetch(API_URL+"?t="?+Date.now()).then(r=>r.json()).then(d=>{API_DATA=d;showTab(CURRENT);});}  
+function fetchData(){fetch(API_URL+"?t="+Date.now()).then(r=>r.json()).then(d=>{API_DATA=d;showTab(CURRENT);});}  
 fetchData();  
 function refreshData(){fetchData();}  
 
