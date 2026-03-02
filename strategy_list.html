@@ -40,13 +40,18 @@ ul{
 }
 
 li{
-  padding:6px 0;
+  padding:8px 0;
   border-bottom:1px solid #222;
   font-size:13px;
+  cursor:pointer;
 }
 
 li:last-child{
   border-bottom:none;
+}
+
+li:hover{
+  color:#00ff99;
 }
 
 .topbar{
@@ -58,6 +63,31 @@ li:last-child{
 .back{
   color:#00bcd4;
   cursor:pointer;
+  font-size:14px;
+}
+
+/* Modal */
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.85);
+  justify-content:center;
+  align-items:center;
+}
+
+.modal-content{
+  background:#111;
+  padding:20px;
+  border-radius:12px;
+  width:90%;
+  max-width:400px;
+}
+
+.close{
+  text-align:right;
+  cursor:pointer;
+  color:#00bcd4;
   font-size:14px;
 }
 </style>
@@ -74,62 +104,82 @@ li:last-child{
 <div class="section">
 <div class="section-title">Directional Strategies</div>
 <ul>
-<li>Buy Call (Long Call)</li>
-<li>Buy Put (Long Put)</li>
-<li>Sell Call (Short Call)</li>
-<li>Sell Put (Short Put)</li>
-<li>Covered Call</li>
-<li>Protective Put</li>
-<li>Bull Call Spread</li>
-<li>Bull Put Spread</li>
-<li>Bear Put Spread</li>
-<li>Bear Call Spread</li>
-<li>Call Ratio Spread</li>
-<li>Put Ratio Spread</li>
+<li onclick="showInfo('Buy Call')">Buy Call (Long Call)</li>
+<li onclick="showInfo('Buy Put')">Buy Put (Long Put)</li>
+<li onclick="showInfo('Bull Call Spread')">Bull Call Spread</li>
+<li onclick="showInfo('Bear Put Spread')">Bear Put Spread</li>
+<li onclick="showInfo('Covered Call')">Covered Call</li>
 </ul>
 </div>
 
 <div class="section">
-<div class="section-title">Neutral / Range Strategies</div>
+<div class="section-title">Neutral Strategies</div>
 <ul>
-<li>Iron Condor</li>
-<li>Short Strangle</li>
-<li>Short Straddle</li>
-<li>Iron Butterfly</li>
-<li>Long Strangle</li>
-<li>Long Straddle</li>
-<li>Calendar Spread</li>
-<li>Diagonal Spread</li>
+<li onclick="showInfo('Iron Condor')">Iron Condor</li>
+<li onclick="showInfo('Iron Fly')">Iron Fly</li>
+<li onclick="showInfo('Short Straddle')">Short Straddle</li>
+<li onclick="showInfo('Short Strangle')">Short Strangle</li>
 </ul>
 </div>
 
 <div class="section">
 <div class="section-title">Volatility Strategies</div>
 <ul>
-<li>Long Straddle</li>
-<li>Long Strangle</li>
-<li>Short Straddle</li>
-<li>Short Strangle</li>
-<li>Iron Condor</li>
-<li>Iron Fly</li>
-<li>Calendar Spread</li>
-<li>Double Calendar</li>
+<li onclick="showInfo('Long Straddle')">Long Straddle</li>
+<li onclick="showInfo('Long Strangle')">Long Strangle</li>
+<li onclick="showInfo('Calendar Spread')">Calendar Spread</li>
 </ul>
 </div>
 
-<div class="section">
-<div class="section-title">Advanced Strategies</div>
-<ul>
-<li>Jade Lizard</li>
-<li>Broken Wing Butterfly</li>
-<li>Reverse Iron Condor</li>
-<li>Christmas Tree Spread</li>
-<li>Back Ratio Spread</li>
-<li>Strip</li>
-<li>Strap</li>
-<li>Box Spread</li>
-</ul>
+<!-- Modal -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <div class="close" onclick="closeModal()">✖ Close</div>
+    <h3 id="strategyTitle"></h3>
+    <p id="strategyText" style="font-size:13px;line-height:1.5;"></p>
+  </div>
 </div>
+
+<script>
+
+const explanations = {
+
+"Buy Call": "Buy Call is used when you expect strong upward movement. Risk limited to premium paid. Profit unlimited.",
+
+"Buy Put": "Buy Put is used when you expect strong downside movement. Risk limited to premium paid. Profit increases as price falls.",
+
+"Bull Call Spread": "Bull Call Spread involves buying an ATM call and selling a higher strike call. Limited risk and limited profit. Used in moderately bullish markets.",
+
+"Bear Put Spread": "Bear Put Spread involves buying an ATM put and selling a lower strike put. Used in moderately bearish markets.",
+
+"Covered Call": "Covered Call means holding stock and selling call option to generate income. Best in sideways markets.",
+
+"Iron Condor": "Iron Condor profits in range-bound markets with high implied volatility. Limited risk, limited reward.",
+
+"Iron Fly": "Iron Fly works best near expiry in tight range markets. High theta decay benefit.",
+
+"Short Straddle": "Short Straddle profits when market stays at same level. High risk strategy due to unlimited loss potential.",
+
+"Short Strangle": "Short Strangle profits in range markets. Safer than straddle but still high risk.",
+
+"Long Straddle": "Long Straddle profits from big movement in either direction. Used before major events.",
+
+"Long Strangle": "Long Strangle is cheaper than straddle. Profits from large volatility expansion.",
+
+"Calendar Spread": "Calendar Spread uses different expiry options. Profits from time decay difference."
+};
+
+function showInfo(name){
+  document.getElementById("strategyTitle").innerText = name;
+  document.getElementById("strategyText").innerText = explanations[name] || "Strategy explanation not added yet.";
+  document.getElementById("modal").style.display="flex";
+}
+
+function closeModal(){
+  document.getElementById("modal").style.display="none";
+}
+
+</script>
 
 </body>
 </html>
