@@ -13,96 +13,64 @@ body{
   font-family:Arial;
   padding:15px;
 }
-
-h2{
-  text-align:center;
-  margin-bottom:20px;
-}
-
+h2{text-align:center;margin-bottom:20px;}
 .section{
   background:#111;
   padding:15px;
   border-radius:12px;
   margin-bottom:15px;
 }
-
 .section-title{
   font-size:14px;
   font-weight:bold;
   margin-bottom:10px;
   color:#00bcd4;
 }
-
-ul{
-  list-style:none;
-  padding:0;
-  margin:0;
-}
-
+ul{list-style:none;padding:0;margin:0;}
 li{
   padding:8px 0;
   border-bottom:1px solid #222;
   font-size:13px;
   cursor:pointer;
 }
-
-li:last-child{
-  border-bottom:none;
-}
-
-li:hover{
-  color:#00ff99;
-}
+li:last-child{border-bottom:none;}
+li:hover{color:#00ff99;}
 
 .topbar{
   display:flex;
   align-items:center;
   margin-bottom:15px;
 }
-
 .back{
   color:#00bcd4;
   cursor:pointer;
   font-size:14px;
 }
 
-/* ===== MODAL ===== */
-
+/* Modal */
 .modal{
   display:none;
   position:fixed;
   inset:0;
   background:rgba(0,0,0,0.85);
-  justify-content:center;
-  align-items:center;
   z-index:100;
 }
-
 .modal-box{
   background:#111;
-  padding:20px;
-  border-radius:12px;
   width:90%;
-  max-width:420px;
-  max-height:80vh;
-  overflow:auto;
+  max-width:400px;
+  margin:15% auto;
+  padding:15px;
+  border-radius:12px;
 }
-
 .close{
-  text-align:right;
+  float:right;
   cursor:pointer;
-  color:#00bcd4;
-  font-size:14px;
-  margin-bottom:10px;
+  font-size:16px;
+  color:#aaa;
 }
-
-.example{
-  margin-top:10px;
-  background:#1a1a1a;
-  padding:10px;
-  border-radius:8px;
-  font-size:12px;
-}
+.green{color:#00ff99;}
+.gold{color:gold;}
 </style>
 </head>
 
@@ -117,85 +85,103 @@ li:hover{
 <div class="section">
 <div class="section-title">Directional Strategies</div>
 <ul>
-<li onclick="openPopup('Buy Call')">Buy Call (Long Call)</li>
-<li onclick="openPopup('Buy Put')">Buy Put (Long Put)</li>
-<li onclick="openPopup('Bull Call Spread')">Bull Call Spread</li>
-<li onclick="openPopup('Bear Put Spread')">Bear Put Spread</li>
+<li onclick="openModal('Buy Call','Bullish strategy.','Example: Stock 100 → Buy 100 CE','Unlimited profit, limited loss.')">Buy Call (Long Call)</li>
+
+<li onclick="openModal('Buy Put','Bearish strategy.','Example: Stock 100 → Buy 100 PE','Unlimited profit, limited loss.')">Buy Put (Long Put)</li>
+
+<li onclick="openModal('Sell Call','Bearish income strategy.','Sell 110 CE if stock 100','Limited profit, unlimited risk.')">Sell Call (Short Call)</li>
+
+<li onclick="openModal('Sell Put','Bullish income strategy.','Sell 90 PE if stock 100','Limited profit, high risk.')">Sell Put (Short Put)</li>
+
+<li onclick="openModal('Covered Call','Hold stock + sell call.','Own stock 100, sell 110 CE','Income strategy.')">Covered Call</li>
+
+<li onclick="openModal('Protective Put','Insurance strategy.','Own stock 100, buy 95 PE','Limited downside.')">Protective Put</li>
+
+<li onclick="openModal('Bull Call Spread','Bullish moderate move.','Buy 100 CE, Sell 110 CE','Limited profit & risk.')">Bull Call Spread</li>
+
+<li onclick="openModal('Bull Put Spread','Bullish income.','Sell 95 PE, Buy 90 PE','Limited risk.')">Bull Put Spread</li>
+
+<li onclick="openModal('Bear Put Spread','Bearish moderate move.','Buy 100 PE, Sell 90 PE','Limited risk.')">Bear Put Spread</li>
+
+<li onclick="openModal('Bear Call Spread','Bearish income.','Sell 110 CE, Buy 115 CE','Limited risk.')">Bear Call Spread</li>
+
+<li onclick="openModal('Call Ratio Spread','Aggressive bullish.','Buy 1 CE, Sell 2 higher CE','High risk.')">Call Ratio Spread</li>
+
+<li onclick="openModal('Put Ratio Spread','Aggressive bearish.','Buy 1 PE, Sell 2 lower PE','High risk.')">Put Ratio Spread</li>
 </ul>
 </div>
 
 <div class="section">
-<div class="section-title">Neutral Strategies</div>
+<div class="section-title">Neutral / Range Strategies</div>
 <ul>
-<li onclick="openPopup('Iron Condor')">Iron Condor</li>
-<li onclick="openPopup('Short Straddle')">Short Straddle</li>
-<li onclick="openPopup('Long Straddle')">Long Straddle</li>
+<li onclick="openModal('Iron Condor','Range-bound market.','Sell OTM CE & PE','Limited profit & risk.')">Iron Condor</li>
+
+<li onclick="openModal('Short Strangle','Neutral high IV.','Sell OTM CE & PE','Unlimited risk.')">Short Strangle</li>
+
+<li onclick="openModal('Short Straddle','Neutral high IV.','Sell ATM CE & PE','Unlimited risk.')">Short Straddle</li>
+
+<li onclick="openModal('Iron Butterfly','Neutral expiry.','Sell ATM, Buy wings','Limited risk.')">Iron Butterfly</li>
+
+<li onclick="openModal('Long Strangle','Expect breakout.','Buy OTM CE & PE','Limited risk.')">Long Strangle</li>
+
+<li onclick="openModal('Long Straddle','Expect strong move.','Buy ATM CE & PE','Limited risk.')">Long Straddle</li>
+
+<li onclick="openModal('Calendar Spread','Time-based strategy.','Buy far expiry, Sell near','Theta strategy.')">Calendar Spread</li>
+
+<li onclick="openModal('Diagonal Spread','Directional calendar.','Different strike & expiry','Moderate risk.')">Diagonal Spread</li>
 </ul>
 </div>
 
-<!-- ===== MODAL ===== -->
+<div class="section">
+<div class="section-title">Advanced / Pro Strategies</div>
+<ul>
+<li onclick="openModal('Jade Lizard','Income strategy with no upside risk.','Sell Put + Call Spread','Moderate risk.')">Jade Lizard</li>
 
+<li onclick="openModal('Broken Wing Butterfly','Directional butterfly.','Uneven wing width','Low risk.')">Broken Wing Butterfly</li>
+
+<li onclick="openModal('Reverse Iron Condor','Volatility breakout.','Buy spreads both sides','Limited risk.')">Reverse Iron Condor</li>
+
+<li onclick="openModal('Christmas Tree Spread','Multi-leg strategy.','Multiple calls same expiry','Complex risk.')">Christmas Tree Spread</li>
+
+<li onclick="openModal('Back Ratio Spread','Volatility strategy.','Buy more options than sold','High risk.')">Back Ratio Spread</li>
+
+<li onclick="openModal('Strip','Bearish volatility bet.','2 Puts + 1 Call','High risk.')">Strip</li>
+
+<li onclick="openModal('Strap','Bullish volatility bet.','2 Calls + 1 Put','High risk.')">Strap</li>
+
+<li onclick="openModal('Box Spread','Arbitrage strategy.','Bull + Bear spread combo','Low risk.')">Box Spread</li>
+</ul>
+</div>
+
+<div class="section">
+<div class="section-title">Income / Theta Strategies</div>
+<ul>
+<li onclick="openModal('Cash Secured Put','Income strategy.','Sell Put with capital','Moderate risk.')">Cash Secured Put</li>
+</ul>
+</div>
+
+<!-- Modal -->
 <div id="modal" class="modal">
   <div class="modal-box">
-    <div class="close" onclick="closePopup()">✖ Close</div>
-    <h3 id="title"></h3>
-    <p id="desc" style="font-size:13px;line-height:1.6;"></p>
-    <div class="example" id="example"></div>
+    <span class="close" onclick="closeModal()">✖</span>
+    <h3 id="mTitle"></h3>
+    <p><b>When to Use:</b> <span id="mUse"></span></p>
+    <p><b>Example:</b> <span id="mExample"></span></p>
+    <p><b>Risk:</b> <span class="gold" id="mRisk"></span></p>
   </div>
 </div>
 
 <script>
-
-const strategyData = {
-
-"Buy Call": {
-desc: "Used when you expect strong bullish move. Risk limited to premium paid. Profit unlimited.",
-example: "Example:\nStock: CIPLA = 1350\nBuy 1400 CE @ 25\nIf price moves to 1500 → option may go to 110\nProfit = 85 per lot\nMax loss = 25"
-},
-
-"Buy Put": {
-desc: "Used when expecting strong downside. Risk limited to premium paid.",
-example: "Example:\nStock: CIPLA = 1350\nBuy 1300 PE @ 20\nIf price falls to 1200 → option may go to 90\nProfit = 70\nMax loss = 20"
-},
-
-"Bull Call Spread": {
-desc: "Moderate bullish strategy. Limited profit and limited risk.",
-example: "Example:\nBuy 1400 CE @ 30\nSell 1450 CE @ 15\nNet cost = 15\nMax profit = 35\nMax loss = 15"
-},
-
-"Bear Put Spread": {
-desc: "Moderate bearish strategy. Limited risk and limited reward.",
-example: "Example:\nBuy 1350 PE @ 28\nSell 1300 PE @ 14\nNet cost = 14\nMax profit = 36"
-},
-
-"Iron Condor": {
-desc: "Used in sideways markets. Profit from time decay. Limited risk.",
-example: "Example:\nSell 1400 CE\nBuy 1450 CE\nSell 1300 PE\nBuy 1250 PE\nProfit if price stays between 1300–1400"
-},
-
-"Short Straddle": {
-desc: "High risk strategy. Profit if market stays at same level.",
-example: "Example:\nSell 1350 CE & 1350 PE\nCollect premium 60\nProfit if price near 1350\nUnlimited risk if breakout"
-},
-
-"Long Straddle": {
-desc: "Used before big event. Profit from strong move either side.",
-example: "Example:\nBuy 1350 CE @ 30\nBuy 1350 PE @ 28\nTotal cost = 58\nNeed big move above 1408 or below 1292"
+function openModal(title,use,example,risk){
+  document.getElementById("mTitle").innerText=title;
+  document.getElementById("mUse").innerText=use;
+  document.getElementById("mExample").innerText=example;
+  document.getElementById("mRisk").innerText=risk;
+  document.getElementById("modal").style.display="block";
 }
-
-};
-
-function openPopup(name){
-  document.getElementById("title").innerText = name;
-  document.getElementById("desc").innerText = strategyData[name].desc;
-  document.getElementById("example").innerText = strategyData[name].example;
-  document.getElementById("modal").style.display="flex";
-}
-
-function closePopup(){
+function closeModal(){
   document.getElementById("modal").style.display="none";
 }
-
 </script>
 
 </body>
