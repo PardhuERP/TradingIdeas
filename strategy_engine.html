@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Strategy Engine | Educational purpose only</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  background:#0b0b0b;
+  color:#fff;
+  font-family:Arial;
+  padding:12px;
+}
+h2{text-align:center;}
+
+.card{
+  background:#111;
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:12px;
+}
+
+input{
+  width:100%;
+  padding:6px;
+  margin-bottom:8px;
+  background:#1a1a1a;
+  border:none;
+  color:#fff;
+  border-radius:6px;
+}
+
+button{
+  width:100%;
+  padding:10px;
+  background:#00bcd4;
+  border:none;
+  font-weight:bold;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.result{
+  margin-top:12px;
+  padding:12px;
+  border-radius:10px;
+  background:#151515;
+}
+
+.green{color:#00ff99;}
+.gold{color:gold;}
+.blue{color:#00bcd4;}
+</style>
+</head>
+
+<body>
+
+<h2>📊 Options Strategy Engine</h2>
+
+<div class="card">
+<b>Market Inputs</b>
+<input id="delta" placeholder="Delta (0.45 or -0.40)">
+<input id="iv" placeholder="IV (13, 22 etc)">
+<input id="gamma" placeholder="Gamma (0.0013)">
+<input id="vega" placeholder="Vega">
+<input id="theta" placeholder="Theta">
+<input id="ceoi" placeholder="CE OI Change (Lakhs)">
+<input id="peoi" placeholder="PE OI Change (Lakhs)">
+<input id="dte" placeholder="Days to Expiry">
+</div>
+
+<div class="card">
+<b>Threshold Settings</b>
+<input id="ivlow" placeholder="IV Low Level">
+<input id="ivhigh" placeholder="IV High Level">
+<input id="gammahigh" placeholder="Gamma High Level">
+<input id="vegahigh" placeholder="Vega High Level">
+<input id="thetahigh" placeholder="Theta High Level">
+</div>
+
+<button onclick="analyze()">Analyze Strategy</button>
+
+<div id="output" class="result"></div>
+
+<script>
+
+function analyze(){
+
+let delta=parseFloat(delta.value);
+let iv=parseFloat(iv.value);
+let gamma=parseFloat(gamma.value);
+let vega=parseFloat(vega.value);
+let theta=parseFloat(theta.value);
+let ceoi=parseFloat(ceoi.value);
+let peoi=parseFloat(peoi.value);
+let dte=parseFloat(dte.value);
+
+let ivlow=parseFloat(ivlow.value);
+let ivhigh=parseFloat(ivhigh.value);
+let gammahigh=parseFloat(gammahigh.value);
+let vegahigh=parseFloat(vegahigh.value);
+let thetahigh=parseFloat(thetahigh.value);
+
+let directionScore=0;
+let volScore=0;
+let timeScore=0;
+
+/* Direction */
+if(delta>0.25) directionScore+=40;
+if(delta<-0.25) directionScore-=40;
+
+if(peoi>ceoi) directionScore+=30;
+if(ceoi>peoi) directionScore-=30;
+
+/* Volatility */
+if(iv<ivlow) volScore=-40;
+if(iv>ivhigh) volScore=40;
+
+if(gamma>gammahigh) volScore+=20;
+if(vega>vegahigh) volScore+=20;
+
+/* Time */
+if(dte<=3) timeScore=40;
+if(theta>thetahigh) timeScore+=30;
+
+let main="";
+let alt1="";
+let alt2="";
+
+/* Strategy Decision */
+
+if(directionScore>30 && volScore<0){
+  main="Buy CE";
+  alt1="Bull Call Spread";
+  alt2="Long Straddle";
+}
+else if(directionScore<-30 && volScore<0){
+  main="Buy PE";
+  alt1="Bear Put Spread";
+  alt2="Long Straddle";
+}
+else if(directionScore>30 && volScore>0){
+  main="Bull Put Spread";
+  alt1="Sell PE";
+  alt2="Iron Fly";
+}
+else if(directionScore<-30 && volScore>0){
+  main="Bear Call Spread";
+  alt1="Sell CE";
+  alt2="Iron Fly";
+}
+else if(Math.abs(directionScore)<=30 && volScore>0){
+  main="Iron Condor";
+  alt1="Short Strangle";
+  alt2="Iron Fly";
+}
+else{
+  main="Long Straddle";
+  alt1="Long Strangle";
+  alt2="Wait / No Trade";
+}
+
+document.getElementById("output").innerHTML=
+`
+<b>Main Strategy:</b> <span class="green">${main}</span><br><br>
+<b>Alternative 1:</b> ${alt1}<br>
+<b>Alternative 2:</b> ${alt2}<br><br>
+
+<hr>
+
+<b>Scoring Breakdown:</b><br>
+Direction Score: ${directionScore}<br>
+Volatility Score: ${volScore}<br>
+Time Score: ${timeScore}
+`;
+
+}
+
+</script>
+
+</body>
+</html>
