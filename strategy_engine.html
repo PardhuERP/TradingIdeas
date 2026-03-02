@@ -11,73 +11,74 @@ body{
   background:#0b0b0b;
   color:#fff;
   font-family:Arial;
-  padding:12px;
+  padding:15px;
 }
-h2{text-align:center;}
+h2{text-align:center;margin-bottom:20px;}
 
 .card{
   background:#111;
-  padding:12px;
-  border-radius:10px;
-  margin-bottom:12px;
+  padding:15px;
+  border-radius:12px;
+  margin-bottom:15px;
 }
 
-input{
+select,input{
   width:100%;
-  padding:6px;
-  margin-bottom:8px;
+  padding:8px;
+  margin-bottom:12px;
   background:#1a1a1a;
   border:none;
   color:#fff;
-  border-radius:6px;
+  border-radius:8px;
 }
 
 button{
   width:100%;
-  padding:10px;
+  padding:12px;
   background:#00bcd4;
   border:none;
   font-weight:bold;
-  border-radius:6px;
+  border-radius:8px;
   cursor:pointer;
 }
 
 .result{
-  margin-top:12px;
-  padding:12px;
-  border-radius:10px;
+  margin-top:15px;
+  padding:15px;
+  border-radius:12px;
   background:#151515;
 }
 
 .green{color:#00ff99;}
 .gold{color:gold;}
 .blue{color:#00bcd4;}
+.red{color:#ff5252;}
 </style>
 </head>
 
 <body>
 
-<h2>📊 Options Strategy Engine</h2>
+<h2>📊 Smart Options Strategy</h2>
 
 <div class="card">
-<b>Market Inputs</b>
-<input id="delta" placeholder="Delta (0.45 or -0.40)">
-<input id="iv" placeholder="IV (13, 22 etc)">
-<input id="gamma" placeholder="Gamma (0.0013)">
-<input id="vega" placeholder="Vega">
-<input id="theta" placeholder="Theta">
-<input id="ceoi" placeholder="CE OI Change (Lakhs)">
-<input id="peoi" placeholder="PE OI Change (Lakhs)">
-<input id="dte" placeholder="Days to Expiry">
-</div>
+<b>Market Bias</b>
+<select id="bias">
+<option>Strong Bullish</option>
+<option>Mild Bullish</option>
+<option>Neutral</option>
+<option>Mild Bearish</option>
+<option>Strong Bearish</option>
+</select>
 
-<div class="card">
-<b>Threshold Settings</b>
-<input id="ivlow" placeholder="IV Low Level">
-<input id="ivhigh" placeholder="IV High Level">
-<input id="gammahigh" placeholder="Gamma High Level">
-<input id="vegahigh" placeholder="Vega High Level">
-<input id="thetahigh" placeholder="Theta High Level">
+<b>Volatility</b>
+<select id="vol">
+<option>Low</option>
+<option>Normal</option>
+<option>High</option>
+</select>
+
+<b>Days to Expiry</b>
+<input id="dte" type="number" placeholder="Enter days (3, 7, 15)">
 </div>
 
 <button onclick="analyze()">Analyze Strategy</button>
@@ -85,96 +86,80 @@ button{
 <div id="output" class="result"></div>
 
 <script>
+function analyze(){
 
-  function analyze(){
+let bias = document.getElementById("bias").value;
+let vol = document.getElementById("vol").value;
+let dte = parseInt(document.getElementById("dte").value);
 
-let deltaVal = parseFloat(document.getElementById("delta").value);
-let ivVal = parseFloat(document.getElementById("iv").value);
-let gammaVal = parseFloat(document.getElementById("gamma").value);
-let vegaVal = parseFloat(document.getElementById("vega").value);
-let thetaVal = parseFloat(document.getElementById("theta").value);
-let ceoiVal = parseFloat(document.getElementById("ceoi").value);
-let peoiVal = parseFloat(document.getElementById("peoi").value);
-let dteVal = parseFloat(document.getElementById("dte").value);
+let main="", alt1="", alt2="", risk="", reason="";
 
-let ivlowVal = parseFloat(document.getElementById("ivlow").value);
-let ivhighVal = parseFloat(document.getElementById("ivhigh").value);
-let gammahighVal = parseFloat(document.getElementById("gammahigh").value);
-let vegahighVal = parseFloat(document.getElementById("vegahigh").value);
-let thetahighVal = parseFloat(document.getElementById("thetahigh").value);
+/* Decision Logic */
 
-let directionScore = 0;
-let volScore = 0;
-let timeScore = 0;
-
-/* Direction */
-if(deltaVal > 0.25) directionScore += 40;
-if(deltaVal < -0.25) directionScore -= 40;
-
-if(peoiVal > ceoiVal) directionScore += 30;
-if(ceoiVal > peoiVal) directionScore -= 30;
-
-/* Volatility */
-if(ivVal < ivlowVal) volScore -= 40;
-if(ivVal > ivhighVal) volScore += 40;
-
-if(gammaVal > gammahighVal) volScore += 20;
-if(vegaVal > vegahighVal) volScore += 20;
-
-/* Time */
-if(dteVal <= 3) timeScore += 40;
-if(thetaVal > thetahighVal) timeScore += 30;
-
-let main="", alt1="", alt2="";
-
-/* Strategy Decision */
-
-if(directionScore>30 && volScore<0){
+if(bias==="Strong Bullish" && vol==="Low"){
   main="Buy CE";
   alt1="Bull Call Spread";
   alt2="Long Straddle";
+  risk="High Reward / High Risk";
 }
-else if(directionScore<-30 && volScore<0){
+
+else if(bias==="Strong Bearish" && vol==="Low"){
   main="Buy PE";
   alt1="Bear Put Spread";
   alt2="Long Straddle";
+  risk="High Reward / High Risk";
 }
-else if(directionScore>30 && volScore>0){
+
+else if(bias==="Mild Bullish" && vol==="High"){
   main="Bull Put Spread";
   alt1="Sell PE";
   alt2="Iron Fly";
+  risk="Moderate";
 }
-else if(directionScore<-30 && volScore>0){
+
+else if(bias==="Mild Bearish" && vol==="High"){
   main="Bear Call Spread";
   alt1="Sell CE";
   alt2="Iron Fly";
+  risk="Moderate";
 }
-else if(Math.abs(directionScore)<=30 && volScore>0){
+
+else if(bias==="Neutral" && vol==="High" && dte>5){
   main="Iron Condor";
   alt1="Short Strangle";
   alt2="Iron Fly";
+  risk="Low to Moderate";
 }
+
+else if(bias==="Neutral" && vol==="High" && dte<=5){
+  main="Iron Fly";
+  alt1="Short Straddle";
+  alt2="Iron Condor";
+  risk="Moderate";
+}
+
 else{
   main="Long Straddle";
   alt1="Long Strangle";
   alt2="Wait / No Trade";
+  risk="Depends on breakout";
 }
 
-document.getElementById("output").innerHTML =
+reason = `Bias: ${bias} | Volatility: ${vol} | DTE: ${dte}`;
+
+document.getElementById("output").innerHTML=
 `
 <b>Main Strategy:</b> <span class="green">${main}</span><br><br>
 <b>Alternative 1:</b> ${alt1}<br>
 <b>Alternative 2:</b> ${alt2}<br><br>
 
-<hr>
+<b>Risk Level:</b> <span class="gold">${risk}</span><br><br>
 
-<b>Scoring Breakdown:</b><br>
-Direction Score: ${directionScore}<br>
-Volatility Score: ${volScore}<br>
-Time Score: ${timeScore}
+<hr>
+<b>Analysis:</b><br>
+${reason}
 `;
 }
-
 </script>
 
 </body>
