@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Level Strategy Engine | Educational purpose only</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  background:#0b0b0b;
+  color:#fff;
+  font-family:Arial;
+  padding:15px;
+}
+h2{text-align:center;margin-bottom:15px;}
+.card{
+  background:#111;
+  padding:15px;
+  border-radius:12px;
+  margin-bottom:15px;
+}
+input,select{
+  width:100%;
+  padding:8px;
+  margin-bottom:10px;
+  background:#1a1a1a;
+  border:none;
+  color:#fff;
+  border-radius:8px;
+}
+button{
+  width:100%;
+  padding:12px;
+  background:#00bcd4;
+  border:none;
+  font-weight:bold;
+  border-radius:8px;
+  cursor:pointer;
+}
+.result{
+  margin-top:15px;
+  padding:15px;
+  border-radius:12px;
+  background:#151515;
+}
+.green{color:#00ff99;}
+.gold{color:gold;}
+.red{color:#ff5252;}
+.blue{color:#00bcd4;}
+</style>
+</head>
+
+<body>
+
+<h2>📊 Level Based Strategy</h2>
+
+<div class="card">
+<select id="stock">
+<option>CIPLA</option>
+<option>RELIANCE</option>
+<option>INFY</option>
+<option>HDFC BANK</option>
+<option>TCS</option>
+<option>ITC</option>
+<option>SBIN</option>
+<option>AXISBANK</option>
+<option>ICICIBANK</option>
+<option>LT</option>
+</select>
+
+<input id="price" type="number" placeholder="Current Price">
+<input id="resistance" type="number" placeholder="Resistance (R1)">
+<input id="support" type="number" placeholder="Support (S1)">
+<input id="dte" type="number" placeholder="Days to Expiry">
+<input id="delta" type="number" placeholder="Delta (0.40 / -0.35)">
+<input id="rangePercent" type="number" placeholder="Near Level % (example 2)">
+</div>
+
+<button onclick="analyze()">Analyze</button>
+
+<div id="output" class="result"></div>
+
+<script>
+
+function getStrikeStep(price){
+  if(price < 500) return 10;
+  if(price < 1000) return 20;
+  if(price < 2000) return 50;
+  return 100;
+}
+
+function roundStrike(price, step){
+  return Math.round(price/step)*step;
+}
+
+function analyze(){
+
+let stock = document.getElementById("stock").value;
+let price = parseFloat(document.getElementById("price").value);
+let r1 = parseFloat(document.getElementById("resistance").value);
+let s1 = parseFloat(document.getElementById("support").value);
+let dte = parseFloat(document.getElementById("dte").value);
+let delta = parseFloat(document.getElementById("delta").value);
+let rangePercent = parseFloat(document.getElementById("rangePercent").value);
+
+let step = getStrikeStep(price);
+let atm = roundStrike(price, step);
+
+let nearSupport = ((price - s1)/s1)*100;
+let nearResistance = ((r1 - price)/price)*100;
+
+let position = "";
+let main="", alt1="", alt2="";
+
+if(nearSupport <= rangePercent){
+  position = "Near Support";
+}
+else if(nearResistance <= rangePercent){
+  position = "Near Resistance";
+}
+else{
+  position = "Mid Range";
+}
+
+/* Strategy Logic */
+
+if(position==="Near Support" && delta>0){
+  main = `Bull Call Spread → Buy ${atm} CE / Sell ${atm+step} CE`;
+  alt1 = `Sell ${s1} PE`;
+  alt2 = `Cash Secured Put at ${s1}`;
+}
+else if(position==="Near Resistance" && delta<0){
+  main = `Bear Put Spread → Buy ${atm} PE / Sell ${atm-step} PE`;
+  alt1 = `Sell ${r1} CE`;
+  alt2 = `Bear Call Spread`;
+}
+else if(position==="Mid Range" && dte>15){
+  main = `Iron Condor → Sell ${atm+step} CE & ${atm-step} PE`;
+  alt1 = `Short Strangle`;
+  alt2 = `Iron Fly`;
+}
+else{
+  main = `Long Straddle at ${atm}`;
+  alt1 = `Long Strangle`;
+  alt2 = `Wait for confirmation`;
+}
+
+document.getElementById("output").innerHTML =
+`
+<b>Stock:</b> ${stock}<br>
+<b>Market Position:</b> <span class="gold">${position}</span><br>
+<b>ATM Strike:</b> ${atm}<br><br>
+
+<b>Main Strategy:</b> <span class="green">${main}</span><br><br>
+<b>Alternative 1:</b> ${alt1}<br>
+<b>Alternative 2:</b> ${alt2}<br><br>
+
+<hr>
+
+<b>Distance to Support:</b> ${nearSupport.toFixed(2)}%<br>
+<b>Distance to Resistance:</b> ${nearResistance.toFixed(2)}%<br>
+<b>Strike Interval Used:</b> ${step}
+`;
+}
+
+</script>
+
+</body>
+</html>
