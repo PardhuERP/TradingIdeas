@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Nifty Strategy Lab</title>
+
+<style>
+body{font-family:Arial;background:#f5f7fa;padding:20px;}
+.container{max-width:700px;margin:auto;background:white;padding:20px;border-radius:8px;}
+input,select{width:100%;padding:8px;margin:5px 0 15px;border:1px solid #ccc;border-radius:5px;}
+button{padding:10px 15px;background:#007bff;color:white;border:none;border-radius:5px;cursor:pointer;}
+button:hover{background:#0056b3;}
+.status{margin-top:10px;font-weight:bold;}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>Nifty Strategy Lab - Save Trade</h2>
+
+<label>Index</label>
+<input type="text" id="index" value="Nifty">
+
+<label>Spot Price</label>
+<input type="number" id="spot">
+
+<label>Market Bias</label>
+<select id="bias">
+<option>Strong Bullish</option>
+<option>Mild Bullish</option>
+<option>Strong Bearish</option>
+<option>Mild Bearish</option>
+<option>Sideways</option>
+</select>
+
+<label>IV View</label>
+<select id="iv">
+<option>IV Increase</option>
+<option>IV Decrease</option>
+<option>Neutral</option>
+</select>
+
+<label>Days to Expiry</label>
+<input type="number" id="dte">
+
+<label>Lot Size</label>
+<input type="number" id="lot" value="65">
+
+<label>Strategy Name</label>
+<input type="text" id="strategy">
+
+<h3>Leg 1</h3>
+<input placeholder="Type (Call/Put)" id="leg1Type">
+<input placeholder="Action (Buy/Sell)" id="leg1Action">
+<input placeholder="Strike" id="leg1Strike" type="number">
+<input placeholder="Premium" id="leg1Premium" type="number">
+<input placeholder="Qty" id="leg1Qty" type="number">
+
+<h3>Leg 2</h3>
+<input placeholder="Type" id="leg2Type">
+<input placeholder="Action" id="leg2Action">
+<input placeholder="Strike" id="leg2Strike" type="number">
+<input placeholder="Premium" id="leg2Premium" type="number">
+<input placeholder="Qty" id="leg2Qty" type="number">
+
+<h3>Leg 3</h3>
+<input placeholder="Type" id="leg3Type">
+<input placeholder="Action" id="leg3Action">
+<input placeholder="Strike" id="leg3Strike" type="number">
+<input placeholder="Premium" id="leg3Premium" type="number">
+<input placeholder="Qty" id="leg3Qty" type="number">
+
+<label>Stock Price (if applicable)</label>
+<input type="number" id="stockPrice">
+
+<label>Margin Used</label>
+<input type="number" id="margin">
+
+<button onclick="saveTrade()">Save Trade</button>
+
+<div class="status" id="status"></div>
+
+</div>
+
+<script>
+
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
+
+function saveTrade(){
+
+  const data = {
+    index: document.getElementById("index").value,
+    spot: document.getElementById("spot").value,
+    bias: document.getElementById("bias").value,
+    iv: document.getElementById("iv").value,
+    dte: document.getElementById("dte").value,
+    lot: document.getElementById("lot").value,
+    strategy: document.getElementById("strategy").value,
+
+    leg1Type: document.getElementById("leg1Type").value,
+    leg1Action: document.getElementById("leg1Action").value,
+    leg1Strike: document.getElementById("leg1Strike").value,
+    leg1Premium: document.getElementById("leg1Premium").value,
+    leg1Qty: document.getElementById("leg1Qty").value,
+
+    leg2Type: document.getElementById("leg2Type").value,
+    leg2Action: document.getElementById("leg2Action").value,
+    leg2Strike: document.getElementById("leg2Strike").value,
+    leg2Premium: document.getElementById("leg2Premium").value,
+    leg2Qty: document.getElementById("leg2Qty").value,
+
+    leg3Type: document.getElementById("leg3Type").value,
+    leg3Action: document.getElementById("leg3Action").value,
+    leg3Strike: document.getElementById("leg3Strike").value,
+    leg3Premium: document.getElementById("leg3Premium").value,
+    leg3Qty: document.getElementById("leg3Qty").value,
+
+    stockPrice: document.getElementById("stockPrice").value,
+    margin: document.getElementById("margin").value
+  };
+
+  fetch(GAS_URL, {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+  .then(res => res.json())
+  .then(res => {
+    document.getElementById("status").innerHTML = "✅ Trade Saved Successfully!";
+  })
+  .catch(err => {
+    document.getElementById("status").innerHTML = "❌ Error Saving Trade";
+  });
+}
+
+</script>
+
+</body>
+</html>
