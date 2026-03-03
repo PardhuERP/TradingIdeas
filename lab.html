@@ -90,6 +90,7 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyW
 function saveTrade(){
 
   const data = {
+    type: "strategy",
     index: document.getElementById("index").value,
     spot: document.getElementById("spot").value,
     bias: document.getElementById("bias").value,
