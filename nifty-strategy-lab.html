@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Nifty Strategy Lab</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f5f7fa;
+    margin:0;
+    padding:20px;
+}
+
+h1{
+    text-align:center;
+    color:#222;
+}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    margin-bottom:20px;
+    border-radius:8px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+label{
+    font-weight:bold;
+}
+
+input, select{
+    width:100%;
+    padding:8px;
+    margin:5px 0 15px 0;
+    border:1px solid #ccc;
+    border-radius:5px;
+}
+
+button{
+    padding:10px 15px;
+    background:#007bff;
+    color:white;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#0056b3;
+}
+
+.result-box{
+    padding:10px;
+    background:#eef2f7;
+    border-radius:5px;
+    margin-bottom:10px;
+}
+
+.green{ color:green; }
+.red{ color:red; }
+
+canvas{
+    background:white;
+    border-radius:8px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>📊 Nifty Strategy Lab</h1>
+
+<!-- MARKET INPUT PANEL -->
+<div class="card">
+<h2>Market Inputs</h2>
+
+<label>Spot Price</label>
+<input type="number" id="spot" placeholder="Enter Spot Price">
+
+<label>Market Bias</label>
+<select id="bias">
+    <option value="strong_bull">Strong Bullish</option>
+    <option value="mild_bull">Mild Bullish</option>
+    <option value="strong_bear">Strong Bearish</option>
+    <option value="mild_bear">Mild Bearish</option>
+    <option value="sideways">Sideways</option>
+</select>
+
+<label>IV Expectation</label>
+<select id="iv">
+    <option value="up">IV Increase</option>
+    <option value="down">IV Decrease</option>
+    <option value="neutral">Neutral</option>
+</select>
+
+<label>Days to Expiry</label>
+<input type="number" id="dte" placeholder="Days to Expiry">
+
+<label>Lot Size</label>
+<input type="number" id="lot" value="65">
+
+<button onclick="suggestStrategy()">Suggest Strategy</button>
+
+</div>
+
+<!-- STRATEGY LIST -->
+<div class="card">
+<h2>Strategy Suggestions</h2>
+<div id="strategyList"></div>
+</div>
+
+<!-- STRATEGY BUILDER -->
+<div class="card">
+<h2>Strategy Builder</h2>
+<div id="strategyBuilder"></div>
+</div>
+
+<!-- RESULTS -->
+<div class="card">
+<h2>Strategy Result</h2>
+<div id="results"></div>
+
+<label>Margin Used (Optional)</label>
+<input type="number" id="margin" placeholder="Enter Margin Used">
+
+<button onclick="calculateStrategy()">Calculate</button>
+</div>
+
+<!-- PAYOFF GRAPH -->
+<div class="card">
+<h2>Expiry Payoff Graph</h2>
+<canvas id="payoffChart"></canvas>
+</div>
+
+</div>
+
+<script>
+/* JS will come in Part 2 */
+</script>
+
+</body>
+</html>
