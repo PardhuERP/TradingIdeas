@@ -474,16 +474,38 @@ function drawChart(prices, pnl){
         chartInstance.destroy();
     }
 
+    // Detect breakeven points
+    let breakevens = [];
+
+    for(let i=1; i<pnl.length; i++){
+        if((pnl[i-1] <= 0 && pnl[i] > 0) || (pnl[i-1] >= 0 && pnl[i] < 0)){
+            breakevens.push(prices[i]);
+        }
+    }
+
     chartInstance = new Chart(ctx, {
         type: 'line',
         data: {
             labels: prices,
-            datasets: [{
+            datasets: [
+            {
                 label: 'Expiry P/L',
                 data: pnl,
                 borderColor: '#007bff',
-                fill: false,
+                fill: true,
+                backgroundColor: function(context){
+                    const value = context.raw;
+                    return value >= 0 ? 'rgba(0,200,0,0.15)' : 'rgba(255,0,0,0.15)';
+                },
                 tension: 0.1
+            },
+            {
+                label: 'Breakeven',
+                data: breakevens.map(b => 0),
+                borderColor: 'orange',
+                pointBackgroundColor: 'orange',
+                pointRadius: 6,
+                showLine:false
             }]
         },
         options: {
@@ -507,7 +529,6 @@ function drawChart(prices, pnl){
             }
         }
     });
-
 }
 </script>
 
