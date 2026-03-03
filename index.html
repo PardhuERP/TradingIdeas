@@ -273,8 +273,9 @@ document.addEventListener("DOMContentLoaded",()=>{
 function toggleMenu(){const m=document.getElementById("menu");m.style.display=m.style.display==="block"?"none":"block";}  
 document.addEventListener("click",e=>{if(!e.target.closest(".menu-btn")&&!e.target.closest(".menu"))document.getElementById("menu").style.display="none";});  
 
-function openTradeJournal(){location.href="trade_journal.html";}  
-function openStats(){location.href="stats_dashboard.html";}  
+function openStrategyLab(){
+  window.location.href = "nifty-strategy-lab.html";
+} 
 function openFiisDiid(){location.href="fiisdiid.html";}  
 
 function fmt(v){if(v==null||v==="")return"";if(isNaN(v))return v;return Number(v).toFixed(2);}  
