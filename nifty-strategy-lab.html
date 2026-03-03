@@ -144,7 +144,371 @@ canvas{
 </div>
 
 <script>
-/* JS will come in Part 2 */
+let selectedStrategy = "";
+let payoffData = [];
+
+// ===============================
+// STRATEGY SUGGESTION ENGINE
+// ===============================
+function suggestStrategy(){
+
+    const bias = document.getElementById("bias").value;
+    const iv = document.getElementById("iv").value;
+
+    let strategies = [];
+
+    if(bias === "strong_bull"){
+        strategies = ["Buy Call","Bull Call Spread","Sell Put","Bull Put Spread","Call Ratio Spread"];
+    }
+    else if(bias === "mild_bull"){
+        strategies = ["Bull Put Spread","Covered Call","Buy Call"];
+    }
+    else if(bias === "strong_bear"){
+        strategies = ["Buy Put","Bear Put Spread","Sell Call","Bear Call Spread","Put Ratio Spread"];
+    }
+    else if(bias === "mild_bear"){
+        strategies = ["Bear Call Spread","Sell Call","Buy Put"];
+    }
+    else{
+        strategies = ["Call Ratio Spread","Put Ratio Spread","Sell Call","Sell Put"];
+    }
+
+    let html = "";
+    strategies.forEach(s=>{
+        html += `<button onclick="loadStrategy('${s}')">${s}</button> `;
+    });
+
+    document.getElementById("strategyList").innerHTML = html;
+}
+
+// ===============================
+// LOAD STRATEGY INPUT FIELDS
+// ===============================
+function loadStrategy(strategy){
+
+    selectedStrategy = strategy;
+
+    let html = `<h3>${strategy}</h3>`;
+
+    if(strategy.includes("Buy Call") || strategy.includes("Sell Call")){
+        html += `
+        <label>Strike Price</label>
+        <input type="number" id="strike1">
+        <label>Premium</label>
+        <input type="number" id="premium1">`;
+    }
+
+    if(strategy.includes("Buy Put") || strategy.includes("Sell Put")){
+        html += `
+        <label>Strike Price</label>
+        <input type="number" id="strike1">
+        <label>Premium</label>
+        <input type="number" id="premium1">`;
+    }
+
+    if(strategy.includes("Spread") || strategy.includes("Ratio")){
+        html += `
+        <label>Strike 1</label>
+        <input type="number" id="strike1">
+        <label>Premium 1</label>
+        <input type="number" id="premium1">
+        <label>Strike 2</label>
+        <input type="number" id="strike2">
+        <label>Premium 2</label>
+        <input type="number" id="premium2">`;
+    }
+
+    if(strategy === "Covered Call" || strategy === "Protective Put"){
+        html += `
+        <label>Stock Price</label>
+        <input type="number" id="stockPrice">
+        <label>Strike Price</label>
+        <input type="number" id="strike1">
+        <label>Premium</label>
+        <input type="number" id="premium1">`;
+    }
+
+    document.getElementById("strategyBuilder").innerHTML = html;
+}
+
+// ===============================
+// CALCULATION ENGINE
+// ===============================
+function calculateStrategy(){
+
+    const spot = parseFloat(document.getElementById("spot").value);
+    const lot = parseFloat(document.getElementById("lot").value);
+    const margin = parseFloat(document.getElementById("margin").value) || 0;
+
+    let strike1 = parseFloat(document.getElementById("strike1")?.value || 0);
+    let premium1 = parseFloat(document.getElementById("premium1")?.value || 0);
+    let strike2 = parseFloat(document.getElementById("strike2")?.value || 0);
+    let premium2 = parseFloat(document.getElementById("premium2")?.value || 0);
+    let stockPrice = parseFloat(document.getElementById("stockPrice")?.value || 0);
+
+    let maxProfit=0, maxLoss=0, breakeven=0;
+
+    // ===== SINGLE LEG =====
+    if(selectedStrategy === "Buy Call"){
+        maxLoss = premium1 * lot;
+        breakeven = strike1 + premium1;
+        maxProfit = "Unlimited";
+    }
+
+    else if(selectedStrategy === "Buy Put"){
+        maxLoss = premium1 * lot;
+        breakeven = strike1 - premium1;
+        maxProfit = "Unlimited";
+    }
+
+    else if(selectedStrategy === "Sell Call"){
+        maxProfit = premium1 * lot;
+        breakeven = strike1 + premium1;
+        maxLoss = "Unlimited";
+    }
+
+    else if(selectedStrategy === "Sell Put"){
+        maxProfit = premium1 * lot;
+        breakeven = strike1 - premium1;
+        maxLoss = (strike1 - premium1) * lot;
+    }
+
+    // ===== SPREADS =====
+    else if(selectedStrategy === "Bull Call Spread"){
+        let net = premium1 - premium2;
+        maxProfit = ((strike2 - strike1 - net) * lot);
+        maxLoss = net * lot;
+        breakeven = strike1 + net;
+    }
+
+    else if(selectedStrategy === "Bear Put Spread"){
+        let net = premium1 - premium2;
+        maxProfit = ((strike1 - strike2 - net) * lot);
+        maxLoss = net * lot;
+        breakeven = strike1 - net;
+    }
+
+    else if(selectedStrategy === "Bull Put Spread"){
+        let net = premium1 - premium2;
+        maxProfit = net * lot;
+        maxLoss = ((strike1 - strike2 - net) * lot);
+        breakeven = strike1 - net;
+    }
+
+    else if(selectedStrategy === "Bear Call Spread"){
+        let net = premium1 - premium2;
+        maxProfit = net * lot;
+        maxLoss = ((strike2 - strike1 - net) * lot);
+        breakeven = strike1 + net;
+    }
+
+    // ===== COVERED / PROTECTIVE =====
+    else if(selectedStrategy === "Covered Call"){
+        maxProfit = ((strike1 - stockPrice + premium1) * lot);
+        maxLoss = (stockPrice - premium1) * lot;
+        breakeven = stockPrice - premium1;
+    }
+
+    else if(selectedStrategy === "Protective Put"){
+        maxLoss = ((stockPrice - strike1 + premium1) * lot);
+        maxProfit = "Unlimited";
+        breakeven = stockPrice + premium1;
+    }
+
+    // ===== RATIO =====
+    else if(selectedStrategy === "Call Ratio Spread"){
+        maxProfit = "Limited (Range Based)";
+        maxLoss = "Unlimited Above Upper Strike";
+        breakeven = "Multiple";
+    }
+
+    else if(selectedStrategy === "Put Ratio Spread"){
+        maxProfit = "Limited (Range Based)";
+        maxLoss = "Unlimited Below Lower Strike";
+        breakeven = "Multiple";
+    }
+
+    let roi = (margin && typeof maxProfit === "number") ? ((maxProfit/margin)*100).toFixed(2)+"%" : "-";
+
+    document.getElementById("results").innerHTML = `
+        <div class="result-box"><b>Max Profit:</b> <span class="green">${maxProfit}</span></div>
+        <div class="result-box"><b>Max Loss:</b> <span class="red">${maxLoss}</span></div>
+        <div class="result-box"><b>Breakeven:</b> ${breakeven}</div>
+        <div class="result-box"><b>Return % (if margin entered):</b> ${roi}</div>
+    `;
+
+}
+
+    // ===============================
+// PAYOFF GRAPH ENGINE
+// ===============================
+
+let chartInstance = null;
+
+function calculateStrategy(){
+
+    const spot = parseFloat(document.getElementById("spot").value);
+    const lot = parseFloat(document.getElementById("lot").value);
+    const margin = parseFloat(document.getElementById("margin").value) || 0;
+
+    let strike1 = parseFloat(document.getElementById("strike1")?.value || 0);
+    let premium1 = parseFloat(document.getElementById("premium1")?.value || 0);
+    let strike2 = parseFloat(document.getElementById("strike2")?.value || 0);
+    let premium2 = parseFloat(document.getElementById("premium2")?.value || 0);
+    let stockPrice = parseFloat(document.getElementById("stockPrice")?.value || 0);
+
+    let maxProfit=0, maxLoss=0, breakeven=0;
+
+    // === EXISTING CALCULATION LOGIC (keep same as Part 2) ===
+    // (Shortened here for clarity – your previous logic stays above)
+
+    // After calculation, generate payoff
+    generatePayoffChart(spot, lot, strike1, premium1, strike2, premium2, stockPrice);
+}
+
+
+// ===============================
+// PAYOFF CALCULATION
+// ===============================
+function generatePayoffChart(spot, lot, strike1, premium1, strike2, premium2, stockPrice){
+
+    let prices = [];
+    let pnl = [];
+
+    for(let price = spot - 1000; price <= spot + 1000; price += 50){
+
+        let total = 0;
+
+        // BUY CALL
+        if(selectedStrategy === "Buy Call"){
+            total = Math.max(0, price - strike1) - premium1;
+        }
+
+        // SELL CALL
+        else if(selectedStrategy === "Sell Call"){
+            total = premium1 - Math.max(0, price - strike1);
+        }
+
+        // BUY PUT
+        else if(selectedStrategy === "Buy Put"){
+            total = Math.max(0, strike1 - price) - premium1;
+        }
+
+        // SELL PUT
+        else if(selectedStrategy === "Sell Put"){
+            total = premium1 - Math.max(0, strike1 - price);
+        }
+
+        // BULL CALL SPREAD
+        else if(selectedStrategy === "Bull Call Spread"){
+            total =
+                (Math.max(0, price - strike1) - premium1) +
+                (premium2 - Math.max(0, price - strike2));
+        }
+
+        // BEAR PUT SPREAD
+        else if(selectedStrategy === "Bear Put Spread"){
+            total =
+                (Math.max(0, strike1 - price) - premium1) +
+                (premium2 - Math.max(0, strike2 - price));
+        }
+
+        // BULL PUT SPREAD
+        else if(selectedStrategy === "Bull Put Spread"){
+            total =
+                (premium1 - Math.max(0, strike1 - price)) +
+                (Math.max(0, strike2 - price) - premium2);
+        }
+
+        // BEAR CALL SPREAD
+        else if(selectedStrategy === "Bear Call Spread"){
+            total =
+                (premium1 - Math.max(0, price - strike1)) +
+                (Math.max(0, price - strike2) - premium2);
+        }
+
+        // COVERED CALL
+        else if(selectedStrategy === "Covered Call"){
+            total =
+                (price - stockPrice) +
+                (premium1 - Math.max(0, price - strike1));
+        }
+
+        // PROTECTIVE PUT
+        else if(selectedStrategy === "Protective Put"){
+            total =
+                (price - stockPrice) +
+                (Math.max(0, strike1 - price) - premium1);
+        }
+
+        // CALL RATIO (1 Buy, 2 Sell assumption)
+        else if(selectedStrategy === "Call Ratio Spread"){
+            total =
+                (Math.max(0, price - strike1) - premium1) +
+                2*(premium2 - Math.max(0, price - strike2));
+        }
+
+        // PUT RATIO (1 Buy, 2 Sell)
+        else if(selectedStrategy === "Put Ratio Spread"){
+            total =
+                (Math.max(0, strike1 - price) - premium1) +
+                2*(premium2 - Math.max(0, strike2 - price));
+        }
+
+        prices.push(price);
+        pnl.push(total * lot);
+    }
+
+    drawChart(prices, pnl);
+}
+
+
+// ===============================
+// DRAW CHART
+// ===============================
+function drawChart(prices, pnl){
+
+    const ctx = document.getElementById('payoffChart').getContext('2d');
+
+    if(chartInstance){
+        chartInstance.destroy();
+    }
+
+    chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: prices,
+            datasets: [{
+                label: 'Expiry P/L',
+                data: pnl,
+                borderColor: '#007bff',
+                fill: false,
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins:{
+                legend:{display:true}
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Price at Expiry'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Profit / Loss'
+                    }
+                }
+            }
+        }
+    });
+
+}
 </script>
 
 </body>
