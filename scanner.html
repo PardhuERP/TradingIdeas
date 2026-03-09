@@ -140,7 +140,11 @@ if(stock.SIGNAL==="BTST_READY") cls="btst";
 let card=document.createElement("div");
 card.className="card "+cls;
 
-card.innerHTML=`
+data.forEach(stock => {
+
+let card = document.createElement("div");
+
+card.innerHTML = `
 
 <div class="stock">${stock.Stock}</div>
 
@@ -155,18 +159,9 @@ card.innerHTML=`
 </div>
 
 <div class="row">
-<span>Strength</span>
-<span>${stock.STRENGTH}</span>
-</div>
-
-<div class="row">
 <span>Signal</span>
-<span>${stock.SIGNAL}</span>
+<span>${stock.Signal}</span>
 </div>
-
-<button onclick="openChart('${stock.Stock}')">
-View Chart
-</button>
 
 `;
 
