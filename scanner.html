@@ -58,12 +58,59 @@ background:#111827;
 color:white;
 }
 
+.header{
+background:#111827;
+padding:15px;
+font-size:20px;
+font-weight:bold;
+display:flex;
+align-items:center;
+justify-content:space-between;
+}
+
+.header-title{
+text-align:center;
+flex:1;
+}
+
+.header-btn{
+color:white;
+text-decoration:none;
+font-size:16px;
+padding:6px 10px;
+background:#1f2937;
+border-radius:6px;
+}
+
+.header-left{
+width:60px;
+}
+
+.header-right{
+width:60px;
+text-align:right;
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="header">📈 Trading Scanner</div>
+<div class="header">
+
+<div class="header-left">
+<a class="header-btn" href="index.html">⬅</a>
+</div>
+
+<div class="header-title">
+📈 Trading Scanner
+</div>
+
+<div class="header-right">
+<a class="header-btn" href="howtoread.html">?</a>
+</div>
+
+</div>
 
 <div class="container" id="scanner">
 Loading...
