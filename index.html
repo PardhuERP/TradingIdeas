@@ -220,7 +220,8 @@ canvas {
   <h1>📈 Live Stock Scanner <span class="sub">Educational purpose only</span></h1>  
   <div class="menu" id="menu">  
      <div onclick="openStrategyList()">🥅 Nifty Strategy List</div>
-    <div onclick="openStrategyLab()">🧪 Nifty Strategy Lab</div>  
+    <div onclick="openStrategyLab()">🧪 Nifty Strategy Lab</div>
+     <div onclick="openScanner()">📊 Top stocks</div>
     <div onclick="openFiisDiid()">💰 Fiis Diis Dashboard</div>
     <div onclick="openTradingView()">📈 Live Chart</div>
   </div>  
@@ -278,8 +279,9 @@ function openStrategyList(){
 }
   
 function openStrategyLab(){
-  window.location.href = "nifty-strategy-lab.html";
-} 
+  window.location.href = "nifty-strategy-lab.html";} 
+function openScanner(){
+  window.location.href = "Scaneer.html";}
 function openFiisDiid(){location.href="fiisdiid.html";}  
 
 function fmt(v){if(v==null||v==="")return"";if(isNaN(v))return v;return Number(v).toFixed(2);}  
