@@ -134,17 +134,13 @@ data.forEach(stock=>{
 
 let cls="watch";
 
-if(stock.SIGNAL==="BREAKOUT_READY") cls="breakout";
-if(stock.SIGNAL==="BTST_READY") cls="btst";
+if(stock.Signal==="BREAKOUT_READY") cls="breakout";
+if(stock.Signal==="BTST_READY") cls="btst";
 
 let card=document.createElement("div");
 card.className="card "+cls;
 
-data.forEach(stock => {
-
-let card = document.createElement("div");
-
-card.innerHTML = `
+card.innerHTML=`
 
 <div class="stock">${stock.Stock}</div>
 
@@ -162,6 +158,10 @@ card.innerHTML = `
 <span>Signal</span>
 <span>${stock.Signal}</span>
 </div>
+
+<button onclick="openChart('${stock.Stock}')">
+View Chart
+</button>
 
 `;
 
@@ -187,7 +187,6 @@ window.open(
 }
 
 loadScanner();
-
 setInterval(loadScanner,60000);
 
 </script>
