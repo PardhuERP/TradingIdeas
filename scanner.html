@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trading Scanner</title>
+
+<style>
+
+body{
+font-family: Arial, sans-serif;
+background:#0f172a;
+color:white;
+margin:0;
+padding:0;
+}
+
+.header{
+background:#111827;
+padding:15px;
+text-align:center;
+font-size:20px;
+font-weight:bold;
+}
+
+.container{
+padding:10px;
+}
+
+.card{
+border-radius:10px;
+padding:12px;
+margin-bottom:10px;
+box-shadow:0 3px 6px rgba(0,0,0,0.4);
+}
+
+.breakout{
+background:#dc2626;
+}
+
+.btst{
+background:#16a34a;
+}
+
+.watch{
+background:#f59e0b;
+color:black;
+}
+
+.stock{
+font-size:18px;
+font-weight:bold;
+}
+
+.row{
+display:flex;
+justify-content:space-between;
+margin-top:6px;
+font-size:14px;
+}
+
+button{
+margin-top:8px;
+padding:6px 10px;
+border:none;
+border-radius:6px;
+background:#111827;
+color:white;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+📈 Trading Scanner
+</div>
+
+<div class="container" id="scanner">
+Loading data...
+</div>
+
+<script>
+
+const API_URL = "https://script.google.com/macros/s/AKfycbze43b5gQyZ5s0q7pln3C18nW5nkQuBhjX-vHq8DC6r8-hLc2dScQn2ifHWvZTx3I8I/exec";
+
+async function loadScanner(){
+
+try{
+
+let res = await fetch(API_URL);
+let data = await res.json();
+
+let container = document.getElementById("scanner");
+container.innerHTML="";
+
+data.forEach(stock=>{
+
+let signal = stock.SIGNAL || "WATCHLIST";
+
+let cls="watch";
+
+if(signal==="BREAKOUT_READY") cls="breakout";
+if(signal==="BTST_READY") cls="btst";
+
+let card = document.createElement("div");
+card.className="card "+cls;
+
+card.innerHTML=`
+
+<div class="stock">${stock.Stock}</div>
+
+<div class="row">
+<span>Score</span>
+<span>${stock.Score}</span>
+</div>
+
+<div class="row">
+<span>Breakout Prob</span>
+<span>${stock.BreakoutProb}%</span>
+</div>
+
+<div class="row">
+<span>Strength</span>
+<span>${stock.STRENGTH}</span>
+</div>
+
+<div class="row">
+<span>Signal</span>
+<span>${signal}</span>
+</div>
+
+<button onclick="openChart('${stock.Stock}')">
+View Chart
+</button>
+
+`;
+
+container.appendChild(card);
+
+});
+
+}catch(e){
+
+document.getElementById("scanner").innerHTML="Error loading data";
+
+}
+
+}
+
+function openChart(stock){
+
+let url="https://www.tradingview.com/chart/?symbol=NSE:"+stock;
+window.open(url,"_blank");
+
+}
+
+loadScanner();
+
+setInterval(loadScanner,60000);
+
+</script>
+
+</body>
+</html>
