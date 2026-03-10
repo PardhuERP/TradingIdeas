@@ -76,16 +76,22 @@ async function load(){
 const res=await fetch(API);
 const json=await res.json();
 
-document.getElementById("date").innerText="Date : "+json.date;
+const d = new Date(json.date);
+document.getElementById("date").innerText =
+"Date : " + d.toLocaleDateString();
 
 let html="";
+let seen = {};
 
 json.stocks.forEach(s=>{
+
+if(seen[s.stock]) return;
+seen[s.stock] = true;
 
 html+=`
 <tr>
 <td>${s.stock}</td>
-<td>${s.deliveryQty}</td>
+<td>${Number(s.deliveryQty).toLocaleString()}</td>
 <td>${s.deliveryPer}%</td>
 </tr>
 `;
