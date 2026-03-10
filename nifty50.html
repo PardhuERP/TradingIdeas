@@ -4,6 +4,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+<title>Nifty 50 Delivery</title>
+
 <style>
 
 body{
@@ -43,13 +45,18 @@ th{
 background:#1f2937;
 }
 
+.loading{
+text-align:center;
+padding:20px;
+}
+
 </style>
 
 </head>
 
 <body>
 
-<div class="header">📦 High Delivery Stocks</div>
+<div class="header">📦 Nifty50 Delivery Data</div>
 
 <div class="date" id="date"></div>
 
@@ -63,7 +70,11 @@ background:#1f2937;
 </tr>
 </thead>
 
-<tbody id="data"></tbody>
+<tbody id="data">
+<tr>
+<td colspan="3" class="loading">Loading...</td>
+</tr>
+</tbody>
 
 </table>
 
@@ -73,32 +84,35 @@ const API="https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAly
 
 async function load(){
 
-const res=await fetch(API);
-const json=await res.json();
+try{
 
-const d = new Date(json.date);
-document.getElementById("date").innerText =
-"Date : " + d.toLocaleDateString();
+const res = await fetch(API);
+const json = await res.json();
 
-let html="";
-let seen = {};
+document.getElementById("date").innerText = "Date : " + json.date;
 
-json.stocks.forEach(s=>{
+let html = "";
 
-if(seen[s.stock]) return;
-seen[s.stock] = true;
+json.stocks.forEach(s => {
 
-html+=`
+html += `
 <tr>
 <td>${s.stock}</td>
-<td>${Number(s.deliveryQty).toLocaleString()}</td>
+<td>${s.deliveryQty}</td>
 <td>${s.deliveryPer}%</td>
 </tr>
 `;
 
 });
 
-document.getElementById("data").innerHTML=html;
+document.getElementById("data").innerHTML = html;
+
+}catch(e){
+
+document.getElementById("data").innerHTML =
+`<tr><td colspan="3">Error loading data</td></tr>`;
+
+}
 
 }
 
