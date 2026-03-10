@@ -83,7 +83,6 @@ background:#065f46;
 
 <input type="text" id="search" placeholder="Search stock..." onkeyup="render()">
 
-<button onclick="sortDelivery()">Sort Delivery %</button>
 
 </div>
 
@@ -92,13 +91,13 @@ background:#065f46;
 <thead>
 
 <tr>
-<th>Stock</th>
-<th>Price</th>
-<th>Turnover</th>
-<th>Delivery Qty</th>
-<th>Delivery %</th>
+<th onclick="sortTable('stock')">Stock ⬍</th>
+<th onclick="sortTable('price')">Price ⬍</th>
+<th onclick="sortTable('turnover')">Turnover ⬍</th>
+<th onclick="sortTable('deliveryQty')">Delivery Qty ⬍</th>
+<th onclick="sortTable('deliveryPer')">Delivery % ⬍</th>
 </tr>
-
+  
 </thead>
 
 <tbody id="data"></tbody>
@@ -169,9 +168,30 @@ document.getElementById("data").innerHTML=html;
 
 }
 
-function sortDelivery(){
+let sortDirection = 1;
+let currentColumn = "";
 
-stocks.sort((a,b)=>b.deliveryPer-a.deliveryPer);
+function sortTable(column){
+
+if(currentColumn === column){
+sortDirection *= -1;
+}else{
+sortDirection = 1;
+currentColumn = column;
+}
+
+stocks.sort((a,b)=>{
+
+let v1 = a[column];
+let v2 = b[column];
+
+if(typeof v1 === "string"){
+return v1.localeCompare(v2) * sortDirection;
+}else{
+return (v1 - v2) * sortDirection;
+}
+
+});
 
 render();
 
