@@ -123,7 +123,7 @@ let d=new Date(json.date);
 
 document.getElementById("date").innerText="Date : "+d.toISOString().split("T")[0];
 
-stocks=json.stocks || [];
+stocks=json.stocks ?? [];
 
 render();
 
