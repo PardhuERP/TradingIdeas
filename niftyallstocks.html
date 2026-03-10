@@ -121,7 +121,8 @@ const json=await res.json();
 
 let d=new Date(json.date);
 
-document.getElementById("date").innerText="Date : "+d.toISOString().split("T")[0];
+document.getElementById("date").innerText =
+"Date : " + new Date(json.date).toLocaleDateString("en-IN");
 
 stocks=json.stocks ?? [];
 
