@@ -2,10 +2,9 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FII DII Data</title>
+<title>FII DII</title>
 
 <style>
-
 body{
 font-family:Arial;
 background:#0f172a;
@@ -14,78 +13,34 @@ text-align:center;
 padding:40px;
 }
 
-.box{
-background:#1e293b;
-padding:20px;
-border-radius:10px;
-display:inline-block;
-}
-
 button{
-padding:10px 15px;
+padding:12px 18px;
 border:none;
 border-radius:6px;
 background:#22c55e;
 color:white;
+font-size:16px;
 font-weight:bold;
 cursor:pointer;
 }
-
 </style>
+
 </head>
 
 <body>
 
-<div class="box">
-
 <h2>FII / DII Data</h2>
 
-<p>FII: <span id="fii">-</span></p>
-<p>DII: <span id="dii">-</span></p>
-<p>Net: <span id="net">-</span></p>
-
-<button onclick="load()">Load Data</button>
-
-</div>
+<button onclick="openNSE()">View FII / DII Report</button>
 
 <script>
 
-async function load(){
+function openNSE(){
 
-try{
-
-const url="https://www.nseindia.com/api/fiidiiTradeReact";
-
-const res=await fetch(url);
-
-const data=await res.json();
-
-let fii=0;
-let dii=0;
-
-data.forEach(r=>{
-
-if(String(r.category).includes("FII")){
-fii=Number(r.netValue)||0;
-}
-
-if(String(r.category).includes("DII")){
-dii=Number(r.netValue)||0;
-}
-
-});
-
-document.getElementById("fii").innerText=fii;
-document.getElementById("dii").innerText=dii;
-document.getElementById("net").innerText=fii+dii;
-
-}catch(e){
-
-document.getElementById("fii").innerText="Error";
-document.getElementById("dii").innerText="Error";
-document.getElementById("net").innerText="Error";
-
-}
+window.open(
+"https://www.nseindia.com/reports/fii-dii",
+"_blank"
+);
 
 }
 
