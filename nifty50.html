@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -22,26 +21,26 @@ font-size:20px;
 font-weight:bold;
 }
 
-.container{
+.date{
+text-align:center;
+margin-top:10px;
+font-size:16px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+}
+
+th,td{
 padding:10px;
+border-bottom:1px solid #374151;
+text-align:center;
 }
 
-.card{
-background:#1e293b;
-padding:12px;
-border-radius:10px;
-margin-bottom:10px;
-}
-
-.row{
-display:flex;
-justify-content:space-between;
-margin:3px 0;
-}
-
-.stock{
-font-size:18px;
-font-weight:bold;
+th{
+background:#1f2937;
 }
 
 </style>
@@ -52,9 +51,21 @@ font-weight:bold;
 
 <div class="header">📦 High Delivery Stocks</div>
 
-<div class="container" id="box">
-Loading...
-</div>
+<div class="date" id="date"></div>
+
+<table>
+
+<thead>
+<tr>
+<th>Stock</th>
+<th>Delivery Qty</th>
+<th>Delivery %</th>
+</tr>
+</thead>
+
+<tbody id="data"></tbody>
+
+</table>
 
 <script>
 
@@ -63,41 +74,25 @@ const API="https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAly
 async function load(){
 
 const res=await fetch(API);
+const json=await res.json();
 
-const data=await res.json();
+document.getElementById("date").innerText="Date : "+json.date;
 
 let html="";
 
-data.forEach(s=>{
+json.stocks.forEach(s=>{
 
 html+=`
-
-<div class="card">
-
-<div class="stock">${s.stock}</div>
-
-<div class="row">
-<span>Date</span>
-<span>${s.date}</span>
-</div>
-
-<div class="row">
-<span>Delivery Qty</span>
-<span>${s.deliveryQty}</span>
-</div>
-
-<div class="row">
-<span>Delivery %</span>
-<span>${s.deliveryPer}%</span>
-</div>
-
-</div>
-
+<tr>
+<td>${s.stock}</td>
+<td>${s.deliveryQty}</td>
+<td>${s.deliveryPer}%</td>
+</tr>
 `;
 
 });
 
-document.getElementById("box").innerHTML=html;
+document.getElementById("data").innerHTML=html;
 
 }
 
@@ -106,5 +101,4 @@ load();
 </script>
 
 </body>
-
 </html>
