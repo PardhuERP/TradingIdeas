@@ -69,6 +69,18 @@ background:#1f2937;
 background:#065f46;
 }
 
+.table-container{
+max-height:80vh;
+overflow-y:auto;
+}
+
+th{
+background:#1f2937;
+position:sticky;
+top:0;
+z-index:2;
+}
+
 </style>
 
 </head>
@@ -86,6 +98,7 @@ background:#065f46;
 
 </div>
 
+<div class="table-container">
 <table>
 
 <thead>
@@ -97,12 +110,13 @@ background:#065f46;
 <th onclick="sortTable('deliveryQty')">Delivery Qty ⬍</th>
 <th onclick="sortTable('deliveryPer')">Delivery % ⬍</th>
 </tr>
-  
+
 </thead>
 
 <tbody id="data"></tbody>
 
 </table>
+</div>
 
 <script>
 
