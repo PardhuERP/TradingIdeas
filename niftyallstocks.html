@@ -77,12 +77,21 @@ const API="https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAly
 
 async function load(){
 
-const res=await fetch(API);
-const json=await res.json();
+try{
 
-document.getElementById("date").innerText="Date : "+json.date;
+const res = await fetch(API);
+const json = await res.json();
+
+document.getElementById("date").innerText="Date : "+(json.date || "");
 
 let html="";
+
+// if no stocks returned
+if(!json.stocks || json.stocks.length===0){
+
+html=`<tr><td colspan="5">No data available</td></tr>`;
+
+}else{
 
 json.stocks.forEach(s=>{
 
@@ -98,7 +107,16 @@ html+=`
 
 });
 
+}
+
 document.getElementById("data").innerHTML=html;
+
+}catch(e){
+
+document.getElementById("data").innerHTML=
+`<tr><td colspan="5">Error loading data</td></tr>`;
+
+}
 
 }
 
