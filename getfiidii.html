@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FII DII Import</title>
+<title>FII DII Data</title>
 
 <style>
 
@@ -10,16 +10,19 @@ body{
 font-family:Arial;
 background:#0f172a;
 color:white;
-padding:20px;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
 }
 
 .card{
 background:#1e293b;
-padding:20px;
-border-radius:10px;
-max-width:400px;
-margin:auto;
+padding:25px;
+border-radius:12px;
 text-align:center;
+width:300px;
 }
 
 .value{
@@ -46,44 +49,46 @@ cursor:pointer;
 
 <h2>FII / DII Data</h2>
 
-<div class="value">FII: <span id="fii">Loading...</span></div>
-<div class="value">DII: <span id="dii">Loading...</span></div>
-<div class="value">Net: <span id="net">Loading...</span></div>
+<div class="value">FII: <span id="fii">-</span></div>
+<div class="value">DII: <span id="dii">-</span></div>
+<div class="value">Net: <span id="net">-</span></div>
 
 <br>
 
-<button onclick="saveData()">Save To Sheet</button>
+<button onclick="loadData()">Get Data</button>
 
 </div>
 
 <script>
 
-let fii=0;
-let dii=0;
-
-async function loadFIIDII(){
+async function loadData(){
 
 try{
 
-const res = await fetch("https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=fiidiidata");
+const url="https://api.allorigins.win/raw?url=https://www.nseindia.com/api/fiidiiTradeReact";
 
-const data = await res.json();
+const res=await fetch(url);
+
+const data=await res.json();
+
+let fii=0;
+let dii=0;
 
 data.forEach(r=>{
 
 if(String(r.category).includes("FII")){
-fii = Number(r.netValue)||0;
+fii=Number(r.netValue)||0;
 }
 
 if(String(r.category).includes("DII")){
-dii = Number(r.netValue)||0;
+dii=Number(r.netValue)||0;
 }
 
 });
 
-document.getElementById("fii").innerText = fii;
-document.getElementById("dii").innerText = dii;
-document.getElementById("net").innerText = fii + dii;
+document.getElementById("fii").innerText=fii;
+document.getElementById("dii").innerText=dii;
+document.getElementById("net").innerText=fii+dii;
 
 }catch(e){
 
@@ -94,32 +99,6 @@ document.getElementById("net").innerText="Error";
 }
 
 }
-
-async function saveData(){
-
-await fetch("https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-action:"savefiidii",
-payload:[
-{category:"FII",netValue:fii},
-{category:"DII",netValue:dii}
-]
-})
-
-});
-
-alert("Saved to sheet");
-
-}
-
-loadFIIDII();
 
 </script>
 
