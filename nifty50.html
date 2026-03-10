@@ -4,8 +4,6 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Nifty 50 Delivery</title>
-
 <style>
 
 body{
@@ -45,20 +43,15 @@ th{
 background:#1f2937;
 }
 
-.loading{
-text-align:center;
-padding:20px;
-}
-
 </style>
 
 </head>
 
 <body>
 
-<div class="header">📦 Nifty50 Delivery Data</div>
+<div class="header">📦 High Delivery Nifty50</div>
 
-<div class="date" id="date"></div>
+<div class="date" id="date">Loading...</div>
 
 <table>
 
@@ -70,11 +63,7 @@ padding:20px;
 </tr>
 </thead>
 
-<tbody id="data">
-<tr>
-<td colspan="3" class="loading">Loading...</td>
-</tr>
-</tbody>
+<tbody id="data"></tbody>
 
 </table>
 
@@ -84,18 +73,16 @@ const API="https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAly
 
 async function load(){
 
-try{
-
 const res = await fetch(API);
 const json = await res.json();
 
-document.getElementById("date").innerText = "Date : " + json.date;
+document.getElementById("date").innerText="Date : "+json.date;
 
-let html = "";
+let html="";
 
-json.stocks.forEach(s => {
+json.stocks.forEach(s=>{
 
-html += `
+html+=`
 <tr>
 <td>${s.stock}</td>
 <td>${s.deliveryQty}</td>
@@ -105,14 +92,7 @@ html += `
 
 });
 
-document.getElementById("data").innerHTML = html;
-
-}catch(e){
-
-document.getElementById("data").innerHTML =
-`<tr><td colspan="3">Error loading data</td></tr>`;
-
-}
+document.getElementById("data").innerHTML=html;
 
 }
 
