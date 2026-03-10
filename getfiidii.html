@@ -10,31 +10,22 @@ body{
 font-family:Arial;
 background:#0f172a;
 color:white;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-margin:0;
-}
-
-.card{
-background:#1e293b;
-padding:25px;
-border-radius:12px;
 text-align:center;
-width:300px;
+padding:20px;
 }
 
-.value{
-font-size:22px;
-margin:10px 0;
+iframe{
+width:100%;
+height:500px;
+border:none;
+background:white;
 }
 
 button{
 padding:10px 15px;
+background:#22c55e;
 border:none;
 border-radius:6px;
-background:#22c55e;
 color:white;
 font-weight:bold;
 cursor:pointer;
@@ -45,58 +36,20 @@ cursor:pointer;
 
 <body>
 
-<div class="card">
+<h2>FII / DII Live Data</h2>
 
-<h2>FII / DII Data</h2>
+<button onclick="loadData()">Load Data</button>
 
-<div class="value">FII: <span id="fii">-</span></div>
-<div class="value">DII: <span id="dii">-</span></div>
-<div class="value">Net: <span id="net">-</span></div>
+<br><br>
 
-<br>
-
-<button onclick="loadData()">Get Data</button>
-
-</div>
+<iframe id="frame"></iframe>
 
 <script>
 
-async function loadData(){
+function loadData(){
 
-try{
-
-const url="https://api.allorigins.win/raw?url=https://www.nseindia.com/api/fiidiiTradeReact";
-
-const res=await fetch(url);
-
-const data=await res.json();
-
-let fii=0;
-let dii=0;
-
-data.forEach(r=>{
-
-if(String(r.category).includes("FII")){
-fii=Number(r.netValue)||0;
-}
-
-if(String(r.category).includes("DII")){
-dii=Number(r.netValue)||0;
-}
-
-});
-
-document.getElementById("fii").innerText=fii;
-document.getElementById("dii").innerText=dii;
-document.getElementById("net").innerText=fii+dii;
-
-}catch(e){
-
-document.getElementById("fii").innerText="Error";
-document.getElementById("dii").innerText="Error";
-document.getElementById("net").innerText="Error";
-
-}
+document.getElementById("frame").src =
+"https://www.nseindia.com/api/fiidiiTradeReact";
 
 }
 
