@@ -5,6 +5,7 @@
 <title>FII DII Data</title>
 
 <style>
+
 body{
 font-family:Arial;
 background:#0f172a;
@@ -29,9 +30,10 @@ color:white;
 font-weight:bold;
 cursor:pointer;
 }
-</style>
 
+</style>
 </head>
+
 <body>
 
 <div class="box">
@@ -50,25 +52,40 @@ cursor:pointer;
 
 async function load(){
 
-const url="https://api.allorigins.win/get?url=https://www.nseindia.com/api/fiidiiTradeReact";
+try{
+
+const url="https://api.allorigins.win/raw?url=https://www.nseindia.com/api/fiidiiTradeReact";
 
 const res=await fetch(url);
 
-const json=await res.json();
-
-const data=JSON.parse(json.contents);
+const data=await res.json();
 
 let fii=0;
 let dii=0;
 
 data.forEach(r=>{
-if(r.category.includes("FII")) fii=r.netValue;
-if(r.category.includes("DII")) dii=r.netValue;
+
+if(String(r.category).includes("FII")){
+fii=Number(r.netValue)||0;
+}
+
+if(String(r.category).includes("DII")){
+dii=Number(r.netValue)||0;
+}
+
 });
 
 document.getElementById("fii").innerText=fii;
 document.getElementById("dii").innerText=dii;
 document.getElementById("net").innerText=fii+dii;
+
+}catch(e){
+
+document.getElementById("fii").innerText="Error";
+document.getElementById("dii").innerText="Error";
+document.getElementById("net").innerText="Error";
+
+}
 
 }
 
