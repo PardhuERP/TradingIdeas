@@ -27,6 +27,28 @@ margin-top:10px;
 font-size:16px;
 }
 
+.controls{
+display:flex;
+justify-content:center;
+gap:10px;
+margin:10px;
+}
+
+input{
+padding:8px;
+border-radius:5px;
+border:none;
+}
+
+button{
+padding:8px 12px;
+border:none;
+border-radius:5px;
+background:#1f2937;
+color:white;
+cursor:pointer;
+}
+
 table{
 width:100%;
 border-collapse:collapse;
@@ -43,15 +65,27 @@ th{
 background:#1f2937;
 }
 
+.high{
+background:#065f46;
+}
+
 </style>
 
 </head>
 
 <body>
 
-<div class="header">📊 Nifty All Stocks</div>
+<div class="header">📊 NSE All EQ Stocks</div>
 
 <div class="date" id="date"></div>
+
+<div class="controls">
+
+<input type="text" id="search" placeholder="Search stock..." onkeyup="render()">
+
+<button onclick="sortDelivery()">Sort Delivery %</button>
+
+</div>
 
 <table>
 
@@ -75,28 +109,51 @@ background:#1f2937;
 
 const API="https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=niftyall";
 
+let stocks=[];
+let sorted=false;
+
 async function load(){
 
 try{
 
-const res = await fetch(API);
-const json = await res.json();
+const res=await fetch(API);
+const json=await res.json();
 
-document.getElementById("date").innerText="Date : "+(json.date || "");
+let d=new Date(json.date);
+
+document.getElementById("date").innerText="Date : "+d.toISOString().split("T")[0];
+
+stocks=json.stocks || [];
+
+render();
+
+}catch(e){
+
+document.getElementById("data").innerHTML=
+`<tr><td colspan="5">Error loading data</td></tr>`;
+
+}
+
+}
+
+function render(){
 
 let html="";
 
-// if no stocks returned
-if(!json.stocks || json.stocks.length===0){
+let search=document.getElementById("search").value.toUpperCase();
 
-html=`<tr><td colspan="5">No data available</td></tr>`;
+let filtered=stocks.filter(s=>s.stock.toUpperCase().includes(search));
 
-}else{
+filtered.forEach(s=>{
 
-json.stocks.forEach(s=>{
+let rowClass="";
+
+if(Number(s.deliveryPer)>=70){
+rowClass="high";
+}
 
 html+=`
-<tr>
+<tr class="${rowClass}">
 <td>${s.stock}</td>
 <td>${s.price}</td>
 <td>${s.turnover}</td>
@@ -107,16 +164,15 @@ html+=`
 
 });
 
-}
-
 document.getElementById("data").innerHTML=html;
 
-}catch(e){
-
-document.getElementById("data").innerHTML=
-`<tr><td colspan="5">Error loading data</td></tr>`;
-
 }
+
+function sortDelivery(){
+
+stocks.sort((a,b)=>b.deliveryPer-a.deliveryPer);
+
+render();
 
 }
 
