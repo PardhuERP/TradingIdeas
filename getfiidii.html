@@ -33,6 +33,20 @@ cursor:pointer;
 
 <button onclick="openNSE()">View FII / DII Report</button>
 
+<button onclick="showForm()">Add Data</button>
+
+<div id="formBox" style="display:none;margin-top:15px">
+
+<textarea id="jsonData" 
+placeholder="Paste NSE JSON here"
+style="width:100%;height:120px"></textarea>
+
+<br><br>
+
+<button onclick="saveJSON()">Submit</button>
+
+</div>
+  
 <script>
 
 function openNSE(){
@@ -41,6 +55,33 @@ window.open(
 "https://www.nseindia.com/api/fiidiiTradeReact",
 "_blank"
 );
+
+}
+
+  function showForm(){
+document.getElementById("formBox").style.display="block";
+}
+
+async function saveJSON(){
+
+const json = document.getElementById("jsonData").value;
+
+await fetch("https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+action:"savefiijson",
+data:json
+})
+
+});
+
+alert("Saved successfully");
 
 }
 
