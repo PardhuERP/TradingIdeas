@@ -5,6 +5,7 @@
 <title>FII DII</title>
 
 <style>
+
 body{
 font-family:Arial;
 background:#0f172a;
@@ -13,19 +14,6 @@ text-align:center;
 padding:40px;
 }
 
-button{
-padding:12px 18px;
-border:none;
-border-radius:6px;
-background:#22c55e;
-color:white;
-font-size:16px;
-font-weight:bold;
-cursor:pointer;
-}
-</style>
-
-  <style>
 button{
 padding:10px 15px;
 border:none;
@@ -36,7 +24,16 @@ font-weight:bold;
 cursor:pointer;
 margin:8px;
 }
-  </style>
+
+textarea{
+width:100%;
+height:120px;
+border-radius:6px;
+border:none;
+padding:10px;
+}
+
+</style>
 
 </head>
 
@@ -50,16 +47,15 @@ margin:8px;
 
 <div id="formBox" style="display:none;margin-top:15px">
 
-<textarea id="jsonData" 
-placeholder="Please go back, don't do anything"
-style="width:100%;height:120px"></textarea>
+<textarea id="jsonData"
+placeholder="Paste JSON here"></textarea>
 
 <br><br>
 
 <button onclick="saveJSON()">Submit</button>
 
 </div>
-  
+
 <script>
 
 function openNSE(){
@@ -71,26 +67,50 @@ window.open(
 
 }
 
-  function showForm(){
+function showForm(){
 document.getElementById("formBox").style.display="block";
 }
 
-function saveJSON(){
+async function saveJSON(){
 
-const json = document.getElementById("jsonData").value;
+const json = document.getElementById("jsonData").value.trim();
 
-fetch("https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec",{
+if(!json){
+alert("Please paste JSON first");
+return;
+}
+
+try{
+
+const response = await fetch(
+"https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec",
+{
 method:"POST",
-mode:"no-cors",
 headers:{
 "Content-Type":"application/x-www-form-urlencoded"
 },
 body:"action=savefiijson&data="+encodeURIComponent(json)
-});
+}
+);
+
+const text = await response.text();
+
+console.log("Server response:",text);
 
 alert("Saved successfully");
 
+document.getElementById("jsonData").value="";
+
+}catch(err){
+
+console.error(err);
+
+alert("Error sending data");
+
 }
+
+}
+
 </script>
 
 </body>
