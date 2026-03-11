@@ -96,6 +96,21 @@ cursor:pointer;
 
 <input type="text" id="search" placeholder="Search stock..." onkeyup="render()">
 
+  <div class="controls">
+
+<input type="text" id="search" placeholder="Search stock..." onkeyup="render()">
+
+<input type="number" id="minPrice" placeholder="Min Price">
+<input type="number" id="maxPrice" placeholder="Max Price">
+
+<input type="number" id="minDelivery" placeholder="Min Delivery %">
+
+<input type="number" id="minTurnover" placeholder="Min Turnover">
+
+<button onclick="render()">Apply Filter</button>
+
+</div>
+
 
 </div>
 
@@ -157,7 +172,24 @@ let html="";
 
 let search=document.getElementById("search").value.toUpperCase();
 
-let filtered=stocks.filter(s=>s.stock.toUpperCase().includes(search));
+let minPrice=parseFloat(document.getElementById("minPrice").value) || 0;
+let maxPrice=parseFloat(document.getElementById("maxPrice").value) || Infinity;
+
+let minDelivery=parseFloat(document.getElementById("minDelivery").value) || 0;
+
+let minTurnover=parseFloat(document.getElementById("minTurnover").value) || 0;
+
+let filtered=stocks.filter(s=>{
+
+return (
+s.stock.toUpperCase().includes(search) &&
+Number(s.price)>=minPrice &&
+Number(s.price)<=maxPrice &&
+Number(s.deliveryPer)>=minDelivery &&
+Number(s.turnover)>=minTurnover
+);
+
+});
 
 filtered.forEach(s=>{
 
@@ -178,6 +210,10 @@ html+=`
 `;
 
 });
+
+if(filtered.length===0){
+html=`<tr><td colspan="5">No stocks match filter</td></tr>`;
+}
 
 document.getElementById("data").innerHTML=html;
 
