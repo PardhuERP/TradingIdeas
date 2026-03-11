@@ -50,33 +50,38 @@ const API="https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAly
 
 async function load(){
 
+document.getElementById("today").innerHTML="Loading...";
+document.getElementById("yesterday").innerHTML="Loading...";
+
+try{
+
 const res=await fetch(API);
 const data=await res.json();
 
 document.getElementById("today").innerHTML=`
-
 <div class="title">Today</div>
-
 <div class="row"><span>Date</span><span>${data.today.date}</span></div>
 <div class="row"><span>FII</span><span>${data.today.fii}</span></div>
 <div class="row"><span>DII</span><span>${data.today.dii}</span></div>
 <div class="row"><span>Net</span><span>${data.today.net}</span></div>
-
 `;
 
 document.getElementById("yesterday").innerHTML=`
-
 <div class="title">Yesterday</div>
-
 <div class="row"><span>Date</span><span>${data.yesterday.date}</span></div>
 <div class="row"><span>FII</span><span>${data.yesterday.fii}</span></div>
 <div class="row"><span>DII</span><span>${data.yesterday.dii}</span></div>
 <div class="row"><span>Net</span><span>${data.yesterday.net}</span></div>
-
 `;
+
+}catch(e){
+
+document.getElementById("today").innerHTML="Error loading data";
+document.getElementById("yesterday").innerHTML="Error loading data";
 
 }
 
+}
 load();
 
 </script>
