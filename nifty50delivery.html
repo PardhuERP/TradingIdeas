@@ -27,6 +27,13 @@ margin-top:10px;
 font-size:16px;
 }
 
+.update{
+text-align:center;
+margin-top:10px;
+font-size:14px;
+color:#9ca3af;
+}
+
 table{
 width:100%;
 border-collapse:collapse;
@@ -67,6 +74,9 @@ background:#1f2937;
 
 </table>
 
+<!-- NEW LINE -->
+<div class="update" id="lastUpdate"></div>
+
 <script>
 
 const API="https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=delivery";
@@ -93,6 +103,18 @@ html+=`
 });
 
 document.getElementById("data").innerHTML=html;
+
+
+// LAST UPDATE LOGIC
+let now = new Date();
+let updateDate = new Date(json.date);
+
+if(now.getHours() < 22){
+updateDate.setDate(updateDate.getDate()-1);
+}
+
+document.getElementById("lastUpdate").innerText =
+"Last Update : " + updateDate.toLocaleDateString("en-IN");
 
 }
 
