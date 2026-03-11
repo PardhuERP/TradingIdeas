@@ -50,6 +50,25 @@ th{
 background:#1f2937;
 }
 
+.header{
+background:#111827;
+padding:15px;
+font-size:20px;
+font-weight:bold;
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.back-btn{
+background:#1f2937;
+color:white;
+border:none;
+padding:6px 12px;
+border-radius:6px;
+cursor:pointer;
+}
 </style>
 
 </head>
@@ -122,6 +141,10 @@ updateDate.setDate(updateDate.getDate()-1);
 document.getElementById("lastUpdate").innerText =
 "Last Update : " + updateDate.toLocaleDateString("en-IN");
 
+}
+
+function goBack(){
+window.history.back();
 }
 
 load();
