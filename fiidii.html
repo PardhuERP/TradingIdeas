@@ -44,6 +44,9 @@ margin:3px 0;
 <div id="today" class="card"></div>
 <div id="yesterday" class="card"></div>
 <div id="mtd" class="card"></div>
+<button onclick="loadMonthly()">View Monthly Data</button>
+
+<div id="monthly"></div>
 
 <script>
 
@@ -141,6 +144,50 @@ document.getElementById("yesterday").innerHTML="Error loading";
 document.getElementById("mtd").innerHTML="Error loading";
 
 }
+
+}
+
+async function loadMonthly(){
+
+const res = await fetch(API.replace("fiidashboard","fiimonthly"));
+
+const data = await res.json();
+
+let html="<h3>Monthly Flow</h3>";
+
+data.forEach(m=>{
+
+html+=`
+
+<div class="card">
+
+<div class="row">
+<span>Month</span>
+<span>${m.month}</span>
+</div>
+
+<div class="row">
+<span>FII</span>
+<span>${m.fii}</span>
+</div>
+
+<div class="row">
+<span>DII</span>
+<span>${m.dii}</span>
+</div>
+
+<div class="row">
+<span>Net</span>
+<span>${m.net}</span>
+</div>
+
+</div>
+
+`;
+
+});
+
+document.getElementById("monthly").innerHTML=html;
 
 }
 
