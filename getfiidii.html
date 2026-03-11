@@ -5,6 +5,7 @@
 <title>FII DII</title>
 
 <style>
+
 body{
 font-family:Arial;
 background:#0f172a;
@@ -31,6 +32,7 @@ border-radius:6px;
 border:none;
 padding:10px;
 }
+
 </style>
 
 </head>
@@ -40,11 +42,13 @@ padding:10px;
 <h2>FII / DII Data</h2>
 
 <button onclick="openNSE()">View FII / DII Report</button>
+
 <button onclick="showForm()">Add Data</button>
 
 <div id="formBox" style="display:none;margin-top:15px">
 
-<textarea id="jsonData" placeholder="Paste JSON here"></textarea>
+<textarea id="jsonData"
+placeholder="Paste JSON here"></textarea>
 
 <br><br>
 
@@ -52,20 +56,22 @@ padding:10px;
 
 </div>
 
-<!-- hidden iframe prevents page redirect -->
-<iframe name="hiddenFrame" style="display:none;"></iframe>
-
 <script>
 
 function openNSE(){
-window.open("https://www.nseindia.com/api/fiidiiTradeReact","_blank");
+
+window.open(
+"https://www.nseindia.com/api/fiidiiTradeReact",
+"_blank"
+);
+
 }
 
 function showForm(){
 document.getElementById("formBox").style.display="block";
 }
 
-function saveJSON(){
+async function saveJSON(){
 
 const json = document.getElementById("jsonData").value.trim();
 
@@ -74,32 +80,34 @@ alert("Please paste JSON first");
 return;
 }
 
-const form = document.createElement("form");
+try{
 
-form.method="POST";
-form.target="hiddenFrame";
-form.action="https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
+const response = await fetch(
+"https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec",
+{
+method:"POST",
+headers:{
+"Content-Type":"application/x-www-form-urlencoded"
+},
+body:"action=savefiijson&data="+encodeURIComponent(json)
+}
+);
 
-const actionInput=document.createElement("input");
-actionInput.type="hidden";
-actionInput.name="action";
-actionInput.value="savefiijson";
+const text = await response.text();
 
-const dataInput=document.createElement("input");
-dataInput.type="hidden";
-dataInput.name="data";
-dataInput.value=json;
+console.log("Server response:",text);
 
-form.appendChild(actionInput);
-form.appendChild(dataInput);
-
-document.body.appendChild(form);
-
-form.submit();
+alert("Saved successfully");
 
 document.getElementById("jsonData").value="";
 
-alert("Saved successfully");
+}catch(err){
+
+console.error(err);
+
+alert("Error sending data");
+
+}
 
 }
 
