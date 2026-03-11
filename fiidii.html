@@ -220,6 +220,10 @@ function color(val){
 return Number(val) >= 0 ? "green" : "red";
 }
 
+function round(val){
+return Math.round(Number(val));
+}
+
 async function loadMonthly(){
 
 const res = await fetch(API.replace("fiidashboard","fiimonthly"));
@@ -247,11 +251,11 @@ html += `
 
 <td>${m.month}</td>
 
-<td class="${color(m.fii)}">${m.fii}</td>
+<td class="${color(m.fii)}">${round(m.fii)}</td>
 
-<td class="${color(m.dii)}">${m.dii}</td>
+<td class="${color(m.dii)}">${round(m.dii)}</td>
 
-<td class="${color(m.net)}">${m.net}</td>
+<td class="${color(m.net)}">${round(m.net)}</td>
 
 </tr>
 `;
