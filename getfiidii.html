@@ -43,17 +43,6 @@ padding:10px;
 
 <button onclick="openNSE()">View FII / DII Report</button>
 
-<button onclick="showForm()">Add Data</button>
-
-<div id="formBox" style="display:none;margin-top:15px">
-
-<textarea id="jsonData"
-placeholder="Paste JSON here"></textarea>
-
-<br><br>
-
-<button onclick="saveJSON()">Submit</button>
-
 </div>
 
 <script>
@@ -71,45 +60,6 @@ function showForm(){
 document.getElementById("formBox").style.display="block";
 }
 
-async function saveJSON(){
-
-const json = document.getElementById("jsonData").value.trim();
-
-if(!json){
-alert("Please paste JSON first");
-return;
-}
-
-try{
-
-const response = await fetch(
-"https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec",
-{
-method:"POST",
-headers:{
-"Content-Type":"application/x-www-form-urlencoded"
-},
-body:"action=savefiijson&data="+encodeURIComponent(json)
-}
-);
-
-const text = await response.text();
-
-console.log("Server response:",text);
-
-alert("Saved successfully");
-
-document.getElementById("jsonData").value="";
-
-}catch(err){
-
-console.error(err);
-
-alert("Error sending data");
-
-}
-
-}
 
 </script>
 
