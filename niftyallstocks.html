@@ -150,8 +150,15 @@ const json=await res.json();
 
 let d=new Date(json.date);
 
+let now = new Date();
+let updateDate = new Date(json.date);
+
+if(now.getHours() < 22){
+updateDate.setDate(updateDate.getDate()-1);
+}
+
 document.getElementById("date").innerText =
-"Date : " + new Date(json.date).toLocaleDateString("en-IN");
+"Last Update : " + updateDate.toLocaleDateString("en-IN");
 
 stocks=json.stocks ?? [];
 
