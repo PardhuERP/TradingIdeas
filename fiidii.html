@@ -223,44 +223,44 @@ return Number(val) >= 0 ? "green" : "red";
 async function loadMonthly(){
 
 const res = await fetch(API.replace("fiidashboard","fiimonthly"));
-
 const data = await res.json();
 
-let html="<h3>Monthly Flow</h3>";
+let html = `
+<div class="card">
+
+<div class="title">Monthly Institutional Flow</div>
+
+<table style="width:100%;margin-top:8px;border-collapse:collapse">
+
+<tr style="border-bottom:1px solid #475569">
+<th align="left">Month</th>
+<th>FII</th>
+<th>DII</th>
+<th>Net</th>
+</tr>
+`;
 
 data.forEach(m=>{
 
-html+=`
+html += `
+<tr>
 
-<div class="card">
+<td>${m.month}</td>
 
-<div class="row">
-<span>Month</span>
-<span>${m.month}</span>
-</div>
+<td class="${color(m.fii)}">${m.fii}</td>
 
-<div class="row">
-<span>FII</span>
-<span class="${color(m.fii)}">${m.fii}</span>
-</div>
+<td class="${color(m.dii)}">${m.dii}</td>
 
-<div class="row">
-<span>DII</span>
-<span class="${color(m.dii)}">${m.dii}</span>
-</div>
+<td class="${color(m.net)}">${m.net}</td>
 
-<div class="row">
-<span>Net</span>
-<span class="${color(m.net)}">${m.net}</span>
-</div>
-
-</div>
-
+</tr>
 `;
 
 });
 
-document.getElementById("monthly").innerHTML=html;
+html += `</table></div>`;
+
+document.getElementById("monthly").innerHTML = html;
 
 }
 
