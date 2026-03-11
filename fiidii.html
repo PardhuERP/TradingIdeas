@@ -166,17 +166,17 @@ document.getElementById("yesterday").innerHTML=`
 
 <div class="row">
 <span>FII</span>
-<span class="${color(data.today.fii)}">${data.today.fii}</span>
+<span class="${color(data.yesterday.fii)}">${data.yesterday.fii}</span>
 </div>
 
 <div class="row">
 <span>DII</span>
-<span class="${color(data.today.dii)}">${data.today.dii}</span>
+<span class="${color(data.yesterday.dii)}">${data.yesterday.dii}</span>
 </div>
 
 <div class="row">
 <span>Net</span>
-<span class="${color(data.today.net)}">${data.today.net}</span>
+<span class="${color(data.yesterday.net)}">${data.yesterday.net}</span>
 </div>
 
 `;
@@ -192,17 +192,17 @@ document.getElementById("mtd").innerHTML=`
 
 <div class="row">
 <span>FII</span>
-<span class="${color(data.today.fii)}">${data.today.fii}</span>
+<span class="${color(data.mtd.fii)}">${data.mtd.fii}</span>
 </div>
 
 <div class="row">
 <span>DII</span>
-<span class="${color(data.today.dii)}">${data.today.dii}</span>
+<span class="${color(data.mtd.dii)}">${data.mtd.dii}</span>
 </div>
 
 <div class="row">
 <span>Net</span>
-<span class="${color(data.today.net)}">${data.today.net}</span>
+<span class="${color(data.mtd.net)}">${data.mtd.net}</span>
 </div>
 `;
 
@@ -214,6 +214,10 @@ document.getElementById("mtd").innerHTML="Error loading";
 
 }
 
+}
+  
+function color(val){
+return Number(val) >= 0 ? "green" : "red";
 }
 
 async function loadMonthly(){
