@@ -135,22 +135,20 @@ document.getElementById("data").innerHTML=html;
 
 
 // LAST UPDATE LOGIC
+function load(){
 
-let now = new Date();
-let updateDate = new Date();
-
-// before 10 PM show yesterday
-if(now.getHours() < 22){
-updateDate.setDate(updateDate.getDate()-1);
-}
+// your API loading code here
 
 document.getElementById("lastUpdate").innerText =
-"Last Update : " + updateDate.toLocaleDateString("en-IN");
+"Data will be updated every day at 10:00 PM";
+
 }
 
 function goBack(){
 window.history.back();
 }
+
+load();
 
 load();
 
