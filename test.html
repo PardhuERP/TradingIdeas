@@ -3,172 +3,255 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Swypio Pay - Fast. Simple. Secure Payments.</title>
 
-<!-- SEO -->
-<meta name="description" content="Accept UPI, QR & online payments instantly with Swypio Pay. Built for Indian businesses. Zero hassle onboarding.">
+<title>Swypio Pay | Fast. Simple. Secure Payments.</title>
 
-<!-- Fonts -->
+<meta name="description" content="Accept UPI, QR & online payments instantly with Swypio Pay. Built for Indian merchants.">
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
+
+:root{
+  --primary:#1a237e;
+  --accent:#00c853;
+  --bg:#f6f9ff;
 }
 
-body {
-  background: #f9fbff;
-  color: #111;
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Inter',sans-serif;
 }
 
-/* Header */
-header {
-  position: sticky;
-  top: 0;
-  background: white;
-  display: flex;
-  justify-content: space-between;
-  padding: 15px 5%;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  z-index: 1000;
+body{
+  background:var(--bg);
+  color:#111;
 }
 
-.logo {
-  font-weight: 700;
-  color: #1a237e;
+/* HEADER */
+header{
+  position:sticky;
+  top:0;
+  background:#fff;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px 6%;
+  box-shadow:0 4px 20px rgba(0,0,0,0.05);
+  z-index:999;
 }
 
-.cta-btn {
-  background: #00c853;
-  color: white;
-  padding: 10px 18px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 600;
+.logo{
+  font-weight:700;
+  font-size:1.2rem;
+  color:var(--primary);
 }
 
-/* Hero */
-.hero {
-  padding: 60px 5%;
-  text-align: center;
+.nav a{
+  margin:0 15px;
+  text-decoration:none;
+  color:#333;
+  font-weight:500;
 }
 
-.hero h1 {
-  font-size: 2.2rem;
-  color: #1a237e;
+.cta{
+  background:var(--accent);
+  color:#fff;
+  padding:10px 18px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:600;
 }
 
-.hero p {
-  margin: 15px 0;
-  font-size: 1rem;
+/* HERO */
+.hero{
+  padding:80px 6%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
 }
 
-.hero-buttons {
-  margin-top: 20px;
+.hero-text{
+  max-width:500px;
 }
 
-.hero-buttons a {
-  margin: 10px;
-  padding: 12px 20px;
-  border-radius: 6px;
-  text-decoration: none;
+.hero h1{
+  font-size:2.8rem;
+  color:var(--primary);
 }
 
-.primary {
-  background: #1a237e;
-  color: white;
+.hero p{
+  margin:20px 0;
+  font-size:1.1rem;
+  color:#444;
 }
 
-.secondary {
-  border: 2px solid #1a237e;
-  color: #1a237e;
+.hero-buttons a{
+  margin-right:10px;
+  padding:14px 22px;
+  border-radius:8px;
+  text-decoration:none;
 }
 
-/* Trust */
-.trust {
-  text-align: center;
-  padding: 40px 5%;
+.primary-btn{
+  background:var(--primary);
+  color:white;
 }
 
-.stats {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 20px;
+.secondary-btn{
+  border:2px solid var(--primary);
+  color:var(--primary);
 }
 
-.stats div {
-  font-weight: 700;
+.hero-img{
+  width:350px;
+  height:250px;
+  background:linear-gradient(135deg,#e3f2fd,#fff);
+  border-radius:15px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.1);
 }
 
-/* Features */
-.features {
-  padding: 50px 5%;
+/* TRUST BAR */
+.trust{
+  background:#fff;
+  padding:25px;
+  text-align:center;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
+.stats{
+  display:flex;
+  justify-content:center;
+  gap:50px;
+  margin-top:10px;
 }
 
-.card {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+.stats div{
+  font-weight:700;
 }
 
-/* Steps */
-.steps {
-  padding: 50px 5%;
-  text-align: center;
+/* FEATURES */
+.section{
+  padding:70px 6%;
+  text-align:center;
 }
 
-/* Use Cases */
-.usecases {
-  padding: 50px 5%;
+.grid{
+  margin-top:40px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:25px;
 }
 
-/* Pricing */
-.pricing {
-  padding: 50px 5%;
-  text-align: center;
+.card{
+  background:#fff;
+  padding:25px;
+  border-radius:12px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.05);
+  transition:.3s;
 }
 
-.price-card {
-  background: white;
-  padding: 25px;
-  border-radius: 10px;
-  margin: 15px;
-  display: inline-block;
+.card:hover{
+  transform:translateY(-5px);
 }
 
-/* CTA */
-.final-cta {
-  text-align: center;
-  padding: 60px 5%;
-  background: linear-gradient(135deg, #1a237e, #3949ab);
-  color: white;
+/* STEPS */
+.steps{
+  display:flex;
+  justify-content:center;
+  gap:40px;
+  margin-top:30px;
+  flex-wrap:wrap;
 }
 
-/* Footer */
-footer {
-  padding: 30px 5%;
-  background: #111;
-  color: white;
-  text-align: center;
+.step{
+  max-width:200px;
 }
 
-/* Mobile */
+/* USE CASE */
+.use{
+  background:#fff;
+  border-radius:10px;
+  padding:20px;
+}
+
+/* PRICING */
+.pricing{
+  display:flex;
+  justify-content:center;
+  gap:30px;
+  flex-wrap:wrap;
+}
+
+.price{
+  background:#fff;
+  padding:30px;
+  border-radius:12px;
+  width:260px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.05);
+}
+
+.highlight{
+  border:2px solid var(--accent);
+}
+
+/* CTA FINAL */
+.final{
+  background:linear-gradient(135deg,#1a237e,#3949ab);
+  color:white;
+  text-align:center;
+  padding:70px 6%;
+}
+
+.final a{
+  display:inline-block;
+  margin-top:20px;
+}
+
+/* FAQ */
+.faq{
+  text-align:left;
+  max-width:700px;
+  margin:auto;
+}
+
+.faq div{
+  margin-bottom:15px;
+}
+
+/* FOOTER */
+footer{
+  background:#111;
+  color:#aaa;
+  padding:30px;
+  text-align:center;
+}
+
+/* WHATSAPP BUTTON */
+.whatsapp{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#25d366;
+  color:white;
+  padding:12px 16px;
+  border-radius:50px;
+  font-weight:600;
+}
+
+/* MOBILE */
 @media(max-width:768px){
-  .stats {
-    flex-direction: column;
-    gap: 10px;
+  .hero{
+    flex-direction:column;
+    text-align:center;
+  }
+  .hero-img{
+    margin-top:30px;
   }
 }
+
 </style>
 </head>
 
@@ -176,23 +259,32 @@ footer {
 
 <header>
   <div class="logo">Swypio Pay</div>
-  <a href="#" class="cta-btn">Get Started</a>
+  <div class="nav">
+    <a href="#">Features</a>
+    <a href="#">Pricing</a>
+    <a href="#">Support</a>
+  </div>
+  <a href="#" class="cta">Get Started</a>
 </header>
 
 <!-- HERO -->
 <section class="hero">
-  <h1>Accept Payments Instantly. Grow Faster.</h1>
-  <p>UPI, QR & online payments made simple for Indian businesses.</p>
+  <div class="hero-text">
+    <h1>Accept Payments Instantly. Grow Faster.</h1>
+    <p>UPI, QR, Payment Links & APIs — everything you need to run your business smoothly.</p>
 
-  <div class="hero-buttons">
-    <a href="#" class="primary">Get Started Free</a>
-    <a href="#" class="secondary">Create Account</a>
+    <div class="hero-buttons">
+      <a href="#" class="primary-btn">Get Started Free</a>
+      <a href="#" class="secondary-btn">Create Account</a>
+    </div>
   </div>
+
+  <div class="hero-img"></div>
 </section>
 
 <!-- TRUST -->
 <section class="trust">
-  <h2>Trusted by Growing Businesses</h2>
+  <h3>Trusted Across India</h3>
   <div class="stats">
     <div>10,000+ Businesses</div>
     <div>₹100Cr+ Processed</div>
@@ -201,85 +293,98 @@ footer {
 </section>
 
 <!-- FEATURES -->
-<section class="features">
-  <h2>Everything You Need</h2>
+<section class="section">
+  <h2>All-in-One Payments Platform</h2>
 
   <div class="grid">
-    <div class="card">UPI Payments – Instant & secure</div>
-    <div class="card">QR Payments – Accept anywhere</div>
-    <div class="card">Payment Links – Share & get paid</div>
-    <div class="card">Subscriptions – Auto billing</div>
-    <div class="card">Instant Settlements</div>
-    <div class="card">Easy Integration</div>
+    <div class="card">💸 UPI Payments<br>Instant payments anytime</div>
+    <div class="card">📱 QR Payments<br>Accept anywhere</div>
+    <div class="card">🔗 Payment Links<br>Share & get paid</div>
+    <div class="card">🔁 Subscriptions<br>Auto billing</div>
+    <div class="card">⚡ Instant Payouts</div>
+    <div class="card">🧩 Easy Integration</div>
   </div>
 </section>
 
-<!-- HOW IT WORKS -->
-<section class="steps">
-  <h2>Start in 3 Simple Steps</h2>
-  <p>1. Sign Up → 2. Setup → 3. Get Paid</p>
+<!-- STEPS -->
+<section class="section">
+  <h2>Start in Minutes</h2>
+
+  <div class="steps">
+    <div class="step">1️⃣ Sign Up</div>
+    <div class="step">2️⃣ Setup QR/Links</div>
+    <div class="step">3️⃣ Get Paid</div>
+  </div>
 </section>
 
 <!-- USE CASES -->
-<section class="usecases">
-  <h2>Built for Every Business</h2>
-  <p>Kirana Stores, Freelancers, Delivery & Online Sellers</p>
+<section class="section">
+  <h2>Built for Your Business</h2>
+
+  <div class="grid">
+    <div class="use">🏪 Retail Shops</div>
+    <div class="use">💻 Freelancers</div>
+    <div class="use">🚚 Delivery Partners</div>
+    <div class="use">🛒 Online Sellers</div>
+  </div>
 </section>
 
 <!-- WHY -->
-<section class="features">
+<section class="section">
   <h2>Why Swypio?</h2>
-  <div class="grid">
-    <div class="card">Instant onboarding</div>
-    <div class="card">Lowest fees</div>
-    <div class="card">Simple interface</div>
-    <div class="card">24/7 support</div>
-  </div>
-</section>
 
-<!-- SECURITY -->
-<section class="steps">
-  <h2>Bank-Level Security</h2>
-  <p>Your payments are encrypted and protected.</p>
+  <div class="grid">
+    <div class="card">⚡ Instant onboarding</div>
+    <div class="card">💰 Lowest fees</div>
+    <div class="card">📲 Simple UI</div>
+    <div class="card">📞 24/7 support</div>
+  </div>
 </section>
 
 <!-- PRICING -->
-<section class="pricing">
+<section class="section">
   <h2>Simple Pricing</h2>
 
-  <div class="price-card">
-    <h3>Free Plan</h3>
-    <p>₹0 Setup</p>
-    <a href="#" class="cta-btn">Start Free</a>
-  </div>
+  <div class="pricing">
+    <div class="price">
+      <h3>Free</h3>
+      <p>₹0 Setup</p>
+      <a href="#" class="cta">Start Free</a>
+    </div>
 
-  <div class="price-card">
-    <h3>Business Plan</h3>
-    <p>Low Transaction Fees</p>
-    <a href="#" class="cta-btn">Upgrade</a>
+    <div class="price highlight">
+      <h3>Business</h3>
+      <p>Low Fees</p>
+      <a href="#" class="cta">Upgrade</a>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section">
+  <h2>FAQs</h2>
+
+  <div class="faq">
+    <div><b>Is it safe?</b><br>Yes, bank-level security.</div>
+    <div><b>How fast onboarding?</b><br>Within minutes.</div>
+    <div><b>Do I need technical skills?</b><br>No, very simple.</div>
   </div>
 </section>
 
 <!-- FINAL CTA -->
-<section class="final-cta">
-  <h2>Start Accepting Payments in Minutes</h2>
-  <a href="#" class="cta-btn">Get Started Now</a>
+<section class="final">
+  <h2>Start Accepting Payments Today</h2>
+  <a href="#" class="cta">Get Started Now</a>
 </section>
 
 <!-- FOOTER -->
 <footer>
   <p>© 2026 Swypio Solutions</p>
-  <p>Privacy | Terms | Contact</p>
+  <p>Privacy • Terms • Contact</p>
 </footer>
 
-<script>
-// Smooth scroll (future use)
-document.querySelectorAll('a').forEach(anchor => {
-  anchor.addEventListener('click', function (e) {
-    e.preventDefault();
-  });
-});
-</script>
+<!-- WHATSAPP -->
+<a href="#" class="whatsapp">Chat on WhatsApp</a>
 
 </body>
 </html>
