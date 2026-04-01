@@ -33,34 +33,51 @@ h2 {
 
 <script>
 
-// Get code from URL
+// Get code
 const urlParams = new URLSearchParams(window.location.search);
 const code = urlParams.get("code");
 
-const API = `https://api.mfapi.in/mf/${code}`;
+fetch(`https://api.mfapi.in/mf/${code}`)
+.then(res => res.json())
+.then(data => {
 
-fetch(API)
-  .then(res => res.json())
-  .then(data => {
+  const navData = data.data;
 
-    document.getElementById("title").innerText = data.meta.scheme_name;
+  // Latest NAV
+  const latest = parseFloat(navData[0].nav);
+  const prev = parseFloat(navData[1].nav);
 
-    const container = document.getElementById("data");
+  // Change %
+  const change = (((latest - prev) / prev) * 100).toFixed(2);
 
-    data.data.slice(0, 10).forEach(item => {
-      const div = document.createElement("div");
-      div.className = "card";
+  // Helper function for returns
+  function getReturn(days) {
+    if(navData.length > days) {
+      const old = parseFloat(navData[days].nav);
+      return (((latest - old)/old)*100).toFixed(2);
+    }
+    return "N/A";
+  }
 
-      div.innerHTML = `
-        Date: ${item.date} <br>
-        NAV: ₹${item.nav}
-      `;
+  document.body.innerHTML = `
+    <h2>${data.meta.scheme_name}</h2>
 
-      container.appendChild(div);
-    });
+    <div>NAV: ₹${latest}</div>
+    <div>Change: ${change}%</div>
 
-  });
+    <hr>
 
+    <div>1M Return: ${getReturn(30)}%</div>
+    <div>3M Return: ${getReturn(90)}%</div>
+    <div>1Y Return: ${getReturn(365)}%</div>
+    <div>3Y Return: ${getReturn(1095)}%</div>
+    <div>5Y Return: ${getReturn(1825)}%</div>
+
+    <hr>
+
+    <div style="color:gray">Note: AUM, Expense Ratio coming next upgrade</div>
+  `;
+});
 </script>
 
 </body>
