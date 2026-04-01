@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Top Mutual Funds</title>
+<title>Mutual Fund Screener</title>
 
 <style>
 body {
@@ -61,21 +61,17 @@ select, input {
 
 <div class="filter">
 
-  <!-- OLD FILTERS (unchanged) -->
+  <!-- PERIOD FILTER -->
   <select id="period">
     <option value="365">1 Year</option>
     <option value="1095">3 Year</option>
     <option value="1825">5 Year</option>
   </select>
 
-  <select id="sort">
-    <option value="top">Top</option>
-    <option value="low">Low</option>
-  </select>
-
-  <!-- ✅ NEW FILTERS ADDED -->
+  <!-- NAME FILTER -->
   <input type="text" id="nameFilter" placeholder="Name starts with">
 
+  <!-- % FILTER -->
   <select id="percent">
     <option value="0">All</option>
     <option value="10">> 10%</option>
@@ -83,6 +79,7 @@ select, input {
     <option value="20">> 20%</option>
   </select>
 
+  <!-- CUSTOM % -->
   <input type="number" id="customPercent" placeholder="Custom %" />
 
 </div>
@@ -127,9 +124,7 @@ fetch(API)
 function applyFilter(){
 
   const days = parseInt(document.getElementById("period").value);
-  const sortType = document.getElementById("sort").value;
 
-  // ✅ NEW FILTER VALUES
   const nameStart = document.getElementById("nameFilter").value.toLowerCase();
   const percentFilter = parseFloat(document.getElementById("percent").value);
   const customPercent = parseFloat(document.getElementById("customPercent").value);
@@ -149,12 +144,12 @@ function applyFilter(){
 
       const ret = ((latest - old)/old * 100);
 
-      // ✅ NAME FILTER
+      // Name filter
       if(nameStart && !item.name.toLowerCase().startsWith(nameStart)){
         return;
       }
 
-      // ✅ % FILTER
+      // % filter
       if(ret < minReturn){
         return;
       }
@@ -168,12 +163,8 @@ function applyFilter(){
 
   });
 
-  // Sort
-  results.sort((a,b) => 
-    sortType === "top" ? b.return - a.return : a.return - b.return
-  );
-
-  display(results.slice(0,10));
+  // ❌ removed sorting + slicing
+  display(results);
 
 }
 
@@ -182,6 +173,11 @@ function display(data){
 
   const list = document.getElementById("list");
   list.innerHTML = "";
+
+  if(data.length === 0){
+    list.innerHTML = "No funds found";
+    return;
+  }
 
   data.forEach(item => {
 
@@ -208,10 +204,8 @@ function display(data){
 
 }
 
-// Event listeners (OLD + NEW)
+// Event listeners
 document.getElementById("period").onchange = applyFilter;
-document.getElementById("sort").onchange = applyFilter;
-
 document.getElementById("nameFilter").oninput = applyFilter;
 document.getElementById("percent").onchange = applyFilter;
 document.getElementById("customPercent").oninput = applyFilter;
