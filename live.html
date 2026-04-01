@@ -209,14 +209,28 @@ th { color: #ddd; }
 canvas {  
   background: #000;  
   margin-top: 8px;  
-}  
+} 
+
+  .back-btn{
+position:absolute;
+left:10px;
+font-size:18px;
+cursor:pointer;
+padding:6px 10px;
+border-radius:6px;
+background:#1a1a1a;
+}
+
+.back-btn:hover{
+background:#333;
+}
 </style>  
 </head>  
 
 <body>  
 
-<div class="topbar">  
-  <div class="menu-btn" onclick="toggleMenu()">°°°</div>  
+<div class="topbar">    
+  <div class="back-btn" onclick="goBack()">⬅</div>
   <h1>📈 Live Stock Scanner <span class="sub">Educational purpose only</span></h1>  
   <div class="menu" id="menu">  
      <div onclick="openStrategyList()">🥅 Nifty Strategy List</div>
@@ -301,6 +315,9 @@ function openCandle(o,h,l,c){const cv=document.getElementById("candleCanvas"),ct
 function closeModal(){document.getElementById("candleModal").style.display="none";}  
 function openTradingView(){
   window.location.href = "tradingview.html";
+}
+  function goBack(){
+window.location.href="index.html";
 }
 
   // ===== AUTO REFRESH FOR LIVE TAB =====
