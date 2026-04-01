@@ -1,296 +1,291 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<!DOCTYPE html>  
+<html>  
+<head>  
+<meta name="viewport" content="width=device-width, initial-scale=1">  
+  
+<title>Investment Calculator</title>  
+  
+<style>  
+  
+body{  
+font-family:Arial;  
+background:#0f172a;  
+color:white;  
+margin:0;  
+}  
+  
+.header{  
+text-align:center;  
+padding:15px;  
+font-size:20px;  
+font-weight:bold;  
+background:#111827;  
+}  
+  
+.toggle{  
+display:flex;  
+margin:10px;  
+background:#1f2937;  
+border-radius:8px;  
+overflow:hidden;  
+}  
+  
+.toggle div{  
+flex:1;  
+text-align:center;  
+padding:10px;  
+cursor:pointer;  
+}  
+  
+.active{  
+background:#22c55e;  
+color:white;  
+}  
+  
+.card{  
+background:#1e293b;  
+margin:10px;  
+padding:15px;  
+border-radius:10px;  
+}  
+  
+input,select{  
+width:100%;  
+padding:10px;  
+margin:6px 0;  
+border-radius:6px;  
+border:none;  
+}  
+  
+button{  
+width:100%;  
+padding:12px;  
+background:#22c55e;  
+border:none;  
+border-radius:8px;  
+color:white;  
+font-weight:bold;  
+margin-top:8px;  
+}  
+  
+.result{  
+margin-top:10px;  
+}  
+  
+.row{  
+display:flex;  
+justify-content:space-between;  
+margin:4px 0;  
+}  
+  
+.green{color:#22c55e;}  
+.yellow{color:#facc15;}  
+  
+.chart{  
+width:150px;  
+height:150px;  
+border-radius:50%;  
+margin:15px auto;  
+background:conic-gradient(#22c55e 0%, #22c55e 50%, #334155 50%);  
+display:flex;  
+align-items:center;  
+justify-content:center;  
+font-size:14px;  
+}  
+  
+.yearTable{  
+margin-top:10px;  
+font-size:14px;  
+}  
+  
+.yearTable div{  
+display:flex;  
+justify-content:space-between;  
+padding:3px 0;  
+border-bottom:1px solid #334155;  
+}  
 
-<title>Investment Calculator</title>
-
-<style>
-
-body{
-font-family:Arial;
-background:#0f172a;
-color:white;
-margin:0;
+.small{
+font-size:13px;
+line-height:1.6;
+color:#cbd5f5;
 }
 
-.header{
-text-align:center;
-padding:15px;
-font-size:20px;
-font-weight:bold;
-background:#111827;
-}
-
-.toggle{
-display:flex;
-margin:10px;
-background:#1f2937;
-border-radius:8px;
-overflow:hidden;
-}
-
-.toggle div{
-flex:1;
-text-align:center;
-padding:10px;
-cursor:pointer;
-}
-
-.active{
-background:#22c55e;
-color:white;
-}
-
-.card{
-background:#1e293b;
-margin:10px;
-padding:15px;
-border-radius:10px;
-}
-
-input{
-width:100%;
-padding:10px;
-margin:6px 0;
-border-radius:6px;
-border:none;
-}
-
-select{
-width:100%;
-padding:10px;
-margin:6px 0;
-border-radius:6px;
-border:none;
-}
-
-button{
-width:100%;
-padding:12px;
-background:#22c55e;
-border:none;
-border-radius:8px;
-color:white;
-font-weight:bold;
-margin-top:8px;
-}
-
-.result{
-margin-top:10px;
-}
-
-.row{
-display:flex;
-justify-content:space-between;
-margin:4px 0;
-}
-
-.green{color:#22c55e;}
-.yellow{color:#facc15;}
-
-.chart{
-width:150px;
-height:150px;
-border-radius:50%;
-margin:15px auto;
-background:conic-gradient(#22c55e 0%, #22c55e 50%, #334155 50%);
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:14px;
-}
-
-.yearTable{
-margin-top:10px;
-font-size:14px;
-}
-
-.yearTable div{
-display:flex;
-justify-content:space-between;
-padding:3px 0;
-border-bottom:1px solid #334155;
-}
-
-  <div class="card" style="font-size:13px; line-height:1.6; color:#cbd5f5;">
-
-<b>⚠️ Disclaimer</b>
-
-<p>
-This calculator is for informational and educational purposes only. It does not provide any financial advice or investment recommendation.
-</p>
-
-<p>
-All returns shown are estimated based on the expected annual return entered by the user. Actual returns may vary depending on market conditions.
-</p>
-
-<p>
-Investments in mutual funds and equity markets are subject to market risks. Please read all scheme-related documents carefully before investing.
-</p>
-
-<p>
-We are not responsible for any financial losses incurred based on the use of this tool. Please consult a qualified financial advisor before making investment decisions.
-</p>
-
-<hr>
-
-<p><b>తెలుగు:</b></p>
-
-<p>
-ఈ కాలిక్యులేటర్ కేవలం సమాచారం మరియు విద్యార్థుల ప్రయోజనాల కోసం మాత్రమే రూపొందించబడింది. ఇది ఎలాంటి ఫైనాన్షియల్ సలహా ఇవ్వదు.
-</p>
-
-<p>
-మీరు ఇచ్చిన వార్షిక రాబడి శాతం ఆధారంగా అంచనా ఫలితాలు మాత్రమే చూపబడతాయి. అసలు రాబడులు మార్కెట్ పరిస్థితులపై ఆధారపడి మారవచ్చు.
-</p>
-
-<p>
-మ్యూచువల్ ఫండ్స్ మరియు స్టాక్ మార్కెట్ పెట్టుబడులు మార్కెట్ రిస్క్‌కు లోబడి ఉంటాయి. పెట్టుబడి పెట్టే ముందు సంబంధిత డాక్యుమెంట్స్ చదవండి.
-</p>
-
-<p>
-ఈ టూల్ ఉపయోగించి తీసుకున్న నిర్ణయాల వల్ల కలిగే నష్టాలకు మేము బాధ్యత వహించము. పెట్టుబడి నిర్ణయాల ముందు ఫైనాన్షియల్ అడ్వైజర్‌ను సంప్రదించండి.
-</p>
-
-</div>
-
-</style>
-</head>
-
-<body>
-
-<div class="header">📊 Investment Calculator</div>
-
-<!-- TOGGLE -->
-<div class="toggle">
-<div id="sipBtn" class="active" onclick="switchType('sip')">SIP Monthly</div>
-<div id="lumpBtn" onclick="switchType('lump')">Lumpsum</div>
-</div>
-
-<div class="card">
-
-<input id="amount" placeholder="Enter amount (₹)">
-<input id="years" placeholder="Enter years (ex: 5)">
-<input id="rate" placeholder="Expected return % (ex: 12)">
-
-<select id="inflation">
-<option value="no">No Inflation</option>
-<option value="yes">With Inflation (6%)</option>
-</select>
-
-<button onclick="calculate()">Calculate</button>
-
-<div class="result" id="result"></div>
-
-<div class="chart" id="chart">Result</div>
-
-<div class="yearTable" id="yearData"></div>
-
-</div>
-
-<script>
-
-let type="sip";
-
-function switchType(t){
-type=t;
-
-document.getElementById("sipBtn").classList.remove("active");
-document.getElementById("lumpBtn").classList.remove("active");
-
-if(t==="sip"){
-document.getElementById("sipBtn").classList.add("active");
-}else{
-document.getElementById("lumpBtn").classList.add("active");
-}
-}
-
-function calculate(){
-
-let amount=Number(document.getElementById("amount").value);
-let years=Number(document.getElementById("years").value);
-let rate=Number(document.getElementById("rate").value)/100;
-let inflation=document.getElementById("inflation").value;
-
-if(!amount || !years || !rate){
-alert("Enter all values");
-return;
-}
-
-let months=years*12;
-let mRate=rate/12;
-
-let future=0;
-
-if(type==="sip"){
-future=amount*((Math.pow(1+mRate,months)-1)/mRate)*(1+mRate);
-}else{
-future=amount*Math.pow(1+rate,years);
-}
-
-if(inflation==="yes"){
-future=future/Math.pow(1.06,years);
-}
-
-let invested= type==="sip" ? amount*months : amount;
-let profit=future-invested;
-
-// RESULT UI
-document.getElementById("result").innerHTML=`
-
-<div class="row">
-<span>Invested</span>
-<span>₹ ${Math.round(invested)}</span>
-</div>
-
-<div class="row">
-<span>Future Value</span>
-<span class="green">₹ ${Math.round(future)}</span>
-</div>
-
-<div class="row">
-<span>Profit</span>
-<span class="yellow">₹ ${Math.round(profit)}</span>
-</div>
-
-`;
-
-// CHART
-let percent=(profit/future)*100;
-
-document.getElementById("chart").style.background=
-`conic-gradient(#22c55e 0% ${percent}%, #334155 ${percent}% 100%)`;
-
-document.getElementById("chart").innerHTML=
-`${percent.toFixed(0)}% Gain`;
-
-
-// YEAR DATA
-let html="";
-let val= type==="sip"?0:amount;
-
-for(let i=1;i<=years;i++){
-
-if(type==="sip"){
-val=amount*((Math.pow(1+mRate,i*12)-1)/mRate)*(1+mRate);
-}else{
-val=amount*Math.pow(1+rate,i);
-}
-
-html+=`
-<div>
-<span>Year ${i}</span>
-<span>₹ ${Math.round(val)}</span>
-</div>
-`;
-}
-
-document.getElementById("yearData").innerHTML=html;
-
-}
-
-</script>
-
-</body>
+</style>  
+</head>  
+  
+<body>  
+  
+<div class="header">📊 Investment Calculator</div>  
+  
+<!-- TOGGLE -->  
+<div class="toggle">  
+<div id="sipBtn" class="active" onclick="switchType('sip')">SIP Monthly</div>  
+<div id="lumpBtn" onclick="switchType('lump')">Lumpsum</div>  
+</div>  
+  
+<div class="card">  
+  
+<input id="amount" placeholder="Enter amount (₹)">  
+<input id="years" placeholder="Enter years (ex: 5)">  
+<input id="rate" placeholder="Expected return % (ex: 12)">  
+  
+<select id="inflation">  
+<option value="no">No Inflation</option>  
+<option value="yes">With Inflation (6%)</option>  
+</select>  
+  
+<button onclick="calculate()">Calculate</button>  
+  
+<div class="result" id="result"></div>  
+  
+<div class="chart" id="chart">Result</div>  
+  
+<div class="yearTable" id="yearData"></div>  
+  
+</div>  
+
+<!-- ✅ DISCLAIMER MOVED CORRECTLY -->
+<div class="card small">  
+  
+<b>⚠️ Disclaimer</b>  
+  
+<p>  
+This calculator is for informational and educational purposes only. It does not provide any financial advice or investment recommendation.  
+</p>  
+  
+<p>  
+All returns shown are estimated based on the expected annual return entered by the user. Actual returns may vary depending on market conditions.  
+</p>  
+  
+<p>  
+Investments in mutual funds and equity markets are subject to market risks. Please read all scheme-related documents carefully before investing.  
+</p>  
+  
+<p>  
+We are not responsible for any financial losses incurred based on the use of this tool. Please consult a qualified financial advisor before making investment decisions.  
+</p>  
+  
+<hr>  
+  
+<p><b>తెలుగు:</b></p>  
+  
+<p>  
+ఈ కాలిక్యులేటర్ కేవలం సమాచారం మరియు విద్యార్థుల ప్రయోజనాల కోసం మాత్రమే రూపొందించబడింది. ఇది ఎలాంటి ఫైనాన్షియల్ సలహా ఇవ్వదు.  
+</p>  
+  
+<p>  
+మీరు ఇచ్చిన వార్షిక రాబడి శాతం ఆధారంగా అంచనా ఫలితాలు మాత్రమే చూపబడతాయి. అసలు రాబడులు మార్కెట్ పరిస్థితులపై ఆధారపడి మారవచ్చు.  
+</p>  
+  
+<p>  
+మ్యూచువల్ ఫండ్స్ మరియు స్టాక్ మార్కెట్ పెట్టుబడులు మార్కెట్ రిస్క్‌కు లోబడి ఉంటాయి. పెట్టుబడి పెట్టే ముందు సంబంధిత డాక్యుమెంట్స్ చదవండి.  
+</p>  
+  
+<p>  
+ఈ టూల్ ఉపయోగించి తీసుకున్న నిర్ణయాల వల్ల కలిగే నష్టాలకు మేము బాధ్యత వహించము. పెట్టుబడి నిర్ణయాల ముందు ఫైనాన్షియల్ అడ్వైజర్‌ను సంప్రదించండి.  
+</p>  
+  
+</div>  
+  
+<script>  
+  
+let type="sip";  
+  
+function switchType(t){  
+type=t;  
+  
+document.getElementById("sipBtn").classList.remove("active");  
+document.getElementById("lumpBtn").classList.remove("active");  
+  
+if(t==="sip"){  
+document.getElementById("sipBtn").classList.add("active");  
+}else{  
+document.getElementById("lumpBtn").classList.add("active");  
+}  
+}  
+  
+function calculate(){  
+  
+let amount=Number(document.getElementById("amount").value);  
+let years=Number(document.getElementById("years").value);  
+let rate=Number(document.getElementById("rate").value)/100;  
+let inflation=document.getElementById("inflation").value;  
+  
+if(!amount || !years || !rate){  
+alert("Enter all values");  
+return;  
+}  
+  
+let months=years*12;  
+let mRate=rate/12;  
+  
+let future=0;  
+  
+if(type==="sip"){  
+future=amount*((Math.pow(1+mRate,months)-1)/mRate)*(1+mRate);  
+}else{  
+future=amount*Math.pow(1+rate,years);  
+}  
+  
+if(inflation==="yes"){  
+future=future/Math.pow(1.06,years);  
+}  
+  
+let invested= type==="sip" ? amount*months : amount;  
+let profit=future-invested;  
+  
+document.getElementById("result").innerHTML=`  
+  
+<div class="row">  
+<span>Invested</span>  
+<span>₹ ${Math.round(invested)}</span>  
+</div>  
+  
+<div class="row">  
+<span>Future Value</span>  
+<span class="green">₹ ${Math.round(future)}</span>  
+</div>  
+  
+<div class="row">  
+<span>Profit</span>  
+<span class="yellow">₹ ${Math.round(profit)}</span>  
+</div>  
+  
+`;  
+  
+let percent=(profit/future)*100;  
+  
+document.getElementById("chart").style.background=  
+`conic-gradient(#22c55e 0% ${percent}%, #334155 ${percent}% 100%)`;  
+  
+document.getElementById("chart").innerHTML=  
+`${percent.toFixed(0)}% Gain`;  
+  
+let html="";  
+let val= type==="sip"?0:amount;  
+  
+for(let i=1;i<=years;i++){  
+  
+if(type==="sip"){  
+val=amount*((Math.pow(1+mRate,i*12)-1)/mRate)*(1+mRate);  
+}else{  
+val=amount*Math.pow(1+rate,i);  
+}  
+  
+html+=`  
+<div>  
+<span>Year ${i}</span>  
+<span>₹ ${Math.round(val)}</span>  
+</div>  
+`;  
+}  
+  
+document.getElementById("yearData").innerHTML=html;  
+  
+}  
+  
+</script>  
+  
+</body>  
 </html>
