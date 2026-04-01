@@ -43,9 +43,10 @@ body {
   display:flex;
   gap:10px;
   padding:10px;
+  flex-wrap:wrap;
 }
 
-select {
+select, input {
   flex:1;
   padding:8px;
   border-radius:8px;
@@ -59,6 +60,8 @@ select {
 <div class="header">📊 Mutual Fund Screener</div>
 
 <div class="filter">
+
+  <!-- OLD FILTERS (unchanged) -->
   <select id="period">
     <option value="365">1 Year</option>
     <option value="1095">3 Year</option>
@@ -69,6 +72,19 @@ select {
     <option value="top">Top</option>
     <option value="low">Low</option>
   </select>
+
+  <!-- ✅ NEW FILTERS ADDED -->
+  <input type="text" id="nameFilter" placeholder="Name starts with">
+
+  <select id="percent">
+    <option value="0">All</option>
+    <option value="10">> 10%</option>
+    <option value="15">> 15%</option>
+    <option value="20">> 20%</option>
+  </select>
+
+  <input type="number" id="customPercent" placeholder="Custom %" />
+
 </div>
 
 <div class="container" id="list">Loading...</div>
@@ -113,6 +129,13 @@ function applyFilter(){
   const days = parseInt(document.getElementById("period").value);
   const sortType = document.getElementById("sort").value;
 
+  // ✅ NEW FILTER VALUES
+  const nameStart = document.getElementById("nameFilter").value.toLowerCase();
+  const percentFilter = parseFloat(document.getElementById("percent").value);
+  const customPercent = parseFloat(document.getElementById("customPercent").value);
+
+  const minReturn = customPercent || percentFilter;
+
   const results = [];
 
   allResults.forEach(item => {
@@ -120,10 +143,21 @@ function applyFilter(){
     const nav = item.navData;
 
     if(nav.length > days){
+
       const latest = parseFloat(nav[0].nav);
       const old = parseFloat(nav[days].nav);
 
       const ret = ((latest - old)/old * 100);
+
+      // ✅ NAME FILTER
+      if(nameStart && !item.name.toLowerCase().startsWith(nameStart)){
+        return;
+      }
+
+      // ✅ % FILTER
+      if(ret < minReturn){
+        return;
+      }
 
       results.push({
         name: item.name,
@@ -174,9 +208,13 @@ function display(data){
 
 }
 
-// Event listeners
+// Event listeners (OLD + NEW)
 document.getElementById("period").onchange = applyFilter;
 document.getElementById("sort").onchange = applyFilter;
+
+document.getElementById("nameFilter").oninput = applyFilter;
+document.getElementById("percent").onchange = applyFilter;
+document.getElementById("customPercent").oninput = applyFilter;
 
 </script>
 
