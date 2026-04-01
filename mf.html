@@ -69,25 +69,79 @@ input {
   <input type="text" id="search" placeholder="Search Mutual Fund...">
 </div>
 
-<div class="list" id="mfList"></div>
+<div class="list" id="mfList">Loading...</div>
+
 
 <script>
 
-// API URL
 const API = "https://api.mfapi.in/mf";
+const CACHE_KEY = "mf_list_cache";
+const CACHE_TIME = "mf_list_time";
+
+const EXPIRY = 24 * 60 * 60 * 1000;
 
 let allData = [];
 
-// Fetch Data
-fetch(API)
-  .then(res => res.json())
-  .then(data => {
-    allData = data;
-    display(data);
-  });
+function loadData(){
 
-// Display Function
-function display(data) {
+  const cachedData = localStorage.getItem(CACHE_KEY);
+  const cachedTime = localStorage.getItem(CACHE_TIME);
+
+  const isValidCache = cachedData && cachedTime &&
+    (Date.now() - Number(cachedTime) < EXPIRY);
+
+  // ✅ USE CACHE FIRST
+  if(isValidCache){
+    console.log("⚡ Loaded from cache");
+    allData = JSON.parse(cachedData);
+    display(allData);
+    return;
+  }
+
+  console.log("🌐 Fetching fresh data");
+
+  fetch(API)
+    .then(res => {
+      if(!res.ok) throw new Error("Network error");
+      return res.json();
+    })
+    .then(data => {
+
+      // 🔥 IMPORTANT: STORE ONLY SMALL DATA
+      const lightData = data.map(item => ({
+        schemeName: item.schemeName,
+        schemeCode: item.schemeCode
+      }));
+
+      allData = lightData;
+
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(lightData));
+        localStorage.setItem(CACHE_TIME, Date.now().toString());
+      } catch(e){
+        console.log("⚠ Cache skipped (storage full)");
+      }
+
+      display(lightData);
+    })
+    .catch(err => {
+      console.log("❌ Fetch error:", err);
+
+      // ✅ fallback to old cache (even expired)
+      if(cachedData){
+        console.log("⚠ Using old cache");
+        allData = JSON.parse(cachedData);
+        display(allData);
+      } else {
+        document.getElementById("mfList").innerText = "Error loading data";
+      }
+    });
+}
+
+loadData();
+
+// Display
+function display(data){
   const list = document.getElementById("mfList");
   list.innerHTML = "";
 
@@ -100,7 +154,6 @@ function display(data) {
       <div class="code">Code: ${item.schemeCode}</div>
     `;
 
-    // Click → open details
     div.onclick = () => {
       window.location.href = "mf-details.html?code=" + item.schemeCode;
     };
@@ -109,8 +162,8 @@ function display(data) {
   });
 }
 
-// Search Filter
-document.getElementById("search").addEventListener("input", function() {
+// Search
+document.getElementById("search").addEventListener("input", function(){
   const value = this.value.toLowerCase();
 
   const filtered = allData.filter(item =>
