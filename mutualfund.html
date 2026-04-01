@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mutual Fund App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial;
+      padding: 10px;
+      background: #111;
+      color: white;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: none;
+    }
+    .card {
+      background: #222;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .card:hover {
+      background: #333;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>📊 Mutual Funds</h2>
+
+<input type="text" id="search" placeholder="Search fund...">
+
+<div id="list"></div>
+
+<script>
+let funds = [];
+
+fetch("https://api.mfapi.in/mf")
+  .then(res => res.json())
+  .then(data => {
+    funds = data;
+    displayFunds(data);
+  });
+
+function displayFunds(data) {
+  let list = document.getElementById("list");
+  list.innerHTML = "";
+
+  data.slice(0, 100).forEach(f => {
+    let div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = f.schemeName;
+
+    div.onclick = () => {
+      window.location = "details.html?code=" + f.schemeCode;
+    };
+
+    list.appendChild(div);
+  });
+}
+
+document.getElementById("search").addEventListener("input", function() {
+  let value = this.value.toLowerCase();
+
+  let filtered = funds.filter(f =>
+    f.schemeName.toLowerCase().includes(value)
+  );
+
+  displayFunds(filtered);
+});
+</script>
+
+</body>
+</html>
