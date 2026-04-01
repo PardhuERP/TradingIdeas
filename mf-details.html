@@ -1,27 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>MF Details</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MF Details</title>
 
 <style>
 body {
-  font-family: Arial;
-  background: #0f172a;
-  color: white;
-  padding: 15px;
+  background:#0f172a;
+  color:white;
+  font-family:Arial;
+  padding:15px;
 }
-
-h2 {
-  margin-bottom: 10px;
-}
-
 .card {
-  background: #1e293b;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 10px;
+  background:#1e293b;
+  padding:12px;
+  margin:10px 0;
+  border-radius:10px;
 }
 </style>
 </head>
@@ -33,51 +27,59 @@ h2 {
 
 <script>
 
-// Get code
-const urlParams = new URLSearchParams(window.location.search);
-const code = urlParams.get("code");
+// GET CODE FROM URL
+const params = new URLSearchParams(window.location.search);
+const code = params.get("code");
 
+if(!code){
+  document.getElementById("title").innerText = "Invalid MF Code";
+  throw new Error("No code");
+}
+
+// FETCH DATA
 fetch(`https://api.mfapi.in/mf/${code}`)
 .then(res => res.json())
 .then(data => {
 
   const navData = data.data;
 
-  // Latest NAV
+  if(!navData || navData.length === 0){
+    document.getElementById("title").innerText = "No Data Found";
+    return;
+  }
+
   const latest = parseFloat(navData[0].nav);
   const prev = parseFloat(navData[1].nav);
 
-  // Change %
-  const change = (((latest - prev) / prev) * 100).toFixed(2);
+  const change = (((latest - prev)/prev)*100).toFixed(2);
 
-  // Helper function for returns
-  function getReturn(days) {
-    if(navData.length > days) {
+  function getReturn(days){
+    if(navData.length > days){
       const old = parseFloat(navData[days].nav);
       return (((latest - old)/old)*100).toFixed(2);
     }
     return "N/A";
   }
 
-  document.body.innerHTML = `
-    <h2>${data.meta.scheme_name}</h2>
+  document.getElementById("title").innerText = data.meta.scheme_name;
 
-    <div>NAV: ₹${latest}</div>
-    <div>Change: ${change}%</div>
+  document.getElementById("data").innerHTML = `
+    <div class="card">NAV: ₹${latest}</div>
+    <div class="card">Change: ${change}%</div>
 
-    <hr>
-
-    <div>1M Return: ${getReturn(30)}%</div>
-    <div>3M Return: ${getReturn(90)}%</div>
-    <div>1Y Return: ${getReturn(365)}%</div>
-    <div>3Y Return: ${getReturn(1095)}%</div>
-    <div>5Y Return: ${getReturn(1825)}%</div>
-
-    <hr>
-
-    <div style="color:gray">Note: AUM, Expense Ratio coming next upgrade</div>
+    <div class="card">1M Return: ${getReturn(30)}%</div>
+    <div class="card">3M Return: ${getReturn(90)}%</div>
+    <div class="card">1Y Return: ${getReturn(365)}%</div>
+    <div class="card">3Y Return: ${getReturn(1095)}%</div>
+    <div class="card">5Y Return: ${getReturn(1825)}%</div>
   `;
+
+})
+.catch(err => {
+  document.getElementById("title").innerText = "Error Loading Data";
+  console.log(err);
 });
+
 </script>
 
 </body>
