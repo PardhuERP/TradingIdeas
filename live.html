@@ -219,8 +219,8 @@ canvas {
   <div class="menu-btn" onclick="toggleMenu()">°°°</div>  
   <h1>📈 Live Stock Scanner <span class="sub">Educational purpose only</span></h1>  
   <div class="menu" id="menu">  
-     <div onclick="openSoon()">💲 Coming Soon</div>
-    
+     <div onclick="openStrategyList()">🥅 Nifty Strategy List</div>
+  </div>  
 </div>  
 
 <div class="tabs">  
@@ -270,8 +270,8 @@ document.addEventListener("DOMContentLoaded",()=>{
 function toggleMenu(){const m=document.getElementById("menu");m.style.display=m.style.display==="block"?"none":"block";}  
 document.addEventListener("click",e=>{if(!e.target.closest(".menu-btn")&&!e.target.closest(".menu"))document.getElementById("menu").style.display="none";});  
 
-function openSoon(){
-  window.location.href = "comingsoon.html";
+function openStrategyList(){
+  window.location.href = "strategy_list.html";
 }
   
 function openStrategyLab(){
