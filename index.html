@@ -223,8 +223,10 @@ canvas {
     <div onclick="openStrategyLab()">🧪 Nifty Strategy Lab</div>
      <div onclick="openScanner()">📊 Breakout stocks</div>
     <div onclick="openNifty50()">📊 Nifty 50 del %</div>
-   <div onclick="openNiftyAll()">📊 Nifty All del %</div> 
+   <div onclick="openNiftyAll()">📊 All stock del %</div> 
     <div onclick="openFiisDiid()">💰 Fiis Diis Dashboard</div>
+    <div onclick="openSipCalc()">💵  SIP calculator </div>
+    <div onclick="openSipDip()"> 💲 SIP Dip Calculator </div>
     <div onclick="openFiisDii()">⛔ Fiis Diis json</div>
     <div onclick="openTradingView()">📈 Live Chart</div>
   </div>  
@@ -289,6 +291,8 @@ function openFiisDiid(){location.href="fiidii.html";}
 function openNifty50(){location.href="nifty50delivery.html";}
 function openNiftyAll(){location.href="niftyallstocks.html";}  
 function openFiisDii(){location.href="getfiidii.html";}  
+function openSipCalc(){location.href="sipcalculator.html";}
+function openSipDip(){location.href="sipdipcalc.html";}
 
 function fmt(v){if(v==null||v==="")return"";if(isNaN(v))return v;return Number(v).toFixed(2);}  
 
