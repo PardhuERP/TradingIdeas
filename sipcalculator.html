@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>SIP & Lumpsum Calculator</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:linear-gradient(180deg,#020617,#0f172a);
+color:white;
+margin:0;
+padding:15px;
+}
+
+.header{
+text-align:center;
+font-size:20px;
+font-weight:bold;
+margin-bottom:15px;
+}
+
+.card{
+background:#1e293b;
+padding:15px;
+border-radius:12px;
+margin-bottom:12px;
+}
+
+select,input{
+width:100%;
+padding:10px;
+margin:6px 0;
+border-radius:6px;
+border:none;
+font-size:15px;
+}
+
+button{
+width:100%;
+padding:12px;
+background:#22c55e;
+border:none;
+border-radius:8px;
+color:white;
+font-weight:bold;
+}
+
+.row{
+display:flex;
+justify-content:space-between;
+padding:5px 0;
+}
+
+.green{color:#22c55e;}
+.yellow{color:#facc15;}
+
+.small{
+font-size:13px;
+color:#cbd5f5;
+line-height:1.5;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">📊 SIP & Lumpsum Calculator</div>
+
+<div class="card">
+
+<select id="type">
+<option value="sip">SIP</option>
+<option value="lump">Lumpsum</option>
+</select>
+
+<input type="number" id="amount" placeholder="Monthly / One-time Investment">
+
+<input type="number" id="years" placeholder="Investment Period (Years)">
+
+<input type="number" id="rate" placeholder="Expected Return %">
+
+<select id="inflation">
+<option value="no">No Inflation</option>
+<option value="yes">Adjust for Inflation</option>
+</select>
+
+<button onclick="calculate()">Calculate</button>
+
+<div id="result"></div>
+
+</div>
+
+<div class="card small">
+
+<h3>## What is SIP ?</h3>
+
+<p><b>English:</b><br>
+Systematic Investment Plan (SIP) is a method of investing small amounts regularly in mutual funds. It helps in wealth creation over time using compounding and reduces market risk through disciplined investing.</p>
+
+<p><b>Telugu:</b><br>
+SIP అంటే ప్రతి నెలా కొంత మొత్తం మ్యూచువల్ ఫండ్‌లో పెట్టుబడి పెట్టడం. ఇది క్రమంగా పెట్టుబడి పెంచుతూ compounding వల్ల ఎక్కువ సంపద సృష్టించడానికి సహాయపడుతుంది. మార్కెట్ fluctuations ప్రభావం తగ్గుతుంది.</p>
+
+<hr>
+
+<p><b>Benefits:</b></p>
+
+<ul>
+<li>No need to time market</li>
+<li>Reduces volatility impact</li>
+<li>Disciplined investing</li>
+<li>Flexible & automatic</li>
+</ul>
+
+<p><b>Disclaimer:</b><br>
+This tool is only for educational purposes. Returns are estimated and may vary.</p>
+
+</div>
+
+<script>
+
+function calculate(){
+
+let type = document.getElementById("type").value;
+let amount = Number(document.getElementById("amount").value);
+let years = Number(document.getElementById("years").value);
+let rate = Number(document.getElementById("rate").value)/100;
+let inflation = document.getElementById("inflation").value;
+
+if(!amount || !years || !rate){
+alert("Enter all values");
+return;
+}
+
+let months = years * 12;
+let monthlyRate = rate/12;
+
+let futureValue = 0;
+
+if(type === "sip"){
+
+futureValue = amount * ((Math.pow(1+monthlyRate,months)-1)/monthlyRate)*(1+monthlyRate);
+
+}else{
+
+futureValue = amount * Math.pow(1+rate,years);
+
+}
+
+// inflation adjust
+if(inflation === "yes"){
+futureValue = futureValue / Math.pow(1.06,years);
+}
+
+let invested = type === "sip" ? amount*months : amount;
+let gain = futureValue - invested;
+
+document.getElementById("result").innerHTML=`
+
+<div class="row">
+<span>Invested</span>
+<span>₹ ${invested.toFixed(0)}</span>
+</div>
+
+<div class="row">
+<span>Future Value</span>
+<span class="green">₹ ${futureValue.toFixed(0)}</span>
+</div>
+
+<div class="row">
+<span>Profit</span>
+<span class="yellow">₹ ${gain.toFixed(0)}</span>
+</div>
+
+`;
+
+}
+
+</script>
+
+</body>
+</html>
