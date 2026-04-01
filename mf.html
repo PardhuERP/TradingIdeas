@@ -77,21 +77,19 @@ const API = "https://api.mfapi.in/mf";
 const CACHE_KEY = "mf_list_cache";
 const CACHE_TIME = "mf_list_time";
 
-// 1 day expiry
+// ⏱ Cache validity (1 day)
 const EXPIRY = 24 * 60 * 60 * 1000;
 
 let allData = [];
 
+// 🔥 Load function
 function loadData(){
 
   const cachedData = localStorage.getItem(CACHE_KEY);
   const cachedTime = localStorage.getItem(CACHE_TIME);
 
-  // ✅ FIX: convert to number
-  const isValidCache = cachedData && cachedTime && 
-    (Date.now() - Number(cachedTime) < EXPIRY);
-
-  if(isValidCache){
+  // ✅ If cache exists and valid
+  if(cachedData && cachedTime && (Date.now() - cachedTime < EXPIRY)){
     console.log("⚡ Loaded from cache");
     allData = JSON.parse(cachedData);
     display(allData);
@@ -100,39 +98,26 @@ function loadData(){
     console.log("🌐 Fetching fresh data");
 
     fetch(API)
-      .then(res => {
-        if(!res.ok) throw new Error("Network error");
-        return res.json();
-      })
+      .then(res => res.json())
       .then(data => {
-
         allData = data;
 
-        // Save cache
+        // Save to cache
         localStorage.setItem(CACHE_KEY, JSON.stringify(data));
-        localStorage.setItem(CACHE_TIME, Date.now().toString());
+        localStorage.setItem(CACHE_TIME, Date.now());
 
         display(data);
       })
-      .catch(err => {
-        console.log(err);
-
-        // 🔥 fallback → try cache even if expired
-        if(cachedData){
-          console.log("⚠ Using old cache");
-          allData = JSON.parse(cachedData);
-          display(allData);
-        } else {
-          document.getElementById("mfList").innerText = "Error loading data";
-        }
+      .catch(() => {
+        document.getElementById("mfList").innerText = "Error loading data";
       });
   }
 }
 
 loadData();
 
-// Display
-function display(data){
+// Display Function
+function display(data) {
   const list = document.getElementById("mfList");
   list.innerHTML = "";
 
@@ -153,8 +138,8 @@ function display(data){
   });
 }
 
-// Search
-document.getElementById("search").addEventListener("input", function(){
+// Search Filter
+document.getElementById("search").addEventListener("input", function() {
   const value = this.value.toLowerCase();
 
   const filtered = allData.filter(item =>
