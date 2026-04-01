@@ -38,27 +38,52 @@ body {
   font-size:12px;
   color:#94a3b8;
 }
+
+.filter {
+  display:flex;
+  gap:10px;
+  padding:10px;
+}
+
+select {
+  flex:1;
+  padding:8px;
+  border-radius:8px;
+  border:none;
+}
 </style>
 </head>
 
 <body>
 
-<div class="header">🔥 Top Funds (1Y Return)</div>
+<div class="header">📊 Mutual Fund Screener</div>
 
-<div class="container" id="list"></div>
+<div class="filter">
+  <select id="period">
+    <option value="365">1 Year</option>
+    <option value="1095">3 Year</option>
+    <option value="1825">5 Year</option>
+  </select>
+
+  <select id="sort">
+    <option value="top">Top</option>
+    <option value="low">Low</option>
+  </select>
+</div>
+
+<div class="container" id="list">Loading...</div>
 
 <script>
 
 const API = "https://api.mfapi.in/mf";
 
-// Step 1: Get all schemes
+let allResults = [];
+
+// Load data once
 fetch(API)
 .then(res => res.json())
 .then(async data => {
 
-  const results = [];
-
-  // Take only first 30 funds (performance safe)
   for(let i=0; i<30; i++){
 
     const code = data[i].schemeCode;
@@ -68,41 +93,71 @@ fetch(API)
       const res = await fetch(`https://api.mfapi.in/mf/${code}`);
       const d = await res.json();
 
-      const navData = d.data;
-
-      if(navData.length > 365){
-        const latest = parseFloat(navData[0].nav);
-        const old = parseFloat(navData[365].nav);
-
-        const ret = ((latest - old)/old * 100);
-
-        results.push({
-          name,
-          code,
-          return: ret
-        });
-      }
+      allResults.push({
+        name,
+        code,
+        navData: d.data
+      });
 
     } catch(e){}
 
   }
 
-  // Step 2: Sort top performers
-  results.sort((a,b) => b.return - a.return);
+  applyFilter();
 
-  // Step 3: Show top 10
-  const top = results.slice(0, 10);
+});
+
+// Filter function
+function applyFilter(){
+
+  const days = parseInt(document.getElementById("period").value);
+  const sortType = document.getElementById("sort").value;
+
+  const results = [];
+
+  allResults.forEach(item => {
+
+    const nav = item.navData;
+
+    if(nav.length > days){
+      const latest = parseFloat(nav[0].nav);
+      const old = parseFloat(nav[days].nav);
+
+      const ret = ((latest - old)/old * 100);
+
+      results.push({
+        name: item.name,
+        code: item.code,
+        return: ret
+      });
+    }
+
+  });
+
+  // Sort
+  results.sort((a,b) => 
+    sortType === "top" ? b.return - a.return : a.return - b.return
+  );
+
+  display(results.slice(0,10));
+
+}
+
+// Display
+function display(data){
 
   const list = document.getElementById("list");
+  list.innerHTML = "";
 
-  top.forEach(item => {
+  data.forEach(item => {
 
     const div = document.createElement("div");
     div.className = "card";
 
     div.innerHTML = `
       <div>${item.name}</div>
-      <div class="small">1Y Return: 
+      <div class="small">
+        Return: 
         <span class="${item.return >= 0 ? 'green':'red'}">
           ${item.return.toFixed(2)}%
         </span>
@@ -117,7 +172,11 @@ fetch(API)
 
   });
 
-});
+}
+
+// Event listeners
+document.getElementById("period").onchange = applyFilter;
+document.getElementById("sort").onchange = applyFilter;
 
 </script>
 
