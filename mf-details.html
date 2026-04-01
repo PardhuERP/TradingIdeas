@@ -48,7 +48,7 @@ body {
 
 <div class="card">
   <div>NAV</div>
-  <div class="big" id="nav">--</div>
+  <div class="big" id="nav">Loading...</div>
   <div id="change">--</div>
 </div>
 
@@ -61,7 +61,14 @@ body {
   <div>5Y: <span id="r5y"></span></div>
 </div>
 
+<!-- ✅ Chart moved inside container -->
+<div class="card">
+  <canvas id="chart" height="120"></canvas>
 </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
 
@@ -92,17 +99,23 @@ fetch(`https://api.mfapi.in/mf/${code}`)
 
   // SET DATA
   document.getElementById("title").innerText = data.meta.scheme_name;
-
   document.getElementById("nav").innerText = "₹ " + latest;
 
   const chgEl = document.getElementById("change");
   chgEl.innerText = change + "%";
   chgEl.className = change >= 0 ? "green" : "red";
 
+  // FIX N/A ISSUE
   function set(id, val){
     const el = document.getElementById(id);
-    el.innerText = val + "%";
-    el.className = val >= 0 ? "green" : "red";
+
+    if(val === "N/A"){
+      el.innerText = val;
+      el.className = "";
+    } else {
+      el.innerText = val + "%";
+      el.className = val >= 0 ? "green" : "red";
+    }
   }
 
   set("r1m", calc(30));
@@ -110,6 +123,39 @@ fetch(`https://api.mfapi.in/mf/${code}`)
   set("r1y", calc(365));
   set("r3y", calc(1095));
   set("r5y", calc(1825));
+
+  // Prepare last 30 days data
+  const labels = [];
+  const values = [];
+
+  navData.slice(0, 30).reverse().forEach(item => {
+    labels.push(item.date);
+    values.push(parseFloat(item.nav));
+  });
+
+  // Dynamic color
+  const chartColor = change >= 0 ? "#22c55e" : "#ef4444";
+
+  // Create chart
+  new Chart(document.getElementById("chart"), {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [{
+        data: values,
+        borderColor: chartColor,
+        borderWidth: 2,
+        tension: 0.3
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { display: false },
+        y: { display: true }
+      }
+    }
+  });
 
 })
 .catch(() => {
