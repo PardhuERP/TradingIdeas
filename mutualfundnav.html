@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Mutual Fund DIP Calculator</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:linear-gradient(180deg,#020617,#0f172a);
+color:white;
+margin:0;
+padding:20px;
+}
+
+.header{
+text-align:center;
+font-size:22px;
+font-weight:bold;
+margin-bottom:20px;
+}
+
+.card{
+background:#1e293b;
+padding:15px;
+border-radius:12px;
+margin-bottom:15px;
+box-shadow:0 4px 10px rgba(0,0,0,0.5);
+}
+
+input{
+width:100%;
+padding:10px;
+margin:8px 0;
+border-radius:6px;
+border:none;
+font-size:16px;
+}
+
+button{
+width:100%;
+padding:12px;
+border:none;
+border-radius:8px;
+background:#22c55e;
+color:white;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.result{
+margin-top:15px;
+}
+
+.row{
+display:flex;
+justify-content:space-between;
+padding:6px 0;
+font-size:16px;
+}
+
+.green{color:#22c55e;}
+.red{color:#ef4444;}
+.yellow{color:#facc15;}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">📊 Mutual Fund DIP Calculator</div>
+
+<div class="card">
+
+<input type="number" id="high" placeholder="Recent High NAV">
+<input type="number" id="current" placeholder="Current NAV">
+<input type="number" id="amount" placeholder="Investment Amount">
+
+<button onclick="calculate()">Calculate</button>
+
+<div class="result" id="result"></div>
+
+</div>
+
+<script>
+
+function calculate(){
+
+let high = Number(document.getElementById("high").value);
+let current = Number(document.getElementById("current").value);
+let amount = Number(document.getElementById("amount").value);
+
+if(!high || !current || !amount){
+alert("Enter all values");
+return;
+}
+
+// DIP %
+let dip = ((high - current)/high)*100;
+
+// Units
+let units = amount / current;
+
+// Signal
+let signal="";
+let color="";
+
+if(dip >= 15){
+signal="STRONG BUY";
+color="green";
+}
+else if(dip >= 8){
+signal="BUY";
+color="yellow";
+}
+else{
+signal="WAIT";
+color="red";
+}
+
+document.getElementById("result").innerHTML=`
+
+<div class="row">
+<span>DIP %</span>
+<span>${dip.toFixed(2)}%</span>
+</div>
+
+<div class="row">
+<span>Units</span>
+<span>${units.toFixed(2)}</span>
+</div>
+
+<div class="row">
+<span>Signal</span>
+<span class="${color}">${signal}</span>
+</div>
+
+`;
+
+}
+
+</script>
+
+</body>
+</html>
