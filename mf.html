@@ -77,7 +77,6 @@ const API = "https://api.mfapi.in/mf";
 const CACHE_KEY = "mf_list_cache";
 const CACHE_TIME = "mf_list_time";
 
-// 1 day expiry
 const EXPIRY = 24 * 60 * 60 * 1000;
 
 let allData = [];
@@ -87,39 +86,38 @@ function loadData(){
   const cachedData = localStorage.getItem(CACHE_KEY);
   const cachedTime = localStorage.getItem(CACHE_TIME);
 
-  // ✅ FIX: convert to number
-  const isValidCache = cachedData && cachedTime && 
+  const isValidCache = cachedData && cachedTime &&
     (Date.now() - Number(cachedTime) < EXPIRY);
 
   if(isValidCache){
-    console.log("⚡ Loaded from cache");
+    console.log("⚡ Cache loaded");
     allData = JSON.parse(cachedData);
     display(allData);
   } 
   else {
-    console.log("🌐 Fetching fresh data");
+    console.log("🌐 Fetching fresh");
 
     fetch(API)
-      .then(res => {
-        if(!res.ok) throw new Error("Network error");
-        return res.json();
-      })
+      .then(res => res.json())
       .then(data => {
 
-        allData = data;
+        // 🔥 KEEP ONLY REQUIRED DATA (IMPORTANT)
+        const lightData = data.map(item => ({
+          schemeName: item.schemeName,
+          schemeCode: item.schemeCode
+        }));
 
-        // Save cache
-        localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+        allData = lightData;
+
+        // Save smaller data
+        localStorage.setItem(CACHE_KEY, JSON.stringify(lightData));
         localStorage.setItem(CACHE_TIME, Date.now().toString());
 
-        display(data);
+        display(lightData);
       })
-      .catch(err => {
-        console.log(err);
-
-        // 🔥 fallback → try cache even if expired
+      .catch(() => {
         if(cachedData){
-          console.log("⚠ Using old cache");
+          console.log("⚠ fallback cache");
           allData = JSON.parse(cachedData);
           display(allData);
         } else {
@@ -130,39 +128,6 @@ function loadData(){
 }
 
 loadData();
-
-// Display
-function display(data){
-  const list = document.getElementById("mfList");
-  list.innerHTML = "";
-
-  data.forEach(item => {
-    const div = document.createElement("div");
-    div.className = "card";
-
-    div.innerHTML = `
-      <div class="name">${item.schemeName}</div>
-      <div class="code">Code: ${item.schemeCode}</div>
-    `;
-
-    div.onclick = () => {
-      window.location.href = "mf-details.html?code=" + item.schemeCode;
-    };
-
-    list.appendChild(div);
-  });
-}
-
-// Search
-document.getElementById("search").addEventListener("input", function(){
-  const value = this.value.toLowerCase();
-
-  const filtered = allData.filter(item =>
-    item.schemeName.toLowerCase().includes(value)
-  );
-
-  display(filtered);
-});
 
 </script>
 
