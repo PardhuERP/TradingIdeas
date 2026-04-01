@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Top Mutual Funds</title>
+
+<style>
+body {
+  background:#0f172a;
+  color:white;
+  font-family:Arial;
+  margin:0;
+}
+
+.header {
+  padding:15px;
+  background:#1e293b;
+  text-align:center;
+  font-weight:bold;
+}
+
+.container {
+  padding:10px;
+}
+
+.card {
+  background:#1e293b;
+  padding:12px;
+  margin-bottom:10px;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+.green { color:#22c55e; }
+.red { color:#ef4444; }
+
+.small {
+  font-size:12px;
+  color:#94a3b8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">🔥 Top Funds (1Y Return)</div>
+
+<div class="container" id="list"></div>
+
+<script>
+
+const API = "https://api.mfapi.in/mf";
+
+// Step 1: Get all schemes
+fetch(API)
+.then(res => res.json())
+.then(async data => {
+
+  const results = [];
+
+  // Take only first 30 funds (performance safe)
+  for(let i=0; i<30; i++){
+
+    const code = data[i].schemeCode;
+    const name = data[i].schemeName;
+
+    try {
+      const res = await fetch(`https://api.mfapi.in/mf/${code}`);
+      const d = await res.json();
+
+      const navData = d.data;
+
+      if(navData.length > 365){
+        const latest = parseFloat(navData[0].nav);
+        const old = parseFloat(navData[365].nav);
+
+        const ret = ((latest - old)/old * 100);
+
+        results.push({
+          name,
+          code,
+          return: ret
+        });
+      }
+
+    } catch(e){}
+
+  }
+
+  // Step 2: Sort top performers
+  results.sort((a,b) => b.return - a.return);
+
+  // Step 3: Show top 10
+  const top = results.slice(0, 10);
+
+  const list = document.getElementById("list");
+
+  top.forEach(item => {
+
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <div>${item.name}</div>
+      <div class="small">1Y Return: 
+        <span class="${item.return >= 0 ? 'green':'red'}">
+          ${item.return.toFixed(2)}%
+        </span>
+      </div>
+    `;
+
+    div.onclick = () => {
+      window.location.href = "mf-details.html?code=" + item.code;
+    };
+
+    list.appendChild(div);
+
+  });
+
+});
+
+</script>
+
+</body>
+</html>
