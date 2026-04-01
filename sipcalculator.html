@@ -12,15 +12,14 @@ font-family:Arial;
 background:#0f172a;
 color:white;
 margin:0;
-padding:0;
 }
 
 .header{
-background:#111827;
-padding:15px;
 text-align:center;
+padding:15px;
 font-size:20px;
 font-weight:bold;
+background:#111827;
 }
 
 .toggle{
@@ -31,29 +30,23 @@ border-radius:8px;
 overflow:hidden;
 }
 
-.toggle button{
+.toggle div{
 flex:1;
+text-align:center;
 padding:10px;
-border:none;
-background:none;
-color:white;
-font-weight:bold;
+cursor:pointer;
 }
 
 .active{
 background:#22c55e;
-color:black;
-}
-
-.container{
-padding:12px;
+color:white;
 }
 
 .card{
 background:#1e293b;
-padding:12px;
+margin:10px;
+padding:15px;
 border-radius:10px;
-margin-bottom:10px;
 }
 
 input{
@@ -62,17 +55,25 @@ padding:10px;
 margin:6px 0;
 border-radius:6px;
 border:none;
-font-size:14px;
 }
 
-button.calc{
+select{
+width:100%;
+padding:10px;
+margin:6px 0;
+border-radius:6px;
+border:none;
+}
+
+button{
 width:100%;
 padding:12px;
+background:#22c55e;
 border:none;
 border-radius:8px;
-background:#22c55e;
 color:white;
 font-weight:bold;
+margin-top:8px;
 }
 
 .result{
@@ -82,53 +83,67 @@ margin-top:10px;
 .row{
 display:flex;
 justify-content:space-between;
-padding:4px 0;
+margin:4px 0;
 }
 
 .green{color:#22c55e;}
 .yellow{color:#facc15;}
 
-canvas{
-margin-top:10px;
-background:#111827;
-border-radius:10px;
+.chart{
+width:150px;
+height:150px;
+border-radius:50%;
+margin:15px auto;
+background:conic-gradient(#22c55e 0%, #22c55e 50%, #334155 50%);
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:14px;
 }
 
-.yearly{
-font-size:13px;
+.yearTable{
 margin-top:10px;
+font-size:14px;
+}
+
+.yearTable div{
+display:flex;
+justify-content:space-between;
+padding:3px 0;
+border-bottom:1px solid #334155;
 }
 
 </style>
-
 </head>
 
 <body>
 
 <div class="header">📊 Investment Calculator</div>
 
+<!-- TOGGLE -->
 <div class="toggle">
-<button id="sipBtn" class="active" onclick="switchType('sip')">SIP Monthly</button>
-<button id="lumpBtn" onclick="switchType('lump')">Lumpsum</button>
+<div id="sipBtn" class="active" onclick="switchType('sip')">SIP Monthly</div>
+<div id="lumpBtn" onclick="switchType('lump')">Lumpsum</div>
 </div>
-
-<div class="container">
 
 <div class="card">
 
-<input type="number" id="amount" placeholder="Enter monthly amount (₹)">
-<input type="number" id="years" placeholder="Enter years (Eg: 5)">
-<input type="number" id="rate" placeholder="Expected return % (Eg: 12)">
+<input id="amount" placeholder="Enter amount (₹)">
+<input id="years" placeholder="Enter years (ex: 5)">
+<input id="rate" placeholder="Expected return % (ex: 12)">
 
-<button class="calc" onclick="calculate()">Calculate</button>
+<select id="inflation">
+<option value="no">No Inflation</option>
+<option value="yes">With Inflation (6%)</option>
+</select>
 
-<div id="result" class="result"></div>
+<button onclick="calculate()">Calculate</button>
 
-<canvas id="chart" height="150"></canvas>
+<div class="result" id="result"></div>
 
-<div id="yearly" class="yearly"></div>
+<div class="chart" id="chart">Result</div>
 
-</div>
+<div class="yearTable" id="yearData"></div>
 
 </div>
 
@@ -144,10 +159,8 @@ document.getElementById("lumpBtn").classList.remove("active");
 
 if(t==="sip"){
 document.getElementById("sipBtn").classList.add("active");
-document.getElementById("amount").placeholder="Enter monthly SIP (₹)";
 }else{
 document.getElementById("lumpBtn").classList.add("active");
-document.getElementById("amount").placeholder="Enter one-time amount (₹)";
 }
 }
 
@@ -156,9 +169,10 @@ function calculate(){
 let amount=Number(document.getElementById("amount").value);
 let years=Number(document.getElementById("years").value);
 let rate=Number(document.getElementById("rate").value)/100;
+let inflation=document.getElementById("inflation").value;
 
-if(!amount||!years||!rate){
-alert("Fill all fields");
+if(!amount || !years || !rate){
+alert("Enter all values");
 return;
 }
 
@@ -173,8 +187,14 @@ future=amount*((Math.pow(1+mRate,months)-1)/mRate)*(1+mRate);
 future=amount*Math.pow(1+rate,years);
 }
 
-let invested= type==="sip"? amount*months:amount;
+if(inflation==="yes"){
+future=future/Math.pow(1.06,years);
+}
 
+let invested= type==="sip" ? amount*months : amount;
+let profit=future-invested;
+
+// RESULT UI
 document.getElementById("result").innerHTML=`
 
 <div class="row">
@@ -189,62 +209,42 @@ document.getElementById("result").innerHTML=`
 
 <div class="row">
 <span>Profit</span>
-<span class="yellow">₹ ${Math.round(future-invested)}</span>
+<span class="yellow">₹ ${Math.round(profit)}</span>
 </div>
 
 `;
 
-drawChart(invested,future);
-yearBreakdown(amount,years,rate);
+// CHART
+let percent=(profit/future)*100;
 
-}
+document.getElementById("chart").style.background=
+`conic-gradient(#22c55e 0% ${percent}%, #334155 ${percent}% 100%)`;
 
-// 🔵 Simple Circle Chart
-function drawChart(inv,fut){
+document.getElementById("chart").innerHTML=
+`${percent.toFixed(0)}% Gain`;
 
-let canvas=document.getElementById("chart");
-let ctx=canvas.getContext("2d");
 
-ctx.clearRect(0,0,canvas.width,canvas.height);
-
-let total=fut;
-let investedAngle=(inv/total)*2*Math.PI;
-
-ctx.beginPath();
-ctx.moveTo(100,75);
-ctx.fillStyle="#22c55e";
-ctx.arc(100,75,60,0,investedAngle);
-ctx.fill();
-
-ctx.beginPath();
-ctx.moveTo(100,75);
-ctx.fillStyle="#facc15";
-ctx.arc(100,75,60,investedAngle,2*Math.PI);
-ctx.fill();
-
-}
-
-// 📊 Yearly Breakdown
-function yearBreakdown(amount,years,rate){
-
-let html="<b>Yearly Growth</b><br>";
+// YEAR DATA
+let html="";
+let val= type==="sip"?0:amount;
 
 for(let i=1;i<=years;i++){
 
-let val;
-
 if(type==="sip"){
-let m=i*12;
-let r=rate/12;
-val=amount*((Math.pow(1+r,m)-1)/r)*(1+r);
+val=amount*((Math.pow(1+mRate,i*12)-1)/mRate)*(1+mRate);
 }else{
 val=amount*Math.pow(1+rate,i);
 }
 
-html+=`Year ${i}: ₹ ${Math.round(val)}<br>`;
+html+=`
+<div>
+<span>Year ${i}</span>
+<span>₹ ${Math.round(val)}</span>
+</div>
+`;
 }
 
-document.getElementById("yearly").innerHTML=html;
+document.getElementById("yearData").innerHTML=html;
 
 }
 
