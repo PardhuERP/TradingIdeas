@@ -79,6 +79,14 @@ select, input {
     <option value="20">> 20%</option>
   </select>
 
+  <!-- % FILTER growth etc-->
+  <select id="typeFilter">
+  <option value="all">All</option>
+  <option value="growth">Growth</option>
+  <option value="regular">Regular</option>
+  <option value="dividend">Dividend</option>
+  </select>
+
   <!-- CUSTOM % -->
   <input type="number" id="customPercent" placeholder="Custom %" />
 
@@ -127,8 +135,8 @@ function applyFilter(){
 
   const nameStart = document.getElementById("nameFilter").value.toLowerCase();
   const percentFilter = parseFloat(document.getElementById("percent").value);
+  const typeFilter = document.getElementById("typeFilter").value;
   const customPercent = parseFloat(document.getElementById("customPercent").value);
-
   const minReturn = customPercent || percentFilter;
 
   const results = [];
@@ -153,6 +161,17 @@ function applyFilter(){
       if(ret < minReturn){
         return;
       }
+
+      // TYPE FILTER
+const name = item.name.toLowerCase();
+
+if(typeFilter === "growth" && !name.includes("growth")) return;
+
+if(typeFilter === "regular" && !name.includes("regular")) return;
+
+// Dividend / IDCW both handled
+if(typeFilter === "dividend" && 
+   !(name.includes("dividend") || name.includes("idcw"))) return;
 
       results.push({
         name: item.name,
@@ -209,6 +228,7 @@ document.getElementById("period").onchange = applyFilter;
 document.getElementById("nameFilter").oninput = applyFilter;
 document.getElementById("percent").onchange = applyFilter;
 document.getElementById("customPercent").oninput = applyFilter;
+document.getElementById("typeFilter").onchange = applyFilter; 
 
 </script>
 
