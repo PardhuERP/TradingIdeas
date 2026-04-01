@@ -219,17 +219,8 @@ canvas {
   <div class="menu-btn" onclick="toggleMenu()">°°°</div>  
   <h1>📈 Live Stock Scanner <span class="sub">Educational purpose only</span></h1>  
   <div class="menu" id="menu">  
-     <div onclick="openStrategyList()">🥅 Nifty Strategy List</div>
-    <div onclick="openStrategyLab()">🧪 Nifty Strategy Lab</div>
-     <div onclick="openScanner()">📊 Breakout stocks</div>
-    <div onclick="openNifty50()">📊 Nifty 50 del %</div>
-   <div onclick="openNiftyAll()">📊 All stock del %</div> 
-    <div onclick="openFiisDiid()">💰 Fiis Diis Dashboard</div>
-    <div onclick="openSipCalc()">💵  SIP calculator </div>
-    <div onclick="openSipDip()"> 💲 SIP Dip Calculator </div>
-    <div onclick="openFiisDii()">⛔ Fiis Diis json</div>
-    <div onclick="openTradingView()">📈 Live Chart</div>
-  </div>  
+     <div onclick="openSoon()">💲 Coming Soon</div>
+    
 </div>  
 
 <div class="tabs">  
@@ -279,8 +270,8 @@ document.addEventListener("DOMContentLoaded",()=>{
 function toggleMenu(){const m=document.getElementById("menu");m.style.display=m.style.display==="block"?"none":"block";}  
 document.addEventListener("click",e=>{if(!e.target.closest(".menu-btn")&&!e.target.closest(".menu"))document.getElementById("menu").style.display="none";});  
 
-function openStrategyList(){
-  window.location.href = "strategy_list.html";
+function openSoon(){
+  window.location.href = "comingsoon.html";
 }
   
 function openStrategyLab(){
