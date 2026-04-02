@@ -130,7 +130,7 @@ const data = await res.json();
 /* TODAY */
 document.getElementById("today").innerHTML=`
 <div class="title">Today</div>
-<div class="row"><span>-</span><span>${data.today.date}</span></div>
+<div class="row"><span>Dt:</span><span>${data.today.date}</span></div>
 <div class="row"><span>FII</span><span class="${color(data.today.fii)}">${round(data.today.fii)}</span></div>
 <div class="row"><span>DII</span><span class="${color(data.today.dii)}">${round(data.today.dii)}</span></div>
 <div class="row"><span>Net</span><span class="${color(data.today.net)}">${round(data.today.net)}</span></div>
@@ -139,7 +139,7 @@ document.getElementById("today").innerHTML=`
 /* YESTERDAY */
 document.getElementById("yesterday").innerHTML=`
 <div class="title">Yesterday</div>
-<div class="row"><span>-</span><span>${data.yesterday.date}</span></div>
+<div class="row"><span>Dt:</span><span>${data.yesterday.date}</span></div>
 <div class="row"><span>FII</span><span class="${color(data.yesterday.fii)}">${round(data.yesterday.fii)}</span></div>
 <div class="row"><span>DII</span><span class="${color(data.yesterday.dii)}">${round(data.yesterday.dii)}</span></div>
 <div class="row"><span>Net</span><span class="${color(data.yesterday.net)}">${round(data.yesterday.net)}</span></div>
@@ -148,7 +148,7 @@ document.getElementById("yesterday").innerHTML=`
 /* MTD */
 document.getElementById("mtd").innerHTML=`
 <div class="title">MTD</div>
-<div class="row"><span>-</span><span>${data.mtd.date}</span></div>
+<div class="row"><span>Dt:</span><span>${data.mtd.date}</span></div>
 <div class="row"><span>FII</span><span class="${color(data.mtd.fii)}">${round(data.mtd.fii)}</span></div>
 <div class="row"><span>DII</span><span class="${color(data.mtd.dii)}">${round(data.mtd.dii)}</span></div>
 <div class="row"><span>Net</span><span class="${color(data.mtd.net)}">${round(data.mtd.net)}</span></div>
