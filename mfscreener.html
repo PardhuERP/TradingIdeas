@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MF Screener</title>
+<title>MF Screener Pro</title>
 
 <style>
 body {
@@ -17,6 +17,7 @@ body {
   background:#1e293b;
   text-align:center;
   font-weight:bold;
+  font-size:18px;
 }
 
 .filter {
@@ -31,6 +32,7 @@ input, select {
   padding:8px;
   border-radius:8px;
   border:none;
+  font-size:14px;
 }
 
 .container {
@@ -41,18 +43,34 @@ input, select {
   background:#1e293b;
   padding:12px;
   margin-bottom:10px;
-  border-radius:10px;
+  border-radius:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.3);
+}
+
+.name {
+  font-weight:bold;
+  margin-bottom:5px;
 }
 
 .green { color:#22c55e; }
 .red { color:#ef4444; }
-.small { font-size:12px; color:#94a3b8; }
+
+.small {
+  font-size:12px;
+  color:#94a3b8;
+}
+
+.row {
+  display:flex;
+  justify-content:space-between;
+  margin-top:5px;
+}
 </style>
 </head>
 
 <body>
 
-<div class="header">📊 Mutual Fund Screener</div>
+<div class="header">📊 MF Screener Pro</div>
 
 <div class="filter">
 
@@ -78,18 +96,27 @@ input, select {
   <option value="Dividend">Dividend</option>
 </select>
 
+<!-- 🔥 NEW SORT -->
+<select id="sort" onchange="applyFilter()">
+  <option value="none">Sort</option>
+  <option value="high">Return High → Low</option>
+  <option value="low">Return Low → High</option>
+</select>
+
+<!-- 🔥 NAV FILTER -->
+<input type="number" id="navMin" placeholder="Min NAV" oninput="applyFilter()">
+<input type="number" id="navMax" placeholder="Max NAV" oninput="applyFilter()">
+
 </div>
 
 <div class="container" id="list">Loading...</div>
 
 <script>
 
-// 🔥 YOUR GAS URL HERE
 const API = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=mf";
 
 let allData = [];
 
-// LOAD DATA
 fetch(API)
 .then(res => res.json())
 .then(data => {
@@ -97,38 +124,44 @@ fetch(API)
   applyFilter();
 });
 
-// FILTER FUNCTION
 function applyFilter(){
 
   const search = document.getElementById("search").value.toLowerCase();
   const period = document.getElementById("period").value;
   const percent = parseFloat(document.getElementById("percent").value);
   const type = document.getElementById("type").value;
+  const sort = document.getElementById("sort").value;
 
-  const keyMap = {
-    "1Y": "1Y",
-    "3Y": "3Y",
-    "5Y": "5Y"
-  };
+  const navMin = parseFloat(document.getElementById("navMin").value) || 0;
+  const navMax = parseFloat(document.getElementById("navMax").value) || Infinity;
 
-  const key = keyMap[period];
+  const key = period;
 
-  const filtered = allData.filter(item => {
+  let filtered = allData.filter(item => {
 
     const name = item.Name.toLowerCase();
     const ret = parseFloat(item[key]) || 0;
+    const nav = parseFloat(item.NAV) || 0;
 
     if(search && !name.includes(search)) return false;
     if(type !== "all" && item.Type !== type) return false;
     if(ret < percent) return false;
+    if(nav < navMin || nav > navMax) return false;
 
     return true;
   });
 
+  // 🔥 SORTING
+  if(sort === "high"){
+    filtered.sort((a,b) => (parseFloat(b[key])||0) - (parseFloat(a[key])||0));
+  }
+  else if(sort === "low"){
+    filtered.sort((a,b) => (parseFloat(a[key])||0) - (parseFloat(b[key])||0));
+  }
+
   display(filtered);
 }
 
-// DISPLAY
 function display(data){
 
   const list = document.getElementById("list");
@@ -145,15 +178,23 @@ function display(data){
     div.className = "card";
 
     div.innerHTML = `
-      <div>${item.Name}</div>
-      <div class="small">
-        NAV: ₹${item.NAV} | ${item.Type}
+      <div class="name">${item.Name}</div>
+
+      <div class="row small">
+        <span>NAV: ₹${item.NAV}</span>
+        <span>${item.Type}</span>
       </div>
-      <div class="${item["Change%"] >= 0 ? 'green':'red'}">
-        ${item["Change%"]}%
+
+      <div class="row">
+        <span class="${item["Change%"] >= 0 ? 'green':'red'}">
+          ${item["Change%"]}%
+        </span>
       </div>
-      <div class="small">
-        1Y: ${item["1Y"]}% | 3Y: ${item["3Y"]}% | 5Y: ${item["5Y"]}%
+
+      <div class="row small">
+        <span>1Y: ${item["1Y"]}%</span>
+        <span>3Y: ${item["3Y"]}%</span>
+        <span>5Y: ${item["5Y"]}%</span>
       </div>
     `;
 
