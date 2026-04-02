@@ -147,25 +147,6 @@ const key = period;
 
 let filtered = allData.filter(item => {
 
-  const name = item.Name.toLowerCase();
-  const ret = parseFloat(item[key]) || 0;
-  const nav = parseFloat(item.NAV) || 0;
-
-  // 🔥 NEW: REMOVE OLD / DEAD FUNDS
-  const updatedDate = new Date(item.Updated);
-  const today = new Date();
-  const diffDays = (today - updatedDate) / (1000 * 60 * 60 * 24);
-
-  if(diffDays > 10) return false; // ❌ hide inactive funds
-
-  if(search && !name.includes(search)) return false;
-  if(type !== "all" && item.Type !== type) return false;
-  if(ret < percent) return false;
-  if(nav < navMin || nav > navMax) return false;
-
-  return true;
-});
-
 const name = item.Name.toLowerCase();
 const ret = parseFloat(item[key]) || 0;
 const nav = parseFloat(item.NAV) || 0;
@@ -233,27 +214,18 @@ let chartInstance;
 
 function openChart(code, name){
 
-  document.getElementById("chartModal").style.display = "block";
-  document.getElementById("chartTitle").innerText = name;
+document.getElementById("chartModal").style.display = "block";
+document.getElementById("chartTitle").innerText = name;
 
-  fetch("https://api.mfapi.in/mf/" + code)
-  .then(res => res.json())
-  .then(data => {
+fetch("https://api.mfapi.in/mf/" + code)
+.then(res => res.json())
+.then(data => {
 
-    // ✅ keep only recent valid data
-    currentChartData = data.data.filter(d => {
-      return new Date(d.date) > new Date("2020-01-01");
-    });
+currentChartData = data.data;
 
-    // 🔥 safety check
-    if(currentChartData.length === 0){
-      alert("No recent data available");
-      return;
-    }
+changeRange(365);
 
-    changeRange(365);
-
-  });
+});
 }
 
 function changeRange(days){
