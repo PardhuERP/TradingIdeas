@@ -201,7 +201,7 @@ ${item["Change%"]}%
 <span>5Y: ${item["5Y"]}%</span>
 </div>
 
-<button onclick="event.stopPropagation(); addToPortfolio('${item.Name}', ${item.NAV})">+ Add</button>
+
 `;
 
 list.appendChild(div);
@@ -257,21 +257,6 @@ function closeChart(){
 document.getElementById("chartModal").style.display = "none";
 }
 
-// 🔥 PORTFOLIO
-function addToPortfolio(name, nav){
-
-let portfolio = JSON.parse(localStorage.getItem("mf_portfolio") || "[]");
-
-portfolio.push({
-name: name,
-buyPrice: nav,
-date: new Date()
-});
-
-localStorage.setItem("mf_portfolio", JSON.stringify(portfolio));
-
-alert("Added to portfolio ✅");
-}
 
 </script>
 
