@@ -214,18 +214,27 @@ let chartInstance;
 
 function openChart(code, name){
 
-document.getElementById("chartModal").style.display = "block";
-document.getElementById("chartTitle").innerText = name;
+  document.getElementById("chartModal").style.display = "block";
+  document.getElementById("chartTitle").innerText = name;
 
-fetch("https://api.mfapi.in/mf/" + code)
-.then(res => res.json())
-.then(data => {
+  fetch("https://api.mfapi.in/mf/" + code)
+  .then(res => res.json())
+  .then(data => {
 
-currentChartData = data.data;
+    // ✅ keep only recent valid data
+    currentChartData = data.data.filter(d => {
+      return new Date(d.date) > new Date("2020-01-01");
+    });
 
-changeRange(365);
+    // 🔥 safety check
+    if(currentChartData.length === 0){
+      alert("No recent data available");
+      return;
+    }
 
-});
+    changeRange(365);
+
+  });
 }
 
 function changeRange(days){
