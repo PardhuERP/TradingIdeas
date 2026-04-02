@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MF Screener</title>
+
+<style>
+body {
+  background:#0f172a;
+  color:white;
+  font-family:Arial;
+  margin:0;
+}
+
+.header {
+  padding:15px;
+  background:#1e293b;
+  text-align:center;
+  font-weight:bold;
+}
+
+.filter {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  padding:10px;
+}
+
+input, select {
+  flex:1;
+  padding:8px;
+  border-radius:8px;
+  border:none;
+}
+
+.container {
+  padding:10px;
+}
+
+.card {
+  background:#1e293b;
+  padding:12px;
+  margin-bottom:10px;
+  border-radius:10px;
+}
+
+.green { color:#22c55e; }
+.red { color:#ef4444; }
+.small { font-size:12px; color:#94a3b8; }
+</style>
+</head>
+
+<body>
+
+<div class="header">📊 Mutual Fund Screener</div>
+
+<div class="filter">
+
+<input type="text" id="search" placeholder="Search..." oninput="applyFilter()">
+
+<select id="period" onchange="applyFilter()">
+  <option value="1Y">1 Year</option>
+  <option value="3Y">3 Year</option>
+  <option value="5Y">5 Year</option>
+</select>
+
+<select id="percent" onchange="applyFilter()">
+  <option value="0">All</option>
+  <option value="10">>10%</option>
+  <option value="15">>15%</option>
+  <option value="20">>20%</option>
+</select>
+
+<select id="type" onchange="applyFilter()">
+  <option value="all">All</option>
+  <option value="Growth">Growth</option>
+  <option value="Regular">Regular</option>
+  <option value="Dividend">Dividend</option>
+</select>
+
+</div>
+
+<div class="container" id="list">Loading...</div>
+
+<script>
+
+// 🔥 YOUR GAS URL HERE
+const API = "YOUR_GAS_URL?action=mf";
+
+let allData = [];
+
+// LOAD DATA
+fetch(API)
+.then(res => res.json())
+.then(data => {
+  allData = data;
+  applyFilter();
+});
+
+// FILTER FUNCTION
+function applyFilter(){
+
+  const search = document.getElementById("search").value.toLowerCase();
+  const period = document.getElementById("period").value;
+  const percent = parseFloat(document.getElementById("percent").value);
+  const type = document.getElementById("type").value;
+
+  const keyMap = {
+    "1Y": "1Y",
+    "3Y": "3Y",
+    "5Y": "5Y"
+  };
+
+  const key = keyMap[period];
+
+  const filtered = allData.filter(item => {
+
+    const name = item.Name.toLowerCase();
+    const ret = parseFloat(item[key]) || 0;
+
+    if(search && !name.includes(search)) return false;
+    if(type !== "all" && item.Type !== type) return false;
+    if(ret < percent) return false;
+
+    return true;
+  });
+
+  display(filtered);
+}
+
+// DISPLAY
+function display(data){
+
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  if(data.length === 0){
+    list.innerHTML = "No funds found";
+    return;
+  }
+
+  data.slice(0,100).forEach(item => {
+
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <div>${item.Name}</div>
+      <div class="small">
+        NAV: ₹${item.NAV} | ${item.Type}
+      </div>
+      <div class="${item["Change%"] >= 0 ? 'green':'red'}">
+        ${item["Change%"]}%
+      </div>
+      <div class="small">
+        1Y: ${item["1Y"]}% | 3Y: ${item["3Y"]}% | 5Y: ${item["5Y"]}%
+      </div>
+    `;
+
+    list.appendChild(div);
+
+  });
+
+}
+
+</script>
+
+</body>
+</html>
