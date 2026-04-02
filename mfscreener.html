@@ -147,6 +147,25 @@ const key = period;
 
 let filtered = allData.filter(item => {
 
+  const name = item.Name.toLowerCase();
+  const ret = parseFloat(item[key]) || 0;
+  const nav = parseFloat(item.NAV) || 0;
+
+  // 🔥 NEW: REMOVE OLD / DEAD FUNDS
+  const updatedDate = new Date(item.Updated);
+  const today = new Date();
+  const diffDays = (today - updatedDate) / (1000 * 60 * 60 * 24);
+
+  if(diffDays > 10) return false; // ❌ hide inactive funds
+
+  if(search && !name.includes(search)) return false;
+  if(type !== "all" && item.Type !== type) return false;
+  if(ret < percent) return false;
+  if(nav < navMin || nav > navMax) return false;
+
+  return true;
+});
+
 const name = item.Name.toLowerCase();
 const ret = parseFloat(item[key]) || 0;
 const nav = parseFloat(item.NAV) || 0;
