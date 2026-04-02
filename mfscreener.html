@@ -230,27 +230,39 @@ changeRange(365);
 
 function changeRange(days){
 
-const filtered = currentChartData.slice(0,days).reverse();
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - days);
 
-const labels = filtered.map(d => d.date);
-const values = filtered.map(d => parseFloat(d.nav));
+  // 🔥 DATE FILTER (NOT SLICE)
+  const filtered = currentChartData.filter(d => {
+    return new Date(d.date) >= cutoffDate;
+  }).reverse();
 
-const color = values[values.length-1] >= values[0] ? "#22c55e" : "#ef4444";
+  if(filtered.length === 0){
+    alert("No recent data available");
+    return;
+  }
 
-if(chartInstance) chartInstance.destroy();
+  const labels = filtered.map(d => d.date);
+  const values = filtered.map(d => parseFloat(d.nav));
 
-chartInstance = new Chart(document.getElementById("mfChart"), {
-type: "line",
-data: {
-labels: labels,
-datasets: [{
-data: values,
-borderColor: color,
-borderWidth: 2,
-tension: 0.3
-}]
-}
-});
+  const color = values[values.length-1] >= values[0] ? "#22c55e" : "#ef4444";
+
+  if(chartInstance) chartInstance.destroy();
+
+  chartInstance = new Chart(document.getElementById("mfChart"), {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [{
+        data: values,
+        borderColor: color,
+        borderWidth: 2,
+        tension: 0.3
+      }]
+    }
+  });
+
 }
 
 function closeChart(){
