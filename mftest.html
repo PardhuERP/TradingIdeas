@@ -6,43 +6,82 @@
 <style>
 body {
   font-family: Arial;
-  background: #f2f2f2;
-}
-
-.header {
+  background: #f5f5f5;
   padding: 10px;
-  background: #111;
-  color: white;
 }
 
-.filter {
-  margin: 10px;
+h2 {
+  margin-bottom: 10px;
 }
 
+/* FILTER BOX */
+.filter-box {
+  background: white;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+input, select {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* CARD */
 .card {
   background: white;
   padding: 12px;
-  margin: 10px;
-  border-radius: 10px;
+  margin-bottom: 10px;
+  border-radius: 12px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.title {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.nav {
+  font-size: 18px;
+  margin-top: 5px;
 }
 
 .green { color: green; }
 .red { color: red; }
+
+.small {
+  font-size: 12px;
+  color: gray;
+}
 </style>
 </head>
 
 <body>
 
-<div class="header">📊 Mutual Fund Tracker</div>
+<h2>📊 Mutual Fund Screener</h2>
 
-<div class="filter">
-  <select id="categoryFilter">
-    <option value="">All</option>
-    <option value="Equity">Equity</option>
-    <option value="Debt">Debt</option>
-    <option value="Hybrid">Hybrid</option>
-  </select>
+<div class="filter-box">
+
+<input type="text" id="search" placeholder="Search fund name">
+
+<input type="number" id="minNav" placeholder="Min NAV">
+<input type="number" id="maxNav" placeholder="Max NAV">
+
+<input type="number" id="minStartNav" placeholder="Min Start NAV">
+
+<input type="number" id="minYears" placeholder="Min Years">
+
+<select id="sort">
+  <option value="">Sort By</option>
+  <option value="Change%">Change %</option>
+  <option value="NAV">NAV</option>
+</select>
+
+<button onclick="applyFilter()">Apply Filter</button>
+
 </div>
 
 <div id="data"></div>
@@ -51,55 +90,87 @@ body {
 
 const API = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
 
-let fullData = [];
+let allData = [];
 
 fetch(API)
 .then(res => res.json())
 .then(data => {
-  fullData = data;
+  allData = data;
   render(data);
 });
 
-function render(data) {
+function calculateYears(startDate){
+  if(!startDate) return 0;
+
+  const parts = startDate.split("-");
+  const d = new Date(parts[2], parts[1]-1, parts[0]);
+
+  const diff = (new Date() - d) / (1000*60*60*24*365);
+  return diff.toFixed(1);
+}
+
+function render(data){
   const container = document.getElementById("data");
   container.innerHTML = "";
 
   data.forEach(fund => {
 
-    const changeClass = fund["Change%"] >= 0 ? "green" : "red";
+    const change = parseFloat(fund["Change%"]);
+    const cls = change >= 0 ? "green" : "red";
+
+    const years = calculateYears(fund["Start Date"]);
 
     const div = document.createElement("div");
     div.className = "card";
 
     div.innerHTML = `
-      <b>${fund.Name}</b><br>
-      ${fund.Category || ""}<br>
-      NAV: ₹${fund.NAV}<br>
-      <span class="${changeClass}">
-        ${fund["Change%"]}%
-      </span><br>
-      Expense: ${fund["Expense Ratio"] || "-"}%
+      <div class="title">${fund.Name}</div>
+      <div class="small">${fund.Category}</div>
+
+      <div class="nav">₹${fund.NAV}</div>
+      <div class="${cls}">${fund["Change%"]}%</div>
+
+      <div class="small">
+        Start NAV: ${fund["Start NAV"]} |
+        Years: ${years}
+      </div>
     `;
 
     container.appendChild(div);
   });
 }
 
-// 🔥 FILTER LOGIC
-document.getElementById("categoryFilter").addEventListener("change", function() {
-  const value = this.value;
+function applyFilter(){
 
-  if (!value) {
-    render(fullData);
-    return;
+  const search = document.getElementById("search").value.toLowerCase();
+  const minNav = parseFloat(document.getElementById("minNav").value) || 0;
+  const maxNav = parseFloat(document.getElementById("maxNav").value) || Infinity;
+  const minStartNav = parseFloat(document.getElementById("minStartNav").value) || 0;
+  const minYears = parseFloat(document.getElementById("minYears").value) || 0;
+  const sort = document.getElementById("sort").value;
+
+  let filtered = allData.filter(f => {
+
+    const nav = parseFloat(f.NAV);
+    const startNav = parseFloat(f["Start NAV"]);
+    const years = calculateYears(f["Start Date"]);
+
+    return (
+      f.Name.toLowerCase().includes(search) &&
+      nav >= minNav &&
+      nav <= maxNav &&
+      startNav >= minStartNav &&
+      years >= minYears
+    );
+  });
+
+  // SORT
+  if(sort){
+    filtered.sort((a,b) => parseFloat(b[sort]) - parseFloat(a[sort]));
   }
 
-  const filtered = fullData.filter(fund =>
-    fund.Category && fund.Category.includes(value)
-  );
-
   render(filtered);
-});
+}
 
 </script>
 
