@@ -28,6 +28,7 @@ input, select {
   border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.3);
 }
 
+
 .name { font-weight:bold; }
 
 .green { color:#22c55e; }
@@ -77,6 +78,23 @@ input, select {
 </div>
 
 <div class="container" id="list">Loading...</div>
+
+<!-- ✅ MOVE MODAL HERE -->
+<div id="detailModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000000cc; z-index:999;">
+
+<div style="background:#1e293b; margin:50px auto; padding:15px; border-radius:10px; width:90%; max-width:500px;">
+
+<div style="display:flex; justify-content:space-between;">
+<div id="detailTitle"></div>
+<button onclick="closeDetails()">X</button>
+</div>
+
+<div id="detailContent" style="margin-top:10px;"></div>
+
+</div>
+</div>
+
+</body>
 
 <script>
 
@@ -183,37 +201,54 @@ data.slice(0,100).forEach(f => {
 const div = document.createElement("div");
 div.className = "card";
 
+div.onclick = () => openDetails(f);
+
 div.innerHTML = `
 <div class="name">${f.Name}</div>
 
 <div class="row small">
-<span>NAV ₹${f.NAV}</span>
+<span>${f.Category || "N/A"}</span>
 <span>${f.Type}</span>
 </div>
 
 <div class="row">
+<span>NAV ₹${f.NAV}</span>
 <span class="${f["Change%"]>=0?'green':'red'}">
 ${f["Change%"]}%
 </span>
-<span>${f.years.toFixed(1)} yrs</span>
-</div>
-
-<div class="row small">
-<span>Start ₹${f["Start NAV"]}</span>
-<span>${f["Start Date"]}</span>
-</div>
-
-<div class="row small">
-<span>1Y ${f["1Y"]}%</span>
-<span>3Y ${f["3Y"]}%</span>
-<span>5Y ${f["5Y"]}%</span>
 </div>
 `;
 
 list.appendChild(div);
 
 });
+}
 
+  function openDetails(f){
+
+document.getElementById("detailModal").style.display = "block";
+document.getElementById("detailTitle").innerText = f.Name;
+
+document.getElementById("detailContent").innerHTML = `
+
+<div class="row"><span>NAV</span><span>₹${f.NAV}</span></div>
+<div class="row"><span>Change</span><span>${f["Change%"]}%</span></div>
+
+<div class="row"><span>Type</span><span>${f.Type}</span></div>
+<div class="row"><span>Category</span><span>${f.Category}</span></div>
+
+<div class="row"><span>Start NAV</span><span>₹${f["Start NAV"]}</span></div>
+<div class="row"><span>Start Date</span><span>${f["Start Date"]}</span></div>
+
+<div class="row"><span>1Y</span><span>${f["1Y"]}%</span></div>
+<div class="row"><span>3Y</span><span>${f["3Y"]}%</span></div>
+<div class="row"><span>5Y</span><span>${f["5Y"]}%</span></div>
+
+`;
+}
+
+function closeDetails(){
+document.getElementById("detailModal").style.display = "none";
 }
 
 </script>
