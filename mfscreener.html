@@ -1,304 +1,70 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MF Screener Pro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial;
+      background: #f5f5f5;
+      padding: 10px;
+    }
 
-<style>
-body { background:#0f172a; color:white; font-family:Arial; margin:0; }
+    .card {
+      background: white;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
 
-.header {
-  padding:15px; background:#1e293b; text-align:center;
-  font-weight:bold; font-size:18px;
-}
+    .title {
+      font-weight: bold;
+      font-size: 14px;
+    }
 
-.filter {
-  display:flex; flex-wrap:wrap; gap:8px; padding:10px;
-}
+    .nav {
+      font-size: 18px;
+      margin-top: 5px;
+    }
 
-input, select {
-  flex:1; padding:8px; border-radius:8px; border:none;
-  font-size:14px;
-}
-
-.container { padding:10px; }
-
-.card {
-  background:#1e293b; padding:12px; margin-bottom:10px;
-  border-radius:12px;
-  box-shadow:0 2px 6px rgba(0,0,0,0.3);
-  cursor:pointer;
-  transition:0.2s;
-}
-
-.card:hover {
-  transform:scale(1.02);
-}
-
-.name { font-weight:bold; margin-bottom:5px; }
-
-.green { color:#22c55e; }
-.red { color:#ef4444; }
-
-.small { font-size:12px; color:#94a3b8; }
-
-.row { display:flex; justify-content:space-between; margin-top:5px; }
-
-#chartModal {
-  display:none; position:fixed; top:0; left:0;
-  width:100%; height:100%; background:#000000cc;
-  z-index:999;
-}
-
-.modalBox {
-  background:#1e293b; margin:50px auto; padding:15px;
-  border-radius:10px; width:90%; max-width:500px;
-}
-
-.timeBtns button{
-  margin:5px; padding:6px 12px;
-  border:none; border-radius:6px;
-  background:#334155; color:white;
-}
-</style>
+    .green { color: green; }
+    .red { color: red; }
+  </style>
 </head>
 
 <body>
 
-<div class="header">📊 MF Screener Pro</div>
+<h3>📊 Mutual Funds</h3>
 
-<div class="filter">
-<input type="text" id="search" placeholder="Search..." oninput="applyFilter()">
-
-<select id="period" onchange="applyFilter()">
-<option value="1Y">1 Year</option>
-<option value="3Y">3 Year</option>
-<option value="5Y">5 Year</option>
-</select>
-
-<select id="percent" onchange="applyFilter()">
-<option value="0">All</option>
-<option value="10">>10%</option>
-<option value="15">>15%</option>
-<option value="20">>20%</option>
-</select>
-
-<select id="type" onchange="applyFilter()">
-<option value="all">All</option>
-<option value="Growth">Growth</option>
-<option value="Regular">Regular</option>
-<option value="Dividend">Dividend</option>
-</select>
-
-<select id="sort" onchange="applyFilter()">
-<option value="none">Sort</option>
-<option value="high">Return High → Low</option>
-<option value="low">Return Low → High</option>
-</select>
-
-<input type="number" id="navMin" placeholder="Min NAV" oninput="applyFilter()">
-<input type="number" id="navMax" placeholder="Max NAV" oninput="applyFilter()">
-</div>
-
-<div class="container" id="list">Loading...</div>
-
-<!-- 📊 CHART MODAL -->
-<div id="chartModal">
-<div class="modalBox">
-
-<div style="display:flex; justify-content:space-between;">
-<div id="chartTitle">Chart</div>
-<button onclick="closeChart()">X</button>
-</div>
-
-<div class="timeBtns">
-<button onclick="changeRange(30)">1M</button>
-<button onclick="changeRange(90)">3M</button>
-<button onclick="changeRange(365)">1Y</button>
-<button onclick="changeRange(1825)">5Y</button>
-</div>
-
-<canvas id="mfChart" height="200"></canvas>
-
-</div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<div id="data"></div>
 
 <script>
-
 const API = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=mf";
-
-let allData = [];
-let currentChartData = [];
 
 fetch(API)
 .then(res => res.json())
 .then(data => {
-  allData = data;
-  applyFilter();
-});
 
-// 🔍 FILTER
-function applyFilter(){
+  const container = document.getElementById("data");
 
-const search = document.getElementById("search").value.toLowerCase();
-const period = document.getElementById("period").value;
-const percent = parseFloat(document.getElementById("percent").value);
-const type = document.getElementById("type").value;
-const sort = document.getElementById("sort").value;
+  data.forEach(fund => {
 
-const navMin = parseFloat(document.getElementById("navMin").value) || 0;
-const navMax = parseFloat(document.getElementById("navMax").value) || Infinity;
+    const div = document.createElement("div");
+    div.className = "card";
 
-const key = period;
+    const changeClass = fund["Change%"] >= 0 ? "green" : "red";
 
-let filtered = allData.filter(item => {
+    div.innerHTML = `
+      <div class="title">${fund.Name}</div>
+      <div>Type: ${fund.Type}</div>
+      <div class="nav">₹${fund.NAV}</div>
+      <div class="${changeClass}">${fund["Change%"]}%</div>
+    `;
 
-const name = (item.Name || "").toLowerCase();
-const ret = parseFloat(item[key]) || 0;
-const nav = parseFloat(item.NAV) || 0;
-
-if(search && !name.includes(search)) return false;
-if(type !== "all" && item.Type !== type) return false;
-if(ret < percent) return false;
-if(nav < navMin || nav > navMax) return false;
-
-return true;
-});
-
-if(sort === "high"){
-filtered.sort((a,b) => (parseFloat(b[key])||0) - (parseFloat(a[key])||0));
-}
-else if(sort === "low"){
-filtered.sort((a,b) => (parseFloat(a[key])||0) - (parseFloat(b[key])||0));
-}
-
-display(filtered);
-}
-
-// 🧾 DISPLAY
-function display(data){
-
-const list = document.getElementById("list");
-list.innerHTML = "";
-
-if(data.length === 0){
-  list.innerHTML = "❌ No funds found";
-  return;
-}
-
-data.slice(0,100).forEach(item => {
-
-const div = document.createElement("div");
-div.className = "card";
-
-div.onclick = () => openChart(item.Code, item.Name);
-
-div.innerHTML = `
-<div class="name">${item.Name}</div>
-
-<div class="row small">
-<span>NAV: ₹${item.NAV}</span>
-<span>${item.Type}</span>
-</div>
-
-<div class="row">
-<span class="${item["Change%"] >= 0 ? 'green':'red'}">
-${item["Change%"]}%
-</span>
-</div>
-
-<div class="row small">
-<span>1Y: ${item["1Y"] || "-"}%</span>
-<span>3Y: ${item["3Y"] || "-"}%</span>
-<span>5Y: ${item["5Y"] || "-"}%</span>
-</div>
-`;
-
-list.appendChild(div);
-
-});
-}
-
-// 🧹 CLEAN DATA
-function cleanMFData(rawData){
-  return rawData
-    .filter(d => d.nav && !isNaN(d.nav))
-    .map(d => ({
-      date: new Date(d.date),
-      nav: parseFloat(d.nav)
-    }))
-    .sort((a,b) => a.date - b.date);
-}
-
-// 📊 CHART
-let chartInstance;
-
-function openChart(code, name){
-
-document.getElementById("chartModal").style.display = "block";
-document.getElementById("chartTitle").innerText = name;
-
-fetch("https://api.mfapi.in/mf/" + code)
-.then(res => res.json())
-.then(data => {
-
-currentChartData = cleanMFData(data.data);
-
-changeRange(365);
-
-});
-}
-
-// 🔥 FIXED RANGE (REAL DATE FILTER)
-function changeRange(days){
-
-  if(!currentChartData.length){
-    alert("No data");
-    return;
-  }
-
-  const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - days);
-
-  const filtered = currentChartData.filter(d => d.date >= cutoff);
-
-  if(filtered.length < 2){
-    alert("No recent data available");
-    return;
-  }
-
-  const labels = filtered.map(d => d.date.toLocaleDateString());
-  const values = filtered.map(d => d.nav);
-
-  const color = values[values.length-1] >= values[0] ? "#22c55e" : "#ef4444";
-
-  if(chartInstance) chartInstance.destroy();
-
-  chartInstance = new Chart(document.getElementById("mfChart"), {
-    type: "line",
-    data: {
-      labels: labels,
-      datasets: [{
-        data: values,
-        borderColor: color,
-        borderWidth: 2,
-        tension: 0.3
-      }]
-    },
-    options:{
-      plugins:{ legend:{display:false} },
-      scales:{ x:{ display:false }, y:{ display:false } }
-    }
+    container.appendChild(div);
   });
 
-}
-
-function closeChart(){
-document.getElementById("chartModal").style.display = "none";
-}
-
+});
 </script>
 
 </body>
