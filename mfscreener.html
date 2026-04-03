@@ -37,6 +37,32 @@ input, select {
 .small { font-size:12px; color:#94a3b8; }
 
 .row { display:flex; justify-content:space-between; margin-top:5px; }
+
+  .card {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  padding: 14px;
+  border-radius: 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  transition: 0.2s;
+}
+
+.card:hover {
+  transform: scale(1.02);
+}
+
+#detailModal div {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+}
+
+.name {
+  font-size: 15px;
+  font-weight: bold;
+  color: #e2e8f0;
+}
+
+.green { color: #22c55e; font-weight:bold; }
+.red { color: #ef4444; font-weight:bold; }
 </style>
 </head>
 
@@ -90,6 +116,7 @@ input, select {
 </div>
 
 <div id="detailContent" style="margin-top:10px;"></div>
+<canvas id="detailChart" height="150"></canvas>
 
 </div>
 </div>
@@ -231,18 +258,22 @@ document.getElementById("detailTitle").innerText = f.Name;
 
 document.getElementById("detailContent").innerHTML = `
 
-<div class="row"><span>NAV</span><span>₹${f.NAV}</span></div>
-<div class="row"><span>Change</span><span>${f["Change%"]}%</span></div>
+<div class="row"><b>NAV</b><span>₹${f.NAV}</span></div>
+<div class="row"><b>Change</b><span class="${f["Change%"]>=0?'green':'red'}">${f["Change%"]}%</span></div>
 
-<div class="row"><span>Type</span><span>${f.Type}</span></div>
-<div class="row"><span>Category</span><span>${f.Category}</span></div>
+<div class="row"><b>Type</b><span>${f.Type}</span></div>
+<div class="row"><b>Category</b><span>${f.Category}</span></div>
 
-<div class="row"><span>Start NAV</span><span>₹${f["Start NAV"]}</span></div>
-<div class="row"><span>Start Date</span><span>${f["Start Date"]}</span></div>
+<div class="row"><b>Start NAV</b><span>₹${f["Start NAV"]}</span></div>
+<div class="row"><b>Start Date</b><span>${formattedDate}</span></div>
+
+<hr>
 
 <div class="row"><span>1Y</span><span>${f["1Y"]}%</span></div>
 <div class="row"><span>3Y</span><span>${f["3Y"]}%</span></div>
 <div class="row"><span>5Y</span><span>${f["5Y"]}%</span></div>
+
+<canvas id="detailChart" height="150"></canvas>
 
 `;
 }
@@ -250,6 +281,38 @@ document.getElementById("detailContent").innerHTML = `
 function closeDetails(){
 document.getElementById("detailModal").style.display = "none";
 }
+
+let detailChart;
+loadChart(f.Code);
+
+function loadChart(code){
+
+fetch("https://api.mfapi.in/mf/" + code)
+.then(res => res.json())
+.then(data => {
+
+let chartData = data.data.slice(0, 100).reverse();
+
+const labels = chartData.map(d => d.date);
+const values = chartData.map(d => parseFloat(d.nav));
+
+if(detailChart) detailChart.destroy();
+
+detailChart = new Chart(document.getElementById("detailChart"), {
+  type: "line",
+  data: {
+    labels: labels,
+    datasets: [{
+      data: values,
+      borderColor: "#22c55e",
+      tension: 0.3
+    }]
+  }
+});
+
+});
+}
+  
 
 </script>
 
