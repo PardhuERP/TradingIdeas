@@ -16,7 +16,7 @@ body { background:#0f172a; color:white; font-family:Arial; margin:0; }
   display:flex; flex-wrap:wrap; gap:8px; padding:10px;
 }
 
-input, select, button {
+input, select {
   flex:1; padding:8px; border-radius:8px; border:none;
   font-size:14px;
 }
@@ -25,8 +25,14 @@ input, select, button {
 
 .card {
   background:#1e293b; padding:12px; margin-bottom:10px;
-  border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.3);
+  border-radius:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.3);
   cursor:pointer;
+  transition:0.2s;
+}
+
+.card:hover {
+  transform:scale(1.02);
 }
 
 .name { font-weight:bold; margin-bottom:5px; }
@@ -50,7 +56,9 @@ input, select, button {
 }
 
 .timeBtns button{
-  margin:5px; padding:5px 10px;
+  margin:5px; padding:6px 12px;
+  border:none; border-radius:6px;
+  background:#334155; color:white;
 }
 </style>
 </head>
@@ -131,6 +139,7 @@ fetch(API)
   applyFilter();
 });
 
+// 🔍 FILTER
 function applyFilter(){
 
 const search = document.getElementById("search").value.toLowerCase();
@@ -146,7 +155,7 @@ const key = period;
 
 let filtered = allData.filter(item => {
 
-const name = item.Name.toLowerCase();
+const name = (item.Name || "").toLowerCase();
 const ret = parseFloat(item[key]) || 0;
 const nav = parseFloat(item.NAV) || 0;
 
@@ -168,10 +177,16 @@ filtered.sort((a,b) => (parseFloat(a[key])||0) - (parseFloat(b[key])||0));
 display(filtered);
 }
 
+// 🧾 DISPLAY
 function display(data){
 
 const list = document.getElementById("list");
 list.innerHTML = "";
+
+if(data.length === 0){
+  list.innerHTML = "❌ No funds found";
+  return;
+}
 
 data.slice(0,100).forEach(item => {
 
@@ -195,9 +210,9 @@ ${item["Change%"]}%
 </div>
 
 <div class="row small">
-<span>1Y: ${item["1Y"]}%</span>
-<span>3Y: ${item["3Y"]}%</span>
-<span>5Y: ${item["5Y"]}%</span>
+<span>1Y: ${item["1Y"] || "-"}%</span>
+<span>3Y: ${item["3Y"] || "-"}%</span>
+<span>5Y: ${item["5Y"] || "-"}%</span>
 </div>
 `;
 
@@ -206,26 +221,18 @@ list.appendChild(div);
 });
 }
 
-// 🔥 CLEAN FUNCTION (ADDED)
+// 🧹 CLEAN DATA
 function cleanMFData(rawData){
-  let valid = rawData.filter(d => d.nav && !isNaN(d.nav) && parseFloat(d.nav) > 0);
-
-  let seen = new Set();
-  let unique = [];
-
-  for(let item of valid){
-    if(!seen.has(item.date)){
-      seen.add(item.date);
-      unique.push(item);
-    }
-  }
-
-  unique.sort((a,b) => new Date(a.date) - new Date(b.date));
-
-  return unique;
+  return rawData
+    .filter(d => d.nav && !isNaN(d.nav))
+    .map(d => ({
+      date: new Date(d.date),
+      nav: parseFloat(d.nav)
+    }))
+    .sort((a,b) => a.date - b.date);
 }
 
-// 🔥 CHART
+// 📊 CHART
 let chartInstance;
 
 function openChart(code, name){
@@ -237,30 +244,33 @@ fetch("https://api.mfapi.in/mf/" + code)
 .then(res => res.json())
 .then(data => {
 
-currentChartData = cleanMFData(data.data); // ✅ FIX
+currentChartData = cleanMFData(data.data);
 
 changeRange(365);
 
 });
 }
 
-// 🔥 FIXED RANGE FUNCTION
+// 🔥 FIXED RANGE (REAL DATE FILTER)
 function changeRange(days){
 
-  if(!currentChartData || currentChartData.length < 2){
-    alert("No clean data available");
+  if(!currentChartData.length){
+    alert("No data");
     return;
   }
 
-  let filtered = currentChartData.slice(-days); // ✅ MAIN FIX
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+
+  const filtered = currentChartData.filter(d => d.date >= cutoff);
 
   if(filtered.length < 2){
     alert("No recent data available");
     return;
   }
 
-  const labels = filtered.map(d => d.date);
-  const values = filtered.map(d => parseFloat(d.nav));
+  const labels = filtered.map(d => d.date.toLocaleDateString());
+  const values = filtered.map(d => d.nav);
 
   const color = values[values.length-1] >= values[0] ? "#22c55e" : "#ef4444";
 
@@ -279,10 +289,7 @@ function changeRange(days){
     },
     options:{
       plugins:{ legend:{display:false} },
-      scales:{
-        x:{ display:false },
-        y:{ display:false }
-      }
+      scales:{ x:{ display:false }, y:{ display:false } }
     }
   });
 
