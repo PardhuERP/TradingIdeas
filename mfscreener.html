@@ -85,23 +85,30 @@ const API = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrA
 let allData = [];
 
 fetch(API)
-.then(res => res.json())
-.then(res => res.json())
-.then(raw => {
+.then(res => res.text())   // 🔥 always safe
+.then(text => {
 
-  // 🔥 HANDLE BOTH CASES
-  let data = Array.isArray(raw) ? raw : raw.data;
+  let raw;
 
-  if (!Array.isArray(data)) {
-    console.error("Invalid API response", raw);
+  try {
+    raw = JSON.parse(text);
+  } catch(e){
+    console.error("Invalid JSON", text);
     document.getElementById("list").innerHTML = "❌ API Error";
     return;
   }
 
+  let data = Array.isArray(raw) ? raw : raw.data;
+
+  if (!Array.isArray(data)) {
+    console.error("Invalid format", raw);
+    return;
+  }
+
   allData = data.map(f => {
-    
-    // 🔥 CALCULATE YEARS
+
     let years = 0;
+
     if(f["Start Date"]){
       const parts = f["Start Date"].split("-");
       const d = new Date(parts[2], parts[1]-1, parts[0]);
@@ -114,6 +121,7 @@ fetch(API)
   });
 
   applyFilter();
+
 });
 
 function applyFilter(){
