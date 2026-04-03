@@ -158,7 +158,7 @@ const sort = document.getElementById("sort").value;
 
 let filtered = allData.filter(f => {
 
-const name = f.Name.toLowerCase();
+const name = (f.Name || "").toLowerCase();
 const nav = parseFloat(f.NAV) || 0;
 const startNav = parseFloat(f["Start NAV"]) || 0;
 const years = f.years || 0;
