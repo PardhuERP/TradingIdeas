@@ -86,7 +86,18 @@ let allData = [];
 
 fetch(API)
 .then(res => res.json())
-.then(data => {
+.then(res => res.json())
+.then(raw => {
+
+  // 🔥 HANDLE BOTH CASES
+  let data = Array.isArray(raw) ? raw : raw.data;
+
+  if (!Array.isArray(data)) {
+    console.error("Invalid API response", raw);
+    document.getElementById("list").innerHTML = "❌ API Error";
+    return;
+  }
+
   allData = data.map(f => {
     
     // 🔥 CALCULATE YEARS
