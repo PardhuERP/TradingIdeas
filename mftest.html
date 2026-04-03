@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body {
+  font-family: Arial;
+  background: #f2f2f2;
+}
+
+.header {
+  padding: 10px;
+  background: #111;
+  color: white;
+}
+
+.filter {
+  margin: 10px;
+}
+
+.card {
+  background: white;
+  padding: 12px;
+  margin: 10px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.green { color: green; }
+.red { color: red; }
+</style>
+</head>
+
+<body>
+
+<div class="header">📊 Mutual Fund Tracker</div>
+
+<div class="filter">
+  <select id="categoryFilter">
+    <option value="">All</option>
+    <option value="Equity">Equity</option>
+    <option value="Debt">Debt</option>
+    <option value="Hybrid">Hybrid</option>
+  </select>
+</div>
+
+<div id="data"></div>
+
+<script>
+
+const API = "YOUR_GAS_URL";
+
+let fullData = [];
+
+fetch(API)
+.then(res => res.json())
+.then(data => {
+  fullData = data;
+  render(data);
+});
+
+function render(data) {
+  const container = document.getElementById("data");
+  container.innerHTML = "";
+
+  data.forEach(fund => {
+
+    const changeClass = fund["Change%"] >= 0 ? "green" : "red";
+
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <b>${fund.Name}</b><br>
+      ${fund.Category || ""}<br>
+      NAV: ₹${fund.NAV}<br>
+      <span class="${changeClass}">
+        ${fund["Change%"]}%
+      </span><br>
+      Expense: ${fund["Expense Ratio"] || "-"}%
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+// 🔥 FILTER LOGIC
+document.getElementById("categoryFilter").addEventListener("change", function() {
+  const value = this.value;
+
+  if (!value) {
+    render(fullData);
+    return;
+  }
+
+  const filtered = fullData.filter(fund =>
+    fund.Category && fund.Category.includes(value)
+  );
+
+  render(filtered);
+});
+
+</script>
+
+</body>
+</html>
