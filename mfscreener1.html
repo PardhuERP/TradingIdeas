@@ -1,1 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>Fund Info</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+  font-family: Arial;
+  background: #f5f6fa;
+  margin: 0;
+}
+
+.container {
+  padding: 16px;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* FUND INFO */
+.fund-info h3 {
+  margin: 10px 0 5px;
+}
+
+.watchlist {
+  background: #eef2ff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 20px;
+}
+
+/* NAV */
+.nav-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.nav {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.change {
+  font-size: 16px;
+}
+
+.green { color: green; }
+.red { color: red; }
+
+/* GRID */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.grid p {
+  margin: 0;
+  font-size: 13px;
+  color: gray;
+}
+
+.grid h3 {
+  margin: 5px 0 0;
+}
+
+/* CHART */
+canvas {
+  margin-top: 20px;
+}
+
+/* FILTERS */
+.filters {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+}
+
+.filters button {
+  border: none;
+  background: #eee;
+  padding: 6px 12px;
+  border-radius: 10px;
+}
+
+.filters .active {
+  background: blue;
+  color: white;
+}
+
+/* ACTION BUTTONS */
+.actions {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+}
+
+.buy, .sip {
+  flex: 1;
+  padding: 15px;
+  border: none;
+  font-size: 16px;
+  color: white;
+}
+
+.buy { background: #1e40af; }
+.sip { background: #2563eb; }
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <span>←</span>
+    <h2>Fund info</h2>
+    <span>🔗</span>
+  </div>
+
+  <!-- FUND INFO -->
+  <div class="fund-info">
+    <h3 id="fundName">Loading...</h3>
+    <p id="fundType">Direct | Growth</p>
+    <button class="watchlist">♡ Add to watchlist</button>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav-section">
+    <div class="nav" id="navValue">₹--</div>
+    <div class="change" id="navChange">--%</div>
+  </div>
+
+  <!-- METRICS -->
+  <div class="grid">
+    <div>
+      <p>CAGR (3Y)</p>
+      <h3 class="green">+14.74%</h3>
+    </div>
+    <div>
+      <p>Min Investment</p>
+      <h3>₹5,000</h3>
+    </div>
+    <div>
+      <p>Exit Load</p>
+      <h3>1%</h3>
+    </div>
+    <div>
+      <p>Expense Ratio</p>
+      <h3>1.01%</h3>
+    </div>
+  </div>
+
+  <!-- CHART -->
+  <canvas id="chart"></canvas>
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <button onclick="loadData(90)">3M</button>
+    <button onclick="loadData(180)">6M</button>
+    <button onclick="loadData(365)">1Y</button>
+    <button onclick="loadData(1095)">3Y</button>
+    <button class="active" onclick="loadData('max')">Max</button>
+  </div>
+
+</div>
+
+<!-- ACTION BUTTONS -->
+<div class="actions">
+  <button class="buy">Buy</button>
+  <button class="sip">SIP</button>
+</div>
+
+<script>
+
+// 🔥 CHANGE FUND CODE HERE
+let fundCode = "119551"; 
+
+let chart;
+
+// INIT CHART
+function initChart() {
+  let ctx = document.getElementById('chart').getContext('2d');
+
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [{
+        data: [],
+        borderColor: 'orange',
+        borderWidth: 2,
+        fill: false,
+        tension: 0.4
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { display: false },
+        y: { display: false }
+      }
+    }
+  });
+}
+
+// LOAD DATA
+function loadData(range) {
+
+  fetch("https://api.mfapi.in/mf/" + fundCode)
+  .then(res => res.json())
+  .then(data => {
+
+    document.getElementById("fundName").innerText = data.meta.scheme_name;
+
+    let allData = data.data.reverse(); // latest last
+
+    let filtered;
+
+    if(range === 'max') {
+      filtered = allData;
+    } else {
+      filtered = allData.slice(-range);
+    }
+
+    let labels = filtered.map(d => d.date);
+    let values = filtered.map(d => parseFloat(d.nav));
+
+    // NAV
+    let latest = values[values.length - 1];
+    let prev = values[values.length - 2];
+
+    let change = ((latest - prev) / prev * 100).toFixed(2);
+
+    document.getElementById("navValue").innerText = "₹" + latest;
+
+    let changeEl = document.getElementById("navChange");
+    changeEl.innerText = change + "%";
+
+    if(change >= 0) {
+      changeEl.className = "change green";
+    } else {
+      changeEl.className = "change red";
+    }
+
+    // UPDATE CHART
+    chart.data.labels = labels;
+    chart.data.datasets[0].data = values;
+    chart.update();
+
+  });
+}
+
+// INIT
+initChart();
+loadData('max');
+
+</script>
+
+</body>
+</html>
