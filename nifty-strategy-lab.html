@@ -202,10 +202,8 @@ margin-bottom:14px !important;
 
 /* ===== INPUT PREMIUM ===== */
 input, select{
-background:#020617 !important;
-border:1px solid #1e293b !important;
-padding:14px !important;
-font-size:16px !important;
+width:100%;
+max-width:100%;
 }
 
 /* ===== BUTTON BIG ===== */
@@ -260,7 +258,9 @@ font-size:16px;
 
 /* ===== GRAPH CARD ===== */
 canvas{
-height:260px !important;
+width:100% !important;
+max-width:100%;
+height:250px !important;
 }
 
 /* ===== SPACING ===== */
@@ -283,6 +283,27 @@ font-size:18px;
 padding:16px !important;
 }
 
+}
+
+/* 🔥 STOP SIDE SCROLL */
+html, body{
+max-width:100%;
+overflow-x:hidden;
+}
+
+/* ALL ELEMENTS INSIDE SCREEN */
+*{
+box-sizing:border-box;
+}
+
+/* CONTAINER FIX */
+.container{
+max-width:100%;
+overflow:hidden;
+}
+
+img, table, canvas, div{
+max-width:100%;
 }
 </style>
 </head>
