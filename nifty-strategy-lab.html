@@ -700,6 +700,10 @@ function generatePayoffChart(spot, lot, strike1, premium1, strike2, premium2, st
         options: {
             responsive: true,
             layout: { padding: 10 },
+        interaction: {
+    mode: 'nearest',
+    intersect: false
+}, 
 
             plugins: {
                 legend: {
@@ -861,11 +865,12 @@ function generatePayoffChart(spot, lot, strike1, premium1, strike2, premium2, st
             {
                 id: 'crosshair',
                 afterDraw(chart){
-                    if(chart.tooltip && chart.tooltip._active && chart.tooltip._active.length){
-                        const ctx = chart.ctx;
-                        const point = chart.tooltip._active[0];
-                        const x = point.element.x;
-                        const y = point.element.y;
+                    const active = chart.getActiveElements();
+if(active.length){{
+                      const ctx = chart.ctx;
+const point = chart.tooltip._active[0];
+const x = point.element.x;
+const y = point.element.y;
 
                         ctx.save();
                         ctx.strokeStyle = "rgba(255,255,255,0.3)";
