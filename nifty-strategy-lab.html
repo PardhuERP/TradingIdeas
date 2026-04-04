@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"> 
 <title>Nifty Strategy Lab</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -10,7 +11,7 @@ body{
 font-family: 'Segoe UI', Arial;
 background: linear-gradient(180deg,#020617,#0f172a);
 margin:0;
-padding:15px;
+padding:10px;
 color:#e2e8f0;
 }
 
@@ -304,6 +305,50 @@ overflow:hidden;
 
 img, table, canvas, div{
 max-width:100%;
+}
+
+    /* 🔥 INPUT ZOOM + SHIFT FIX */
+input, select, textarea{
+font-size:16px !important; /* prevents mobile zoom */
+transform:scale(1);
+}
+
+/* 🔥 FIX RIGHT SIDE SHIFT */
+html, body{
+width:100%;
+overflow-x:hidden;
+position:relative;
+}
+
+/* 🔥 FIX CONTAINER WIDTH ISSUE */
+.container{
+width:100%;
+max-width:100%;
+padding:0;
+margin:0 auto;
+}
+
+/* 🔥 PREVENT ANY ELEMENT OVERFLOW */
+*{
+max-width:100%;
+}
+
+/* 🔥 FIX CARD STRETCH */
+.card{
+width:100%;
+}
+
+/* 🔥 FIX BUTTON STRETCH */
+button{
+width:100%;
+}
+
+/* 🔥 FIX STRATEGY BUTTON WRAP */
+#strategyList{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+justify-content:flex-start;
 }
 </style>
 </head>
