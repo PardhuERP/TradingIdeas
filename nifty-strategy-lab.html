@@ -786,7 +786,40 @@ function drawChart(prices, pnl){
             }
         },
 
-  {
+  // ===== STRIKE LINES =====
+{
+    id:'strikeLines',
+    afterDraw(chart){
+        const ctx = chart.ctx;
+        const xScale = chart.scales.x;
+
+        const strike1 = parseFloat(document.getElementById("strike1")?.value || 0);
+        const strike2 = parseFloat(document.getElementById("strike2")?.value || 0);
+
+        if(strike1){
+            let x = xScale.getPixelForValue(strike1);
+            ctx.strokeStyle="#00ffcc";
+            ctx.setLineDash([3,3]);
+            ctx.beginPath();
+            ctx.moveTo(x,0);
+            ctx.lineTo(x,chart.height);
+            ctx.stroke();
+        }
+
+        if(strike2){
+            let x = xScale.getPixelForValue(strike2);
+            ctx.strokeStyle="#ff66ff";
+            ctx.setLineDash([3,3]);
+            ctx.beginPath();
+            ctx.moveTo(x,0);
+            ctx.lineTo(x,chart.height);
+            ctx.stroke();
+        }
+    }
+},
+
+// ===== CROSSHAIR (LAST) =====
+{
     id: 'crosshair',
     afterDraw(chart){
         if(chart.tooltip?._active?.length){
@@ -796,15 +829,14 @@ function drawChart(prices, pnl){
 
             ctx.save();
 
-            // Vertical line
             ctx.strokeStyle = "rgba(255,255,255,0.3)";
             ctx.setLineDash([5,5]);
+
             ctx.beginPath();
             ctx.moveTo(x, chart.chartArea.top);
             ctx.lineTo(x, chart.chartArea.bottom);
             ctx.stroke();
 
-            // Horizontal line
             ctx.beginPath();
             ctx.moveTo(chart.chartArea.left, y);
             ctx.lineTo(chart.chartArea.right, y);
@@ -813,42 +845,9 @@ function drawChart(prices, pnl){
             ctx.restore();
         }
     }
-}, 
-
-        // STRIKE LINES
-        {
-            id:'strikeLines',
-            afterDraw(chart){
-                const ctx = chart.ctx;
-                const xScale = chart.scales.x;
-
-                const strike1 = parseFloat(document.getElementById("strike1")?.value || 0);
-                const strike2 = parseFloat(document.getElementById("strike2")?.value || 0);
-
-                if(strike1){
-                    let x = xScale.getPixelForValue(strike1);
-                    ctx.strokeStyle="#00ffcc";
-                    ctx.setLineDash([3,3]);
-                    ctx.beginPath();
-                    ctx.moveTo(x,0);
-                    ctx.lineTo(x,chart.height);
-                    ctx.stroke();
-                }
-
-                if(strike2){
-                    let x = xScale.getPixelForValue(strike2);
-                    ctx.strokeStyle="#ff66ff";
-                    ctx.setLineDash([3,3]);
-                    ctx.beginPath();
-                    ctx.moveTo(x,0);
-                    ctx.lineTo(x,chart.height);
-                    ctx.stroke();
-                }
-            }
-        }
-
+}
         ]
-    };
+    });
 }
 </script> 
 </body>
