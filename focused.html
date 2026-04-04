@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Focused Stocks</title>
+
+<style>
+
+body{
+font-family: 'Segoe UI', Arial;
+background: linear-gradient(180deg,#020617,#0f172a);
+color:white;
+margin:0;
+padding:15px;
+}
+
+/* HEADER */
+.header{
+text-align:center;
+font-size:22px;
+font-weight:bold;
+margin-bottom:15px;
+color:#e2e8f0;
+}
+
+/* BUTTONS */
+.buttons{
+display:flex;
+justify-content:space-between;
+gap:8px;
+margin-bottom:15px;
+}
+
+.buttons button{
+flex:1;
+padding:10px;
+border:none;
+border-radius:10px;
+background:#1f2937;
+color:white;
+font-weight:bold;
+cursor:pointer;
+transition:0.2s;
+}
+
+.buttons button.active{
+background:#22c55e;
+color:black;
+}
+
+.buttons button:hover{
+background:#334155;
+}
+
+/* CARD */
+.card{
+background:rgba(30,41,59,0.8);
+padding:15px;
+border-radius:12px;
+box-shadow:0 6px 20px rgba(0,0,0,0.4);
+}
+
+/* STOCK LIST */
+.stock{
+padding:10px;
+border-bottom:1px solid #374151;
+display:flex;
+justify-content:space-between;
+}
+
+.stock:last-child{
+border-bottom:none;
+}
+
+.badge{
+background:#22c55e;
+color:black;
+padding:3px 8px;
+border-radius:6px;
+font-size:12px;
+font-weight:bold;
+}
+
+.empty{
+text-align:center;
+color:#94a3b8;
+padding:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">🎯 Focused Stocks</div>
+
+<div class="buttons">
+<button onclick="loadData('P', this)" class="active">Nifty 50</button>
+<button onclick="loadData('R', this)">Nifty 100</button>
+<button onclick="loadData('T', this)">Nifty 200</button>
+<button onclick="loadData('V', this)">Nifty 500</button>
+</div>
+
+<div class="card" id="stockList">
+Loading...
+</div>
+
+<script>
+
+// 🔗 YOUR GAS API
+const API = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=focused";
+
+// LOAD DATA
+async function loadData(type, btn){
+
+// button active UI
+document.querySelectorAll(".buttons button").forEach(b=>b.classList.remove("active"));
+btn.classList.add("active");
+
+document.getElementById("stockList").innerHTML="Loading...";
+
+try{
+
+const res = await fetch(API + "&col=" + type);
+const data = await res.json();
+
+let html="";
+
+if(!data || data.length===0){
+html=`<div class="empty">No Stocks Found</div>`;
+}else{
+
+data.forEach((s,i)=>{
+html+=`
+<div class="stock">
+<span>${i+1}. ${s}</span>
+<span class="badge">🔥</span>
+</div>
+`;
+});
+
+}
+
+document.getElementById("stockList").innerHTML=html;
+
+}catch(e){
+
+document.getElementById("stockList").innerHTML=
+`<div class="empty">Error loading data</div>`;
+
+}
+
+}
+
+// default load
+loadData('P', document.querySelector(".buttons button"));
+
+</script>
+
+</body>
+</html>
