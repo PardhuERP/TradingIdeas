@@ -703,23 +703,52 @@ function drawChart(prices, pnl){
                     labels: { color: "#fff" }
                 },
                 tooltip: {
-                    callbacks: {
-                        label: (ctx)=>`₹ ${ctx.raw}`
-                    }
-                }
-            },
+    backgroundColor: "#111",
+    titleColor: "#fff",
+    bodyColor: "#fff",
+    borderColor: "#444",
+    borderWidth: 1,
 
-            scales: {
-                x: {
-                    ticks: { color: "#aaa" },
-                    grid: { color: "rgba(255,255,255,0.05)" }
-                },
-                y: {
-                    ticks: { color: "#aaa" },
-                    grid: { color: "rgba(255,255,255,0.05)" }
-                }
-            }
+    callbacks: {
+        title: function(context){
+            return `Price: ${context[0].label}`;
         },
+        label: function(context){
+            let val = context.raw;
+            let type = val >= 0 ? "Profit" : "Loss";
+            return `${type}: ₹ ${val.toFixed(2)}`;
+        }
+    }
+},
+
+{
+    id: 'crosshair',
+    afterDraw(chart){
+        if(chart.tooltip?._active?.length){
+            const ctx = chart.ctx;
+            const x = chart.tooltip._active[0].element.x;
+            const y = chart.tooltip._active[0].element.y;
+
+            ctx.save();
+
+            // Vertical line
+            ctx.strokeStyle = "rgba(255,255,255,0.3)";
+            ctx.setLineDash([5,5]);
+            ctx.beginPath();
+            ctx.moveTo(x, chart.chartArea.top);
+            ctx.lineTo(x, chart.chartArea.bottom);
+            ctx.stroke();
+
+            // Horizontal line
+            ctx.beginPath();
+            ctx.moveTo(chart.chartArea.left, y);
+            ctx.lineTo(chart.chartArea.right, y);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+    }
+},
 
         plugins: [
 
