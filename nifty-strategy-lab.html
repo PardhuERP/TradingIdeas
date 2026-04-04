@@ -179,6 +179,111 @@ input::placeholder{
 font-size:14px;
 color:#94a3b8;
 }
+
+    /* ===== APP HEADER ===== */
+.app-header{
+position:sticky;
+top:0;
+background:#020617;
+padding:12px;
+text-align:center;
+font-size:18px;
+font-weight:bold;
+z-index:10;
+border-bottom:1px solid #1e293b;
+}
+
+/* ===== CARD IMPROVEMENT ===== */
+.card{
+border-radius:16px !important;
+padding:18px !important;
+margin-bottom:14px !important;
+}
+
+/* ===== INPUT PREMIUM ===== */
+input, select{
+background:#020617 !important;
+border:1px solid #1e293b !important;
+padding:14px !important;
+font-size:16px !important;
+}
+
+/* ===== BUTTON BIG ===== */
+button{
+width:100%;
+padding:14px !important;
+font-size:16px !important;
+border-radius:10px !important;
+}
+
+/* ===== STRATEGY CHIPS ===== */
+#strategyList{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+}
+
+#strategyList button{
+background:#1e293b;
+border-radius:20px;
+padding:8px 12px !important;
+font-size:13px !important;
+width:auto;
+}
+
+#strategyList button.active{
+background:#22c55e;
+color:#000;
+}
+
+/* ===== RESULT CARDS ===== */
+.result-box{
+background:#020617 !important;
+padding:12px !important;
+border-radius:10px !important;
+font-size:15px !important;
+border-left:4px solid #22c55e;
+}
+
+/* ===== PROFIT LOSS COLORS ===== */
+.green{
+color:#22c55e;
+font-weight:bold;
+font-size:16px;
+}
+
+.red{
+color:#ef4444;
+font-weight:bold;
+font-size:16px;
+}
+
+/* ===== GRAPH CARD ===== */
+canvas{
+height:260px !important;
+}
+
+/* ===== SPACING ===== */
+.card h2{
+margin-bottom:12px !important;
+}
+
+/* ===== MOBILE ===== */
+@media(max-width:600px){
+
+body{
+padding:10px;
+}
+
+h1{
+font-size:18px;
+}
+
+.card{
+padding:16px !important;
+}
+
+}
 </style>
 </head>
 
@@ -186,10 +291,17 @@ color:#94a3b8;
 
 <div class="container">
 
-<h1>📊 Nifty Strategy Lab</h1>
-<p style="text-align:center;color:#94a3b8;font-size:12px;margin-top:-10px;">
+<div class="app-header">
+
+<div class="header-title">
+📊 Nifty Strategy Lab
+</div>
+
+<div class="header-sub">
 Options Strategy Builder & Analyzer
-</p>
+</div>
+
+</div>
 
 <!-- MARKET INPUT PANEL -->
 <div class="card">
@@ -286,11 +398,15 @@ function suggestStrategy(){
     }
 
     let html = "";
-    strategies.forEach(s=>{
-        html += `<button onclick="loadStrategy('${s}')">${s}</button> `;
-    });
+strategies.forEach(s=>{
+    html += `<button onclick="selectStrategy(this,'${s}')">${s}</button>`;
+});
+document.getElementById("strategyList").innerHTML = html;
 
-    document.getElementById("strategyList").innerHTML = html;
+function selectStrategy(btn,strategy){
+document.querySelectorAll("#strategyList button").forEach(b=>b.classList.remove("active"));
+btn.classList.add("active");
+loadStrategy(strategy);
 }
 
 // ===============================
