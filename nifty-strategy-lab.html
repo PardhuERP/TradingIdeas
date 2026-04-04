@@ -673,7 +673,10 @@ function generatePayoffChart(spot, lot, strike1, premium1, strike2, premium2, st
     let prices = [];
     let pnl = [];
 
-    for(let price = spot - 1000; price <= spot + 1000; price += 50){
+    let min = Math.min(strike1, strike2 || strike1) - 500;
+let max = Math.max(strike1, strike2 || strike1) + 500;
+
+for(let price = min; price <= max; price += 25){
 
         let total = 0;
 
