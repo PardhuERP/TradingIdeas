@@ -651,100 +651,103 @@ function drawChart(prices, pnl){
         chartInstance.destroy();
     }
 
+    // ===== BREAKEVEN =====
+    let breakevens = [];
+    for(let i=1; i<pnl.length; i++){
+        if((pnl[i-1] <= 0 && pnl[i] > 0) || (pnl[i-1] >= 0 && pnl[i] < 0)){
+            breakevens.push(prices[i]);
+        }
+    }
+
+    // ===== GRADIENT =====
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, "rgba(0,200,0,0.25)");
+    gradient.addColorStop(1, "rgba(255,0,0,0.25)");
+
     chartInstance = new Chart(ctx, {
         type: 'line',
         data: {
             labels: prices,
-            datasets: [{
+            datasets: [
+            {
                 label: 'P/L',
                 data: pnl,
                 borderColor: '#00bfff',
                 borderWidth: 3,
-                tension: 0.4,
-                pointRadius: 0,
-
-                // 🔥 COLOR ZONES
                 fill: true,
-                backgroundColor: (ctx)=>{
-                    const value = ctx.raw;
-                    return value >= 0 
-                        ? "rgba(0,200,0,0.15)"   // PROFIT
-                        : "rgba(255,0,0,0.15)"; // LOSS
-                }
-            }]
+                backgroundColor: gradient,
+                tension: 0.4,
+                pointRadius: 0
+            },
+            {
+                label: 'BE',
+                data: breakevens.map(()=>0),
+                pointBackgroundColor: 'orange',
+                pointRadius: 6,
+                showLine: false
+            }
+            ]
         },
 
         options: {
             responsive: true,
             plugins:{
-                legend:{
-                    labels:{color:"#fff"}
+                legend:{ labels:{color:"#fff"} },
+                tooltip:{
+                    callbacks:{
+                        label:(ctx)=>`₹ ${ctx.raw}`
+                    }
                 }
             },
-            scales: {
-                x: {
-                    ticks:{color:"#aaa"},
-                    grid:{color:"rgba(255,255,255,0.05)"}
-                },
-                y: {
-                    ticks:{
-                        color:"#aaa",
-                        callback:(v)=>"₹"+v
-                    },
-                    grid:{color:"rgba(255,255,255,0.05)"}
-                }
+            scales:{
+                x:{ ticks:{color:"#aaa"} },
+                y:{ ticks:{color:"#aaa"} }
             }
         },
 
         plugins: [
 
-        // ===== ZERO LINE =====
+        // ZERO LINE
         {
-            id: 'zeroLine',
+            id:'zeroLine',
             afterDraw(chart){
                 const y = chart.scales.y.getPixelForValue(0);
                 const ctx = chart.ctx;
 
-                ctx.save();
-                ctx.strokeStyle = "#fff";
+                ctx.strokeStyle="white";
                 ctx.setLineDash([5,5]);
-
                 ctx.beginPath();
-                ctx.moveTo(chart.chartArea.left, y);
-                ctx.lineTo(chart.chartArea.right, y);
+                ctx.moveTo(chart.chartArea.left,y);
+                ctx.lineTo(chart.chartArea.right,y);
                 ctx.stroke();
-
-                ctx.restore();
             }
         },
 
-        // ===== SPOT LINE =====
+        // SPOT LINE
         {
-            id: 'spotLine',
+            id:'spotLine',
             afterDraw(chart){
                 const spot = parseFloat(document.getElementById("spot").value);
+                if(!spot) return;
+
                 const x = chart.scales.x.getPixelForValue(spot);
                 const ctx = chart.ctx;
 
-                ctx.save();
-                ctx.strokeStyle = "yellow";
-                ctx.setLineDash([6,3]);
-
+                ctx.strokeStyle="yellow";
+                ctx.setLineDash([5,5]);
                 ctx.beginPath();
-                ctx.moveTo(x, chart.chartArea.top);
-                ctx.lineTo(x, chart.chartArea.bottom);
+                ctx.moveTo(x,chart.chartArea.top);
+                ctx.lineTo(x,chart.chartArea.bottom);
                 ctx.stroke();
 
                 ctx.fillStyle="yellow";
-                ctx.fillText("SPOT", x-15, chart.chartArea.top+15);
-
-                ctx.restore();
+                ctx.fillText("SPOT",x-15,20);
             }
         },
 
-        // ===== STRIKE LINES =====
+        // STRIKE LINES
         {
-            id: 'strikeLines',
+            id:'strikeLines',
             afterDraw(chart){
                 const ctx = chart.ctx;
                 const xScale = chart.scales.x;
@@ -753,37 +756,23 @@ function drawChart(prices, pnl){
                 const strike2 = parseFloat(document.getElementById("strike2")?.value || 0);
 
                 if(strike1){
-                    const x = xScale.getPixelForValue(strike1);
-
-                    ctx.save();
-                    ctx.strokeStyle = "#00ffcc";
+                    let x = xScale.getPixelForValue(strike1);
+                    ctx.strokeStyle="#00ffcc";
                     ctx.setLineDash([3,3]);
-
                     ctx.beginPath();
-                    ctx.moveTo(x, chart.chartArea.top);
-                    ctx.lineTo(x, chart.chartArea.bottom);
+                    ctx.moveTo(x,0);
+                    ctx.lineTo(x,chart.height);
                     ctx.stroke();
-
-                    ctx.fillStyle="#00ffcc";
-                    ctx.fillText("K1", x-10, chart.chartArea.bottom-5);
-                    ctx.restore();
                 }
 
                 if(strike2){
-                    const x = xScale.getPixelForValue(strike2);
-
-                    ctx.save();
-                    ctx.strokeStyle = "#ff66ff";
+                    let x = xScale.getPixelForValue(strike2);
+                    ctx.strokeStyle="#ff66ff";
                     ctx.setLineDash([3,3]);
-
                     ctx.beginPath();
-                    ctx.moveTo(x, chart.chartArea.top);
-                    ctx.lineTo(x, chart.chartArea.bottom);
+                    ctx.moveTo(x,0);
+                    ctx.lineTo(x,chart.height);
                     ctx.stroke();
-
-                    ctx.fillStyle="#ff66ff";
-                    ctx.fillText("K2", x-10, chart.chartArea.bottom-5);
-                    ctx.restore();
                 }
             }
         }
