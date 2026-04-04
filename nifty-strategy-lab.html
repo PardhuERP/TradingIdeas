@@ -442,11 +442,14 @@ Options Strategy Builder & Analyzer
 
 </div>
 
- <script>
+<script>
+
 let selectedStrategy = "";
 let payoffData = [];
 let chartInstance = null;
 
+// ===============================
+// STRATEGY SUGGESTION
 // ===============================
 function suggestStrategy(){
 
@@ -478,17 +481,14 @@ function suggestStrategy(){
     document.getElementById("strategyList").innerHTML = html;
 }
 
-// ===============================
 function selectStrategy(btn,strategy){
-
-    document.querySelectorAll("#strategyList button")
-        .forEach(b=>b.classList.remove("active"));
-
+    document.querySelectorAll("#strategyList button").forEach(b=>b.classList.remove("active"));
     btn.classList.add("active");
-
     loadStrategy(strategy);
 }
 
+// ===============================
+// LOAD STRATEGY INPUT
 // ===============================
 function loadStrategy(strategy){
 
@@ -496,15 +496,7 @@ function loadStrategy(strategy){
 
     let html = `<h3>${strategy}</h3>`;
 
-    if(strategy.includes("Call")){
-        html += `
-        <label>Strike Price</label>
-        <input type="number" id="strike1">
-        <label>Premium</label>
-        <input type="number" id="premium1">`;
-    }
-
-    if(strategy.includes("Put")){
+    if(strategy.includes("Call") || strategy.includes("Put")){
         html += `
         <label>Strike Price</label>
         <input type="number" id="strike1">
@@ -527,24 +519,19 @@ function loadStrategy(strategy){
     if(strategy === "Covered Call" || strategy === "Protective Put"){
         html += `
         <label>Stock Price</label>
-        <input type="number" id="stockPrice">
-        <label>Strike Price</label>
-        <input type="number" id="strike1">
-        <label>Premium</label>
-        <input type="number" id="premium1">`;
+        <input type="number" id="stockPrice">`;
     }
 
     document.getElementById("strategyBuilder").innerHTML = html;
 }
 
 // ===============================
-// CALCULATION + PAYOFF
+// CALCULATION + GRAPH
 // ===============================
 function calculateStrategy(){
 
     const spot = parseFloat(document.getElementById("spot").value);
     const lot = parseFloat(document.getElementById("lot").value);
-    const margin = parseFloat(document.getElementById("margin").value) || 0;
 
     let strike1 = parseFloat(document.getElementById("strike1")?.value || 0);
     let premium1 = parseFloat(document.getElementById("premium1")?.value || 0);
@@ -560,37 +547,18 @@ function calculateStrategy(){
         maxProfit = "Unlimited";
     }
 
-    else if(selectedStrategy === "Buy Put"){
-        maxLoss = premium1 * lot;
-        breakeven = strike1 - premium1;
-        maxProfit = "Unlimited";
-    }
-
-    else if(selectedStrategy === "Sell Call"){
-        maxProfit = premium1 * lot;
-        breakeven = strike1 + premium1;
-        maxLoss = "Unlimited";
-    }
-
-    else if(selectedStrategy === "Sell Put"){
-        maxProfit = premium1 * lot;
-        breakeven = strike1 - premium1;
-        maxLoss = (strike1 - premium1) * lot;
-    }
-
-    let roi = (margin && typeof maxProfit === "number") ? ((maxProfit/margin)*100).toFixed(2)+"%" : "-";
-
     document.getElementById("results").innerHTML = `
         <div><b>Max Profit:</b> ${maxProfit}</div>
         <div><b>Max Loss:</b> ${maxLoss}</div>
         <div><b>Breakeven:</b> ${breakeven}</div>
-        <div><b>ROI:</b> ${roi}</div>
     `;
 
-    // 🔥 CALL PAYOFF
+    // ✅ IMPORTANT → CALL GRAPH
     generatePayoffChart(spot, lot, strike1, premium1, strike2, premium2, stockPrice);
 }
 
+// ===============================
+// PAYOFF ENGINE
 // ===============================
 function generatePayoffChart(spot, lot, strike1, premium1, strike2, premium2, stockPrice){
 
@@ -616,32 +584,79 @@ function generatePayoffChart(spot, lot, strike1, premium1, strike2, premium2, st
 }
 
 // ===============================
+// DRAW CHART
+// ===============================
 function drawChart(prices, pnl){
 
     const ctx = document.getElementById('payoffChart').getContext('2d');
 
-    if(chartInstance){
-        chartInstance.destroy();
-    }
+    if(chartInstance) chartInstance.destroy();
+
+    let breakevens = [];
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, "rgba(0,200,0,0.25)");
+    gradient.addColorStop(1, "rgba(255,0,0,0.25)");
 
     chartInstance = new Chart(ctx, {
         type: 'line',
         data: {
             labels: prices,
             datasets: [{
-                label: 'P/L',
                 data: pnl,
                 borderColor: '#00bfff',
                 borderWidth: 3,
+                fill: true,
                 tension: 0.4,
-                pointRadius: 0
+                pointRadius: 0,
+                backgroundColor: gradient
             }]
         },
+
         options: {
-            responsive: true
+            responsive: true,
+            scales: {
+                x: { ticks: { color: "#aaa" }},
+                y: { ticks: { color: "#aaa" }}
+            }
+        },
+
+        plugins: [
+
+        {
+            id:'zeroLine',
+            afterDraw(chart){
+                const y = chart.scales.y.getPixelForValue(0);
+                const ctx = chart.ctx;
+
+                ctx.beginPath();
+                ctx.moveTo(chart.chartArea.left, y);
+                ctx.lineTo(chart.chartArea.right, y);
+                ctx.strokeStyle="white";
+                ctx.stroke();
+            }
+        },
+
+        {
+            id:'spotLine',
+            afterDraw(chart){
+                const x = chart.scales.x.getPixelForValue(
+                    parseFloat(document.getElementById("spot").value)
+                );
+                const ctx = chart.ctx;
+
+                ctx.beginPath();
+                ctx.moveTo(x, chart.chartArea.top);
+                ctx.lineTo(x, chart.chartArea.bottom);
+                ctx.strokeStyle="yellow";
+                ctx.stroke();
+            }
         }
+
+        ]
     });
 }
+
 </script>
 
 </body>
