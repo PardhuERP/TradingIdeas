@@ -721,34 +721,7 @@ function drawChart(prices, pnl){
     }
 },
 
-{
-    id: 'crosshair',
-    afterDraw(chart){
-        if(chart.tooltip?._active?.length){
-            const ctx = chart.ctx;
-            const x = chart.tooltip._active[0].element.x;
-            const y = chart.tooltip._active[0].element.y;
 
-            ctx.save();
-
-            // Vertical line
-            ctx.strokeStyle = "rgba(255,255,255,0.3)";
-            ctx.setLineDash([5,5]);
-            ctx.beginPath();
-            ctx.moveTo(x, chart.chartArea.top);
-            ctx.lineTo(x, chart.chartArea.bottom);
-            ctx.stroke();
-
-            // Horizontal line
-            ctx.beginPath();
-            ctx.moveTo(chart.chartArea.left, y);
-            ctx.lineTo(chart.chartArea.right, y);
-            ctx.stroke();
-
-            ctx.restore();
-        }
-    }
-},
 
         plugins: [
 
@@ -812,6 +785,35 @@ function drawChart(prices, pnl){
                 ctx.fillText("SPOT",x-15,20);
             }
         },
+
+  {
+    id: 'crosshair',
+    afterDraw(chart){
+        if(chart.tooltip?._active?.length){
+            const ctx = chart.ctx;
+            const x = chart.tooltip._active[0].element.x;
+            const y = chart.tooltip._active[0].element.y;
+
+            ctx.save();
+
+            // Vertical line
+            ctx.strokeStyle = "rgba(255,255,255,0.3)";
+            ctx.setLineDash([5,5]);
+            ctx.beginPath();
+            ctx.moveTo(x, chart.chartArea.top);
+            ctx.lineTo(x, chart.chartArea.bottom);
+            ctx.stroke();
+
+            // Horizontal line
+            ctx.beginPath();
+            ctx.moveTo(chart.chartArea.left, y);
+            ctx.lineTo(chart.chartArea.right, y);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+    }
+}, 
 
         // STRIKE LINES
         {
