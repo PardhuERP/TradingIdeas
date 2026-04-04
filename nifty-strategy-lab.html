@@ -661,12 +661,134 @@ function drawChart(prices, pnl){
                 borderColor: '#00bfff',
                 borderWidth: 3,
                 tension: 0.4,
-                pointRadius: 0
+                pointRadius: 0,
+
+                // 🔥 COLOR ZONES
+                fill: true,
+                backgroundColor: (ctx)=>{
+                    const value = ctx.raw;
+                    return value >= 0 
+                        ? "rgba(0,200,0,0.15)"   // PROFIT
+                        : "rgba(255,0,0,0.15)"; // LOSS
+                }
             }]
         },
+
         options: {
-            responsive: true
+            responsive: true,
+            plugins:{
+                legend:{
+                    labels:{color:"#fff"}
+                }
+            },
+            scales: {
+                x: {
+                    ticks:{color:"#aaa"},
+                    grid:{color:"rgba(255,255,255,0.05)"}
+                },
+                y: {
+                    ticks:{
+                        color:"#aaa",
+                        callback:(v)=>"₹"+v
+                    },
+                    grid:{color:"rgba(255,255,255,0.05)"}
+                }
+            }
+        },
+
+        plugins: [
+
+        // ===== ZERO LINE =====
+        {
+            id: 'zeroLine',
+            afterDraw(chart){
+                const y = chart.scales.y.getPixelForValue(0);
+                const ctx = chart.ctx;
+
+                ctx.save();
+                ctx.strokeStyle = "#fff";
+                ctx.setLineDash([5,5]);
+
+                ctx.beginPath();
+                ctx.moveTo(chart.chartArea.left, y);
+                ctx.lineTo(chart.chartArea.right, y);
+                ctx.stroke();
+
+                ctx.restore();
+            }
+        },
+
+        // ===== SPOT LINE =====
+        {
+            id: 'spotLine',
+            afterDraw(chart){
+                const spot = parseFloat(document.getElementById("spot").value);
+                const x = chart.scales.x.getPixelForValue(spot);
+                const ctx = chart.ctx;
+
+                ctx.save();
+                ctx.strokeStyle = "yellow";
+                ctx.setLineDash([6,3]);
+
+                ctx.beginPath();
+                ctx.moveTo(x, chart.chartArea.top);
+                ctx.lineTo(x, chart.chartArea.bottom);
+                ctx.stroke();
+
+                ctx.fillStyle="yellow";
+                ctx.fillText("SPOT", x-15, chart.chartArea.top+15);
+
+                ctx.restore();
+            }
+        },
+
+        // ===== STRIKE LINES =====
+        {
+            id: 'strikeLines',
+            afterDraw(chart){
+                const ctx = chart.ctx;
+                const xScale = chart.scales.x;
+
+                const strike1 = parseFloat(document.getElementById("strike1")?.value || 0);
+                const strike2 = parseFloat(document.getElementById("strike2")?.value || 0);
+
+                if(strike1){
+                    const x = xScale.getPixelForValue(strike1);
+
+                    ctx.save();
+                    ctx.strokeStyle = "#00ffcc";
+                    ctx.setLineDash([3,3]);
+
+                    ctx.beginPath();
+                    ctx.moveTo(x, chart.chartArea.top);
+                    ctx.lineTo(x, chart.chartArea.bottom);
+                    ctx.stroke();
+
+                    ctx.fillStyle="#00ffcc";
+                    ctx.fillText("K1", x-10, chart.chartArea.bottom-5);
+                    ctx.restore();
+                }
+
+                if(strike2){
+                    const x = xScale.getPixelForValue(strike2);
+
+                    ctx.save();
+                    ctx.strokeStyle = "#ff66ff";
+                    ctx.setLineDash([3,3]);
+
+                    ctx.beginPath();
+                    ctx.moveTo(x, chart.chartArea.top);
+                    ctx.lineTo(x, chart.chartArea.bottom);
+                    ctx.stroke();
+
+                    ctx.fillStyle="#ff66ff";
+                    ctx.fillText("K2", x-10, chart.chartArea.bottom-5);
+                    ctx.restore();
+                }
+            }
         }
+
+        ]
     });
 }
 </script> 
