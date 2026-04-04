@@ -350,15 +350,6 @@ flex-wrap:wrap;
 gap:8px;
 justify-content:flex-start;
 }
-body {
-    background: #0f172a;
-}
-
-canvas {
-    background: #020617;
-    border-radius: 10px;
-}
- 
 </style>
 </head>
 
@@ -682,10 +673,7 @@ function generatePayoffChart(spot, lot, strike1, premium1, strike2, premium2, st
     let prices = [];
     let pnl = [];
 
-    let min = Math.min(strike1, strike2 || strike1) - 500;
-let max = Math.max(strike1, strike2 || strike1) + 500;
-
-for(let price = min; price <= max; price += 25){
+    for(let price = spot - 1000; price <= spot + 1000; price += 50){
 
         let total = 0;
 
@@ -784,19 +772,14 @@ function drawChart(prices, pnl){
         chartInstance.destroy();
     }
 
-    // ===== BREAKEVEN DETECTION =====
+    // Detect breakeven points
     let breakevens = [];
+
     for(let i=1; i<pnl.length; i++){
         if((pnl[i-1] <= 0 && pnl[i] > 0) || (pnl[i-1] >= 0 && pnl[i] < 0)){
             breakevens.push(prices[i]);
         }
     }
-
-    // ===== GRADIENT =====
-    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, "rgba(0,200,0,0.25)");
-    gradient.addColorStop(0.5, "rgba(255,255,255,0.05)");
-    gradient.addColorStop(1, "rgba(255,0,0,0.25)");
 
     chartInstance = new Chart(ctx, {
         type: 'line',
@@ -804,290 +787,45 @@ function drawChart(prices, pnl){
             labels: prices,
             datasets: [
             {
-                label: 'P/L at Expiry',
+                label: 'Expiry P/L',
                 data: pnl,
-                borderColor: '#00bfff',
-                borderWidth: 3,
+                borderColor: '#007bff',
                 fill: true,
-                tension: 0.4,
-                pointRadius: 0,
-                pointHoverRadius: 4
+                backgroundColor: function(context){
+                    const value = context.raw;
+                    return value >= 0 ? 'rgba(0,200,0,0.15)' : 'rgba(255,0,0,0.15)';
+                },
+                tension: 0.1
             },
-
-            // Breakeven Points
             {
                 label: 'Breakeven',
                 data: breakevens.map(b => 0),
                 borderColor: 'orange',
                 pointBackgroundColor: 'orange',
                 pointRadius: 6,
-                showLine: false
-            }
-            ]
+                showLine:false
+            }]
         },
-
         options: {
-
-    responsive: true,
-
-    layout: {
-        padding: 10
-    },
-
-    plugins: {
-        legend: {
-            labels: {
-                color: "#ffffff",
-                font: {
-                    size: 12
-                }
-            }
-        },
-
-        tooltip: {
-            backgroundColor: "#111",
-            titleColor: "#fff",
-            bodyColor: "#fff",
-            borderColor: "#444",
-            borderWidth: 1,
-            callbacks: {
-                label: function(context){
-                    return `P/L: ₹ ${context.raw.toFixed(2)}`;
-                }
-            }
-        }
-    },
-
-    scales: {
-
-        x: {
-            ticks: {
-                color: "#aaa"
+            responsive: true,
+            plugins:{
+                legend:{display:true}
             },
-            grid: {
-                color: "rgba(255,255,255,0.05)"
-            },
-            title: {
-                display: true,
-                text: "Price at Expiry",
-                color: "#fff"
-            }
-        },
-
-        y: {
-            ticks: {
-                color: "#aaa",
-                callback: function(value){
-                    return "₹" + value;
-                }
-            },
-            grid: {
-                color: "rgba(255,255,255,0.05)"
-            },
-            title: {
-                display: true,
-                text: "Profit / Loss",
-                color: "#fff"
-            }
-        }
-
-    }
-},
-
             scales: {
                 x: {
-                    ticks: {
-                        color: "#ccc"
-                    },
                     title: {
                         display: true,
-                        text: 'Price at Expiry',
-                        color: "#fff"
+                        text: 'Price at Expiry'
                     }
                 },
-
                 y: {
-                    ticks: {
-                        color: "#ccc",
-                        callback: function(value){
-                            return "₹" + value;
-                        }
-                    },
                     title: {
                         display: true,
-                        text: 'Profit / Loss',
-                        color: "#fff"
+                        text: 'Profit / Loss'
                     }
                 }
             }
-        },
-
-        plugins: [
-
-        // ===== ZERO LINE =====
-        {
-            id: 'zeroLine',
-            afterDraw(chart){
-                const yScale = chart.scales.y;
-                const ctx = chart.ctx;
-                const y = yScale.getPixelForValue(0);
-
-                ctx.save();
-                ctx.strokeStyle = "white";
-                ctx.lineWidth = 1;
-                ctx.setLineDash([5,5]);
-                ctx.beginPath();
-                ctx.moveTo(chart.chartArea.left, y);
-                ctx.lineTo(chart.chartArea.right, y);
-                ctx.stroke();
-                ctx.restore();
-            }
-        },
-
-        // ===== BREAKEVEN LINES =====
-        // ===== BREAKEVEN LINES =====
-{
-    id: 'breakevenLines',
-    afterDraw(chart){
-        const ctx = chart.ctx;
-        const xScale = chart.scales.x;
-
-        breakevens.forEach(b=>{
-            const x = xScale.getPixelForValue(b);
-
-            ctx.save();
-            ctx.strokeStyle = "orange";
-            ctx.setLineDash([4,4]);
-
-            ctx.beginPath();
-            ctx.moveTo(x, chart.chartArea.top);
-            ctx.lineTo(x, chart.chartArea.bottom);
-            ctx.stroke();
-
-            ctx.fillStyle = "orange";
-            ctx.fillText(`BE: ${b}`, x-20, chart.chartArea.top + 10);
-
-            ctx.restore();
-        });
-    }
-},   // 👈 VERY IMPORTANT COMMA HERE
-
-// ===== SPOT LINE =====
-{
-    id: 'spotLine',
-    afterDraw(chart){
-        const ctx = chart.ctx;
-        const xScale = chart.scales.x;
-
-        const spot = parseFloat(document.getElementById("spot").value);
-        const x = xScale.getPixelForValue(spot);
-
-        ctx.save();
-        ctx.strokeStyle = "yellow";
-        ctx.setLineDash([6,3]);
-
-        ctx.beginPath();
-        ctx.moveTo(x, chart.chartArea.top);
-        ctx.lineTo(x, chart.chartArea.bottom);
-        ctx.stroke();
-
-        ctx.fillStyle = "yellow";
-        ctx.fillText("SPOT", x-15, chart.chartArea.top + 20);
-
-        ctx.restore();
-    }
-},
-
-// ===== MAX PROFIT & LOSS =====
-{
-    id: 'maxPoints',
-    afterDraw(chart){
-        const ctx = chart.ctx;
-        const xScale = chart.scales.x;
-        const yScale = chart.scales.y;
-
-        const data = chart.data.datasets[0].data;
-
-        let maxProfit = Math.max(...data);
-        let maxLoss = Math.min(...data);
-
-        let profitIndex = data.indexOf(maxProfit);
-        let lossIndex = data.indexOf(maxLoss);
-
-        let xProfit = xScale.getPixelForValue(chart.data.labels[profitIndex]);
-        let yProfit = yScale.getPixelForValue(maxProfit);
-
-        let xLoss = xScale.getPixelForValue(chart.data.labels[lossIndex]);
-        let yLoss = yScale.getPixelForValue(maxLoss);
-
-        ctx.save();
-
-        // GREEN DOT (Max Profit)
-        ctx.fillStyle = "green";
-        ctx.beginPath();
-        ctx.arc(xProfit, yProfit, 5, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.fillText("Max Profit", xProfit - 30, yProfit - 10);
-
-        // RED DOT (Max Loss)
-        ctx.fillStyle = "red";
-        ctx.beginPath();
-        ctx.arc(xLoss, yLoss, 5, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.fillText("Max Loss", xLoss - 30, yLoss + 15);
-
-        ctx.restore();
-    }
-},
-                              
-// ===== STRIKE LINES =====
-{
-    id: 'strikeLines',
-    afterDraw(chart){
-        const ctx = chart.ctx;
-        const xScale = chart.scales.x;
-
-        const strike1 = parseFloat(document.getElementById("strike1")?.value || 0);
-        const strike2 = parseFloat(document.getElementById("strike2")?.value || 0);
-
-        ctx.save();
-
-        // STRIKE 1
-        if(strike1){
-            const x1 = xScale.getPixelForValue(strike1);
-
-            ctx.strokeStyle = "#00ffcc";
-            ctx.setLineDash([3,3]);
-
-            ctx.beginPath();
-            ctx.moveTo(x1, chart.chartArea.top);
-            ctx.lineTo(x1, chart.chartArea.bottom);
-            ctx.stroke();
-
-            ctx.fillStyle = "#00ffcc";
-            ctx.fillText("K1", x1 - 10, chart.chartArea.bottom - 5);
         }
-
-        // STRIKE 2
-        if(strike2){
-            const x2 = xScale.getPixelForValue(strike2);
-
-            ctx.strokeStyle = "#ff66ff";
-            ctx.setLineDash([3,3]);
-
-            ctx.beginPath();
-            ctx.moveTo(x2, chart.chartArea.top);
-            ctx.lineTo(x2, chart.chartArea.bottom);
-            ctx.stroke();
-
-            ctx.fillStyle = "#ff66ff";
-            ctx.fillText("K2", x2 - 10, chart.chartArea.bottom - 5);
-        }
-
-        ctx.restore();
-    }
-}
-]
     });
 }
 </script>
