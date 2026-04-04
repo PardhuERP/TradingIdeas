@@ -539,7 +539,7 @@ function loadStrategy(strategy){
 }
 
 // ===============================
-// CALCULATION ENGINE
+// CALCULATION + GRAPH ENGINE
 // ===============================
 function calculateStrategy(){
 
@@ -635,15 +635,26 @@ function calculateStrategy(){
         breakeven = "Multiple";
     }
 
-    let roi = (margin && typeof maxProfit === "number") ? ((maxProfit/margin)*100).toFixed(2)+"%" : "-";
+    // ===== ROI =====
+    let roi = (margin && typeof maxProfit === "number") 
+        ? ((maxProfit/margin)*100).toFixed(2)+"%" 
+        : "-";
 
+    // ===== UI UPDATE =====
     document.getElementById("results").innerHTML = `
         <div class="result-box"><b>Max Profit:</b> <span class="green">${maxProfit}</span></div>
         <div class="result-box"><b>Max Loss:</b> <span class="red">${maxLoss}</span></div>
         <div class="result-box"><b>Breakeven:</b> ${breakeven}</div>
-        <div class="result-box"><b>Return % (if margin entered):</b> ${roi}</div>
+        <div class="result-box"><b>Return %:</b> ${roi}</div>
     `;
 
+    // ===== GENERATE CHART ===== 🔥
+    generatePayoffChart(
+        spot, lot,
+        strike1, premium1,
+        strike2, premium2,
+        stockPrice
+    );
 }
 
     // ===============================
