@@ -645,7 +645,7 @@ function generatePayoffChart(spot, lot, strike1, premium1, strike2, premium2, st
 // ===============================
 // DRAW CHART
 // ===============================
-function drawChart(prices, pnl){
+  function drawChart(prices, pnl){
 
     const ctx = document.getElementById('payoffChart').getContext('2d');
 
@@ -668,34 +668,37 @@ function drawChart(prices, pnl){
 
     chartInstance = new Chart(ctx, {
         type: 'line',
+
         data: {
             labels: prices,
             datasets: [
-            {
-                label: 'P/L at Expiry',
-                data: pnl,
-                borderColor: '#00bfff',
-                borderWidth: 3,
-                fill: true,
-                backgroundColor: gradient, // ✅ FIXED
-                tension: 0.4,
-                pointRadius: 0,
-                pointHoverRadius: 4
-            },
-            {
-                label: 'Breakeven',
-                data: breakevens.map(()=>0),
-                borderColor: 'orange',
-                pointBackgroundColor: 'orange',
-                pointRadius: 6,
-                showLine: false
-            }
+                {
+                    label: 'P/L at Expiry',
+                    data: pnl,
+                    borderColor: '#00bfff',
+                    borderWidth: 3,
+                    fill: true,
+                    backgroundColor: gradient,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    pointHoverRadius: 4
+                },
+                {
+                    label: 'Breakeven',
+                    data: breakevens.map(()=>0),
+                    borderColor: 'orange',
+                    pointBackgroundColor: 'orange',
+                    pointRadius: 6,
+                    showLine: false
+                }
             ]
         },
 
+        // ===============================
+        // OPTIONS (ONLY CONFIG HERE)
+        // ===============================
         options: {
             responsive: true,
-
             layout: { padding: 10 },
 
             plugins: {
@@ -703,158 +706,189 @@ function drawChart(prices, pnl){
                     labels: { color: "#fff" }
                 },
                 tooltip: {
-    backgroundColor: "#111",
-    titleColor: "#fff",
-    bodyColor: "#fff",
-    borderColor: "#444",
-    borderWidth: 1,
+                    backgroundColor: "#111",
+                    titleColor: "#fff",
+                    bodyColor: "#fff",
+                    borderColor: "#444",
+                    borderWidth: 1,
+                    callbacks: {
+                        title: function(context){
+                            return `Price: ${context[0].label}`;
+                        },
+                        label: function(context){
+                            let val = context.raw;
+                            let type = val >= 0 ? "Profit" : "Loss";
+                            return `${type}: ₹ ${val.toFixed(2)}`;
+                        }
+                    }
+                }
+            },
 
-    callbacks: {
-        title: function(context){
-            return `Price: ${context[0].label}`;
+            scales: {
+                x: {
+                    ticks: { color: "#aaa" },
+                    grid: { color: "rgba(255,255,255,0.05)" },
+                    title: {
+                        display: true,
+                        text: "Price at Expiry",
+                        color: "#fff"
+                    }
+                },
+                y: {
+                    ticks: {
+                        color: "#aaa",
+                        callback: val => "₹" + val
+                    },
+                    grid: { color: "rgba(255,255,255,0.05)" },
+                    title: {
+                        display: true,
+                        text: "Profit / Loss",
+                        color: "#fff"
+                    }
+                }
+            }
         },
-        label: function(context){
-            let val = context.raw;
-            let type = val >= 0 ? "Profit" : "Loss";
-            return `${type}: ₹ ${val.toFixed(2)}`;
-        }
-    }
-},
 
-
-
+        // ===============================
+        // CUSTOM DRAWING PLUGINS
+        // ===============================
         plugins: [
 
-        // ZERO LINE
-        {
-            id:'zeroLine',
-            afterDraw(chart){
-                const y = chart.scales.y.getPixelForValue(0);
-                const ctx = chart.ctx;
+            // ZERO LINE
+            {
+                id:'zeroLine',
+                afterDraw(chart){
+                    const y = chart.scales.y.getPixelForValue(0);
+                    const ctx = chart.ctx;
 
-                ctx.strokeStyle="white";
-                ctx.setLineDash([5,5]);
-                ctx.beginPath();
-                ctx.moveTo(chart.chartArea.left,y);
-                ctx.lineTo(chart.chartArea.right,y);
-                ctx.stroke();
-            }
-        },
-
-        // BREAKEVEN LINES
-        {
-            id:'breakevenLines',
-            afterDraw(chart){
-                const ctx = chart.ctx;
-                const xScale = chart.scales.x;
-
-                breakevens.forEach(b=>{
-                    let x = xScale.getPixelForValue(b);
-
-                    ctx.strokeStyle="orange";
-                    ctx.setLineDash([4,4]);
+                    ctx.save();
+                    ctx.strokeStyle="white";
+                    ctx.setLineDash([5,5]);
                     ctx.beginPath();
-                    ctx.moveTo(x, chart.chartArea.top);
-                    ctx.lineTo(x, chart.chartArea.bottom);
+                    ctx.moveTo(chart.chartArea.left,y);
+                    ctx.lineTo(chart.chartArea.right,y);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+            },
+
+            // BREAKEVEN LINES
+            {
+                id:'breakevenLines',
+                afterDraw(chart){
+                    const ctx = chart.ctx;
+                    const xScale = chart.scales.x;
+
+                    breakevens.forEach(b=>{
+                        let x = xScale.getPixelForValue(b);
+
+                        ctx.save();
+                        ctx.strokeStyle="orange";
+                        ctx.setLineDash([4,4]);
+                        ctx.beginPath();
+                        ctx.moveTo(x, chart.chartArea.top);
+                        ctx.lineTo(x, chart.chartArea.bottom);
+                        ctx.stroke();
+
+                        ctx.fillStyle="orange";
+                        ctx.fillText("BE", x-10, 15);
+                        ctx.restore();
+                    });
+                }
+            },
+
+            // SPOT LINE
+            {
+                id:'spotLine',
+                afterDraw(chart){
+                    const spot = parseFloat(document.getElementById("spot").value);
+                    if(!spot) return;
+
+                    const x = chart.scales.x.getPixelForValue(spot);
+                    const ctx = chart.ctx;
+
+                    ctx.save();
+                    ctx.strokeStyle="yellow";
+                    ctx.setLineDash([5,5]);
+                    ctx.beginPath();
+                    ctx.moveTo(x,chart.chartArea.top);
+                    ctx.lineTo(x,chart.chartArea.bottom);
                     ctx.stroke();
 
-                    ctx.fillStyle="orange";
-                    ctx.fillText("BE", x-10, 15);
-                });
+                    ctx.fillStyle="yellow";
+                    ctx.fillText("SPOT",x-15,20);
+                    ctx.restore();
+                }
+            },
+
+            // STRIKE LINES
+            {
+                id:'strikeLines',
+                afterDraw(chart){
+                    const ctx = chart.ctx;
+                    const xScale = chart.scales.x;
+
+                    const strike1 = parseFloat(document.getElementById("strike1")?.value || 0);
+                    const strike2 = parseFloat(document.getElementById("strike2")?.value || 0);
+
+                    ctx.save();
+
+                    if(strike1){
+                        let x = xScale.getPixelForValue(strike1);
+                        ctx.strokeStyle="#00ffcc";
+                        ctx.setLineDash([3,3]);
+                        ctx.beginPath();
+                        ctx.moveTo(x, chart.chartArea.top);
+                        ctx.lineTo(x, chart.chartArea.bottom);
+                        ctx.stroke();
+                    }
+
+                    if(strike2){
+                        let x = xScale.getPixelForValue(strike2);
+                        ctx.strokeStyle="#ff66ff";
+                        ctx.setLineDash([3,3]);
+                        ctx.beginPath();
+                        ctx.moveTo(x, chart.chartArea.top);
+                        ctx.lineTo(x, chart.chartArea.bottom);
+                        ctx.stroke();
+                    }
+
+                    ctx.restore();
+                }
+            },
+
+            // CROSSHAIR
+            {
+                id: 'crosshair',
+                afterDraw(chart){
+                    if(chart.tooltip && chart.tooltip._active && chart.tooltip._active.length){
+                        const ctx = chart.ctx;
+                        const point = chart.tooltip._active[0];
+                        const x = point.element.x;
+                        const y = point.element.y;
+
+                        ctx.save();
+                        ctx.strokeStyle = "rgba(255,255,255,0.3)";
+                        ctx.setLineDash([5,5]);
+
+                        ctx.beginPath();
+                        ctx.moveTo(x, chart.chartArea.top);
+                        ctx.lineTo(x, chart.chartArea.bottom);
+                        ctx.stroke();
+
+                        ctx.beginPath();
+                        ctx.moveTo(chart.chartArea.left, y);
+                        ctx.lineTo(chart.chartArea.right, y);
+                        ctx.stroke();
+
+                        ctx.restore();
+                    }
+                }
             }
-        },
 
-        // SPOT LINE
-        {
-            id:'spotLine',
-            afterDraw(chart){
-                const spot = parseFloat(document.getElementById("spot").value);
-                if(!spot) return;
-
-                const x = chart.scales.x.getPixelForValue(spot);
-                const ctx = chart.ctx;
-
-                ctx.strokeStyle="yellow";
-                ctx.setLineDash([5,5]);
-                ctx.beginPath();
-                ctx.moveTo(x,chart.chartArea.top);
-                ctx.lineTo(x,chart.chartArea.bottom);
-                ctx.stroke();
-
-                ctx.fillStyle="yellow";
-                ctx.fillText("SPOT",x-15,20);
-            }
-        },
-
-// ===== STRIKE LINES =====
-{
-    id:'strikeLines',
-    afterDraw(chart){
-        const ctx = chart.ctx;
-        const xScale = chart.scales.x;
-
-        const strike1 = parseFloat(document.getElementById("strike1")?.value || 0);
-        const strike2 = parseFloat(document.getElementById("strike2")?.value || 0);
-
-        if(strike1){
-            let x = xScale.getPixelForValue(strike1);
-            ctx.strokeStyle="#00ffcc";
-            ctx.setLineDash([3,3]);
-            ctx.beginPath();
-            ctx.moveTo(x, chart.chartArea.top);
-            ctx.lineTo(x, chart.chartArea.bottom);
-            ctx.stroke();
-        }
-
-        if(strike2){
-            let x = xScale.getPixelForValue(strike2);
-            ctx.strokeStyle="#ff66ff";
-            ctx.setLineDash([3,3]);
-            ctx.beginPath();
-            ctx.moveTo(x, chart.chartArea.top);
-            ctx.lineTo(x, chart.chartArea.bottom);
-            ctx.stroke();
-        }
-    }
-},   // 👈 VERY IMPORTANT COMMA
-
-// ===== CROSSHAIR =====
-{
-    id: 'crosshair',
-    afterDraw(chart){
-        if(chart.tooltip && chart.tooltip._active && chart.tooltip._active.length){
-            const ctx = chart.ctx;
-            const point = chart.tooltip._active[0];
-            const x = point.element.x;
-            const y = point.element.y;
-
-            ctx.save();
-
-            ctx.strokeStyle = "rgba(255,255,255,0.3)";
-            ctx.setLineDash([5,5]);
-
-            // Vertical
-            ctx.beginPath();
-            ctx.moveTo(x, chart.chartArea.top);
-            ctx.lineTo(x, chart.chartArea.bottom);
-            ctx.stroke();
-
-            // Horizontal
-            ctx.beginPath();
-            ctx.moveTo(chart.chartArea.left, y);
-            ctx.lineTo(chart.chartArea.right, y);
-            ctx.stroke();
-
-            ctx.restore();
-        }
-    }
+        ]
+    });
 }
-
-]   // 👈 CLOSE plugins array ONLY
-
-}); // 👈 CLOSE Chart
-
-} // 👈 CLOSE function
 </script> 
 </body>
 </html>
