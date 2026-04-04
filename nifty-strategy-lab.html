@@ -442,15 +442,15 @@ Options Strategy Builder & Analyzer
 
 </div>
 
-<script>
+ <script>
 let selectedStrategy = "";
 let payoffData = [];
+let chartInstance = null;
 
 // ===============================
 function suggestStrategy(){
 
     const bias = document.getElementById("bias").value;
-    const iv = document.getElementById("iv").value;
 
     let strategies = [];
 
@@ -478,6 +478,7 @@ function suggestStrategy(){
     document.getElementById("strategyList").innerHTML = html;
 }
 
+// ===============================
 function selectStrategy(btn,strategy){
 
     document.querySelectorAll("#strategyList button")
@@ -489,15 +490,13 @@ function selectStrategy(btn,strategy){
 }
 
 // ===============================
-// LOAD STRATEGY INPUT FIELDS
-// ===============================
 function loadStrategy(strategy){
 
     selectedStrategy = strategy;
 
     let html = `<h3>${strategy}</h3>`;
 
-    if(strategy.includes("Buy Call") || strategy.includes("Sell Call")){
+    if(strategy.includes("Call")){
         html += `
         <label>Strike Price</label>
         <input type="number" id="strike1">
@@ -505,7 +504,7 @@ function loadStrategy(strategy){
         <input type="number" id="premium1">`;
     }
 
-    if(strategy.includes("Buy Put") || strategy.includes("Sell Put")){
+    if(strategy.includes("Put")){
         html += `
         <label>Strike Price</label>
         <input type="number" id="strike1">
@@ -539,7 +538,7 @@ function loadStrategy(strategy){
 }
 
 // ===============================
-// CALCULATION ENGINE
+// CALCULATION + PAYOFF
 // ===============================
 function calculateStrategy(){
 
@@ -555,7 +554,6 @@ function calculateStrategy(){
 
     let maxProfit=0, maxLoss=0, breakeven=0;
 
-    // ===== SINGLE LEG =====
     if(selectedStrategy === "Buy Call"){
         maxLoss = premium1 * lot;
         breakeven = strike1 + premium1;
@@ -580,102 +578,19 @@ function calculateStrategy(){
         maxLoss = (strike1 - premium1) * lot;
     }
 
-    // ===== SPREADS =====
-    else if(selectedStrategy === "Bull Call Spread"){
-        let net = premium1 - premium2;
-        maxProfit = ((strike2 - strike1 - net) * lot);
-        maxLoss = net * lot;
-        breakeven = strike1 + net;
-    }
-
-    else if(selectedStrategy === "Bear Put Spread"){
-        let net = premium1 - premium2;
-        maxProfit = ((strike1 - strike2 - net) * lot);
-        maxLoss = net * lot;
-        breakeven = strike1 - net;
-    }
-
-    else if(selectedStrategy === "Bull Put Spread"){
-        let net = premium1 - premium2;
-        maxProfit = net * lot;
-        maxLoss = ((strike1 - strike2 - net) * lot);
-        breakeven = strike1 - net;
-    }
-
-    else if(selectedStrategy === "Bear Call Spread"){
-        let net = premium1 - premium2;
-        maxProfit = net * lot;
-        maxLoss = ((strike2 - strike1 - net) * lot);
-        breakeven = strike1 + net;
-    }
-
-    // ===== COVERED / PROTECTIVE =====
-    else if(selectedStrategy === "Covered Call"){
-        maxProfit = ((strike1 - stockPrice + premium1) * lot);
-        maxLoss = (stockPrice - premium1) * lot;
-        breakeven = stockPrice - premium1;
-    }
-
-    else if(selectedStrategy === "Protective Put"){
-        maxLoss = ((stockPrice - strike1 + premium1) * lot);
-        maxProfit = "Unlimited";
-        breakeven = stockPrice + premium1;
-    }
-
-    // ===== RATIO =====
-    else if(selectedStrategy === "Call Ratio Spread"){
-        maxProfit = "Limited (Range Based)";
-        maxLoss = "Unlimited Above Upper Strike";
-        breakeven = "Multiple";
-    }
-
-    else if(selectedStrategy === "Put Ratio Spread"){
-        maxProfit = "Limited (Range Based)";
-        maxLoss = "Unlimited Below Lower Strike";
-        breakeven = "Multiple";
-    }
-
     let roi = (margin && typeof maxProfit === "number") ? ((maxProfit/margin)*100).toFixed(2)+"%" : "-";
 
     document.getElementById("results").innerHTML = `
-        <div class="result-box"><b>Max Profit:</b> <span class="green">${maxProfit}</span></div>
-        <div class="result-box"><b>Max Loss:</b> <span class="red">${maxLoss}</span></div>
-        <div class="result-box"><b>Breakeven:</b> ${breakeven}</div>
-        <div class="result-box"><b>Return % (if margin entered):</b> ${roi}</div>
+        <div><b>Max Profit:</b> ${maxProfit}</div>
+        <div><b>Max Loss:</b> ${maxLoss}</div>
+        <div><b>Breakeven:</b> ${breakeven}</div>
+        <div><b>ROI:</b> ${roi}</div>
     `;
 
-}
-
-    // ===============================
-// PAYOFF GRAPH ENGINE
-// ===============================
-
-let chartInstance = null;
-
-function calculateStrategy(){
-
-    const spot = parseFloat(document.getElementById("spot").value);
-    const lot = parseFloat(document.getElementById("lot").value);
-    const margin = parseFloat(document.getElementById("margin").value) || 0;
-
-    let strike1 = parseFloat(document.getElementById("strike1")?.value || 0);
-    let premium1 = parseFloat(document.getElementById("premium1")?.value || 0);
-    let strike2 = parseFloat(document.getElementById("strike2")?.value || 0);
-    let premium2 = parseFloat(document.getElementById("premium2")?.value || 0);
-    let stockPrice = parseFloat(document.getElementById("stockPrice")?.value || 0);
-
-    let maxProfit=0, maxLoss=0, breakeven=0;
-
-    // === EXISTING CALCULATION LOGIC (keep same as Part 2) ===
-    // (Shortened here for clarity – your previous logic stays above)
-
-    // After calculation, generate payoff
+    // 🔥 CALL PAYOFF
     generatePayoffChart(spot, lot, strike1, premium1, strike2, premium2, stockPrice);
 }
 
-
-// ===============================
-// PAYOFF CALCULATION
 // ===============================
 function generatePayoffChart(spot, lot, strike1, premium1, strike2, premium2, stockPrice){
 
@@ -683,86 +598,14 @@ function generatePayoffChart(spot, lot, strike1, premium1, strike2, premium2, st
     let pnl = [];
 
     let min = Math.min(strike1, strike2 || strike1) - 500;
-let max = Math.max(strike1, strike2 || strike1) + 500;
+    let max = Math.max(strike1, strike2 || strike1) + 500;
 
-for(let price = min; price <= max; price += 25){
+    for(let price = min; price <= max; price += 25){
 
         let total = 0;
 
-        // BUY CALL
         if(selectedStrategy === "Buy Call"){
             total = Math.max(0, price - strike1) - premium1;
-        }
-
-        // SELL CALL
-        else if(selectedStrategy === "Sell Call"){
-            total = premium1 - Math.max(0, price - strike1);
-        }
-
-        // BUY PUT
-        else if(selectedStrategy === "Buy Put"){
-            total = Math.max(0, strike1 - price) - premium1;
-        }
-
-        // SELL PUT
-        else if(selectedStrategy === "Sell Put"){
-            total = premium1 - Math.max(0, strike1 - price);
-        }
-
-        // BULL CALL SPREAD
-        else if(selectedStrategy === "Bull Call Spread"){
-            total =
-                (Math.max(0, price - strike1) - premium1) +
-                (premium2 - Math.max(0, price - strike2));
-        }
-
-        // BEAR PUT SPREAD
-        else if(selectedStrategy === "Bear Put Spread"){
-            total =
-                (Math.max(0, strike1 - price) - premium1) +
-                (premium2 - Math.max(0, strike2 - price));
-        }
-
-        // BULL PUT SPREAD
-        else if(selectedStrategy === "Bull Put Spread"){
-            total =
-                (premium1 - Math.max(0, strike1 - price)) +
-                (Math.max(0, strike2 - price) - premium2);
-        }
-
-        // BEAR CALL SPREAD
-        else if(selectedStrategy === "Bear Call Spread"){
-            total =
-                (premium1 - Math.max(0, price - strike1)) +
-                (Math.max(0, price - strike2) - premium2);
-        }
-
-        // COVERED CALL
-        else if(selectedStrategy === "Covered Call"){
-            total =
-                (price - stockPrice) +
-                (premium1 - Math.max(0, price - strike1));
-        }
-
-        // PROTECTIVE PUT
-        else if(selectedStrategy === "Protective Put"){
-            total =
-                (price - stockPrice) +
-                (Math.max(0, strike1 - price) - premium1);
-        }
-
-        // CALL RATIO (1 Buy, 2 Sell assumption)
-        else if(selectedStrategy === "Call Ratio Spread"){
-            total =
-                (Math.max(0, price - strike1) - premium1) +
-                2*(premium2 - Math.max(0, price - strike2));
-        }
-
-        // PUT RATIO (1 Buy, 2 Sell)
-        else if(selectedStrategy === "Put Ratio Spread"){
-            total =
-                (Math.max(0, strike1 - price) - premium1) +
-                2*(premium2 - Math.max(0, strike2 - price));
         }
 
         prices.push(price);
@@ -772,9 +615,6 @@ for(let price = min; price <= max; price += 25){
     drawChart(prices, pnl);
 }
 
-
-// ===============================
-// DRAW CHART
 // ===============================
 function drawChart(prices, pnl){
 
@@ -784,310 +624,22 @@ function drawChart(prices, pnl){
         chartInstance.destroy();
     }
 
-    // ===== BREAKEVEN DETECTION =====
-    let breakevens = [];
-    for(let i=1; i<pnl.length; i++){
-        if((pnl[i-1] <= 0 && pnl[i] > 0) || (pnl[i-1] >= 0 && pnl[i] < 0)){
-            breakevens.push(prices[i]);
-        }
-    }
-
-    // ===== GRADIENT =====
-    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, "rgba(0,200,0,0.25)");
-    gradient.addColorStop(0.5, "rgba(255,255,255,0.05)");
-    gradient.addColorStop(1, "rgba(255,0,0,0.25)");
-
     chartInstance = new Chart(ctx, {
         type: 'line',
         data: {
             labels: prices,
-            datasets: [
-            {
-                label: 'P/L at Expiry',
+            datasets: [{
+                label: 'P/L',
                 data: pnl,
                 borderColor: '#00bfff',
                 borderWidth: 3,
-                fill: true,
                 tension: 0.4,
-                pointRadius: 0,
-                pointHoverRadius: 4
-            },
-
-            // Breakeven Points
-            {
-                label: 'Breakeven',
-                data: breakevens.map(b => 0),
-                borderColor: 'orange',
-                pointBackgroundColor: 'orange',
-                pointRadius: 6,
-                showLine: false
-            }
-            ]
+                pointRadius: 0
+            }]
         },
-
         options: {
-
-    responsive: true,
-
-    layout: {
-        padding: 10
-    },
-
-    plugins: {
-        legend: {
-            labels: {
-                color: "#ffffff",
-                font: {
-                    size: 12
-                }
-            }
-        },
-
-        tooltip: {
-            backgroundColor: "#111",
-            titleColor: "#fff",
-            bodyColor: "#fff",
-            borderColor: "#444",
-            borderWidth: 1,
-            callbacks: {
-                label: function(context){
-                    return `P/L: ₹ ${context.raw.toFixed(2)}`;
-                }
-            }
+            responsive: true
         }
-    },
-
-    scales: {
-
-        x: {
-            ticks: {
-                color: "#aaa"
-            },
-            grid: {
-                color: "rgba(255,255,255,0.05)"
-            },
-            title: {
-                display: true,
-                text: "Price at Expiry",
-                color: "#fff"
-            }
-        },
-
-        y: {
-            ticks: {
-                color: "#aaa",
-                callback: function(value){
-                    return "₹" + value;
-                }
-            },
-            grid: {
-                color: "rgba(255,255,255,0.05)"
-            },
-            title: {
-                display: true,
-                text: "Profit / Loss",
-                color: "#fff"
-            }
-        }
-
-    }
-},
-
-            scales: {
-                x: {
-                    ticks: {
-                        color: "#ccc"
-                    },
-                    title: {
-                        display: true,
-                        text: 'Price at Expiry',
-                        color: "#fff"
-                    }
-                },
-
-                y: {
-                    ticks: {
-                        color: "#ccc",
-                        callback: function(value){
-                            return "₹" + value;
-                        }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Profit / Loss',
-                        color: "#fff"
-                    }
-                }
-            }
-        },
-
-        plugins: [
-
-        // ===== ZERO LINE =====
-        {
-            id: 'zeroLine',
-            afterDraw(chart){
-                const yScale = chart.scales.y;
-                const ctx = chart.ctx;
-                const y = yScale.getPixelForValue(0);
-
-                ctx.save();
-                ctx.strokeStyle = "white";
-                ctx.lineWidth = 1;
-                ctx.setLineDash([5,5]);
-                ctx.beginPath();
-                ctx.moveTo(chart.chartArea.left, y);
-                ctx.lineTo(chart.chartArea.right, y);
-                ctx.stroke();
-                ctx.restore();
-            }
-        },
-
-        // ===== BREAKEVEN LINES =====
-        // ===== BREAKEVEN LINES =====
-{
-    id: 'breakevenLines',
-    afterDraw(chart){
-        const ctx = chart.ctx;
-        const xScale = chart.scales.x;
-
-        breakevens.forEach(b=>{
-            const x = xScale.getPixelForValue(b);
-
-            ctx.save();
-            ctx.strokeStyle = "orange";
-            ctx.setLineDash([4,4]);
-
-            ctx.beginPath();
-            ctx.moveTo(x, chart.chartArea.top);
-            ctx.lineTo(x, chart.chartArea.bottom);
-            ctx.stroke();
-
-            ctx.fillStyle = "orange";
-            ctx.fillText(`BE: ${b}`, x-20, chart.chartArea.top + 10);
-
-            ctx.restore();
-        });
-    }
-},   // 👈 VERY IMPORTANT COMMA HERE
-
-// ===== SPOT LINE =====
-{
-    id: 'spotLine',
-    afterDraw(chart){
-        const ctx = chart.ctx;
-        const xScale = chart.scales.x;
-
-        const spot = parseFloat(document.getElementById("spot").value);
-        const x = xScale.getPixelForValue(spot);
-
-        ctx.save();
-        ctx.strokeStyle = "yellow";
-        ctx.setLineDash([6,3]);
-
-        ctx.beginPath();
-        ctx.moveTo(x, chart.chartArea.top);
-        ctx.lineTo(x, chart.chartArea.bottom);
-        ctx.stroke();
-
-        ctx.fillStyle = "yellow";
-        ctx.fillText("SPOT", x-15, chart.chartArea.top + 20);
-
-        ctx.restore();
-    }
-},
-
-// ===== MAX PROFIT & LOSS =====
-{
-    id: 'maxPoints',
-    afterDraw(chart){
-        const ctx = chart.ctx;
-        const xScale = chart.scales.x;
-        const yScale = chart.scales.y;
-
-        const data = chart.data.datasets[0].data;
-
-        let maxProfit = Math.max(...data);
-        let maxLoss = Math.min(...data);
-
-        let profitIndex = data.indexOf(maxProfit);
-        let lossIndex = data.indexOf(maxLoss);
-
-        let xProfit = xScale.getPixelForValue(chart.data.labels[profitIndex]);
-        let yProfit = yScale.getPixelForValue(maxProfit);
-
-        let xLoss = xScale.getPixelForValue(chart.data.labels[lossIndex]);
-        let yLoss = yScale.getPixelForValue(maxLoss);
-
-        ctx.save();
-
-        // GREEN DOT (Max Profit)
-        ctx.fillStyle = "green";
-        ctx.beginPath();
-        ctx.arc(xProfit, yProfit, 5, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.fillText("Max Profit", xProfit - 30, yProfit - 10);
-
-        // RED DOT (Max Loss)
-        ctx.fillStyle = "red";
-        ctx.beginPath();
-        ctx.arc(xLoss, yLoss, 5, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.fillText("Max Loss", xLoss - 30, yLoss + 15);
-
-        ctx.restore();
-    }
-},
-                              
-// ===== STRIKE LINES =====
-{
-    id: 'strikeLines',
-    afterDraw(chart){
-        const ctx = chart.ctx;
-        const xScale = chart.scales.x;
-
-        const strike1 = parseFloat(document.getElementById("strike1")?.value || 0);
-        const strike2 = parseFloat(document.getElementById("strike2")?.value || 0);
-
-        ctx.save();
-
-        // STRIKE 1
-        if(strike1){
-            const x1 = xScale.getPixelForValue(strike1);
-
-            ctx.strokeStyle = "#00ffcc";
-            ctx.setLineDash([3,3]);
-
-            ctx.beginPath();
-            ctx.moveTo(x1, chart.chartArea.top);
-            ctx.lineTo(x1, chart.chartArea.bottom);
-            ctx.stroke();
-
-            ctx.fillStyle = "#00ffcc";
-            ctx.fillText("K1", x1 - 10, chart.chartArea.bottom - 5);
-        }
-
-        // STRIKE 2
-        if(strike2){
-            const x2 = xScale.getPixelForValue(strike2);
-
-            ctx.strokeStyle = "#ff66ff";
-            ctx.setLineDash([3,3]);
-
-            ctx.beginPath();
-            ctx.moveTo(x2, chart.chartArea.top);
-            ctx.lineTo(x2, chart.chartArea.bottom);
-            ctx.stroke();
-
-            ctx.fillStyle = "#ff66ff";
-            ctx.fillText("K2", x2 - 10, chart.chartArea.bottom - 5);
-        }
-
-        ctx.restore();
-    }
-}
-]
     });
 }
 </script>
