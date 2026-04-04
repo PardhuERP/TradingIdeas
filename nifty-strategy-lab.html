@@ -772,14 +772,19 @@ function drawChart(prices, pnl){
         chartInstance.destroy();
     }
 
-    // Detect breakeven points
+    // ===== BREAKEVEN DETECTION =====
     let breakevens = [];
-
     for(let i=1; i<pnl.length; i++){
         if((pnl[i-1] <= 0 && pnl[i] > 0) || (pnl[i-1] >= 0 && pnl[i] < 0)){
             breakevens.push(prices[i]);
         }
     }
+
+    // ===== GRADIENT =====
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, "rgba(0,200,0,0.25)");
+    gradient.addColorStop(0.5, "rgba(255,255,255,0.05)");
+    gradient.addColorStop(1, "rgba(255,0,0,0.25)");
 
     chartInstance = new Chart(ctx, {
         type: 'line',
@@ -787,45 +792,129 @@ function drawChart(prices, pnl){
             labels: prices,
             datasets: [
             {
-                label: 'Expiry P/L',
+                label: 'P/L at Expiry',
                 data: pnl,
-                borderColor: '#007bff',
+                borderColor: '#00bfff',
+                borderWidth: 2,
                 fill: true,
-                backgroundColor: function(context){
-                    const value = context.raw;
-                    return value >= 0 ? 'rgba(0,200,0,0.15)' : 'rgba(255,0,0,0.15)';
-                },
-                tension: 0.1
+                backgroundColor: gradient,
+                tension: 0.3,
+                pointRadius: 0
             },
+
+            // Breakeven Points
             {
                 label: 'Breakeven',
                 data: breakevens.map(b => 0),
                 borderColor: 'orange',
                 pointBackgroundColor: 'orange',
                 pointRadius: 6,
-                showLine:false
-            }]
+                showLine: false
+            }
+            ]
         },
+
         options: {
             responsive: true,
-            plugins:{
-                legend:{display:true}
+            interaction: {
+                mode: 'index',
+                intersect: false
             },
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Price at Expiry'
+
+            plugins: {
+                legend: {
+                    labels: {
+                        color: "#fff"
                     }
                 },
-                y: {
+
+                tooltip: {
+                    callbacks: {
+                        label: function(context){
+                            return `P/L: ₹ ${context.raw.toFixed(2)}`;
+                        }
+                    }
+                }
+            },
+
+            scales: {
+                x: {
+                    ticks: {
+                        color: "#ccc"
+                    },
                     title: {
                         display: true,
-                        text: 'Profit / Loss'
+                        text: 'Price at Expiry',
+                        color: "#fff"
+                    }
+                },
+
+                y: {
+                    ticks: {
+                        color: "#ccc",
+                        callback: function(value){
+                            return "₹" + value;
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Profit / Loss',
+                        color: "#fff"
                     }
                 }
             }
+        },
+
+        plugins: [
+
+        // ===== ZERO LINE =====
+        {
+            id: 'zeroLine',
+            afterDraw(chart){
+                const yScale = chart.scales.y;
+                const ctx = chart.ctx;
+                const y = yScale.getPixelForValue(0);
+
+                ctx.save();
+                ctx.strokeStyle = "white";
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5,5]);
+                ctx.beginPath();
+                ctx.moveTo(chart.chartArea.left, y);
+                ctx.lineTo(chart.chartArea.right, y);
+                ctx.stroke();
+                ctx.restore();
+            }
+        },
+
+        // ===== BREAKEVEN LINES =====
+        {
+            id: 'breakevenLines',
+            afterDraw(chart){
+                const ctx = chart.ctx;
+                const xScale = chart.scales.x;
+                const yScale = chart.scales.y;
+
+                breakevens.forEach(b=>{
+                    const x = xScale.getPixelForValue(b);
+
+                    ctx.save();
+                    ctx.strokeStyle = "orange";
+                    ctx.setLineDash([4,4]);
+                    ctx.beginPath();
+                    ctx.moveTo(x, chart.chartArea.top);
+                    ctx.lineTo(x, chart.chartArea.bottom);
+                    ctx.stroke();
+
+                    ctx.fillStyle = "orange";
+                    ctx.fillText(`BE: ${b}`, x-20, chart.chartArea.top + 10);
+
+                    ctx.restore();
+                });
+            }
         }
+
+        ]
     });
 }
 </script>
