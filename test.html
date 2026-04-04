@@ -1,390 +1,1096 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Swypio Pay | Fast. Simple. Secure Payments.</title>
-
-<meta name="description" content="Accept UPI, QR & online payments instantly with Swypio Pay. Built for Indian merchants.">
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+ <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"> 
+<title>Nifty Strategy Lab</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-
-:root{
-  --primary:#1a237e;
-  --accent:#00c853;
-  --bg:#f6f9ff;
-}
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:'Inter',sans-serif;
-}
-
 body{
-  background:var(--bg);
-  color:#111;
+font-family: 'Segoe UI', Arial;
+background: linear-gradient(180deg,#020617,#0f172a);
+margin:0;
+padding:10px;
+color:#e2e8f0;
 }
 
 /* HEADER */
-header{
-  position:sticky;
-  top:0;
-  background:#fff;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:15px 6%;
-  box-shadow:0 4px 20px rgba(0,0,0,0.05);
-  z-index:999;
+h1{
+text-align:center;
+font-size:22px;
+margin-bottom:15px;
 }
 
-.logo{
-  font-weight:700;
-  font-size:1.2rem;
-  color:var(--primary);
+/* CONTAINER */
+.container{
+max-width:1000px;
+margin:auto;
 }
 
-.nav a{
-  margin:0 15px;
-  text-decoration:none;
-  color:#333;
-  font-weight:500;
-}
-
-.cta{
-  background:var(--accent);
-  color:#fff;
-  padding:10px 18px;
-  border-radius:8px;
-  text-decoration:none;
-  font-weight:600;
-}
-
-/* HERO */
-.hero{
-  padding:80px 6%;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  flex-wrap:wrap;
-}
-
-.hero-text{
-  max-width:500px;
-}
-
-.hero h1{
-  font-size:2.8rem;
-  color:var(--primary);
-}
-
-.hero p{
-  margin:20px 0;
-  font-size:1.1rem;
-  color:#444;
-}
-
-.hero-buttons a{
-  margin-right:10px;
-  padding:14px 22px;
-  border-radius:8px;
-  text-decoration:none;
-}
-
-.primary-btn{
-  background:var(--primary);
-  color:white;
-}
-
-.secondary-btn{
-  border:2px solid var(--primary);
-  color:var(--primary);
-}
-
-.hero-img{
-  width:350px;
-  height:250px;
-  background:linear-gradient(135deg,#e3f2fd,#fff);
-  border-radius:15px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.1);
-}
-
-/* TRUST BAR */
-.trust{
-  background:#fff;
-  padding:25px;
-  text-align:center;
-}
-
-.stats{
-  display:flex;
-  justify-content:center;
-  gap:50px;
-  margin-top:10px;
-}
-
-.stats div{
-  font-weight:700;
-}
-
-/* FEATURES */
-.section{
-  padding:70px 6%;
-  text-align:center;
-}
-
-.grid{
-  margin-top:40px;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:25px;
-}
-
+/* CARD */
 .card{
-  background:#fff;
-  padding:25px;
-  border-radius:12px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.05);
-  transition:.3s;
+background: rgba(30,41,59,0.8);
+padding:16px;
+margin-bottom:15px;
+border-radius:14px;
+box-shadow:0 10px 30px rgba(0,0,0,0.5);
+backdrop-filter: blur(6px);
 }
 
-.card:hover{
-  transform:translateY(-5px);
+/* INPUT */
+label{
+font-size:13px;
+color:#94a3b8;
 }
 
-/* STEPS */
-.steps{
-  display:flex;
-  justify-content:center;
-  gap:40px;
-  margin-top:30px;
-  flex-wrap:wrap;
+input, select{
+width:100%;
+padding:10px;
+margin:6px 0 14px 0;
+border-radius:8px;
+border:none;
+background:#0f172a;
+color:white;
+font-size:14px;
+outline:none;
 }
 
-.step{
-  max-width:200px;
+/* BUTTON */
+button{
+padding:10px 14px;
+background:#22c55e;
+border:none;
+border-radius:8px;
+color:white;
+font-weight:bold;
+cursor:pointer;
+margin:5px 4px 5px 0;
+transition:0.2s;
 }
 
-/* USE CASE */
-.use{
-  background:#fff;
-  border-radius:10px;
-  padding:20px;
+button:hover{
+background:#16a34a;
+transform:scale(1.05);
 }
 
-/* PRICING */
-.pricing{
-  display:flex;
-  justify-content:center;
-  gap:30px;
-  flex-wrap:wrap;
+/* STRATEGY BUTTONS */
+#strategyList button{
+background:#1f2937;
+font-size:12px;
 }
 
-.price{
-  background:#fff;
-  padding:30px;
-  border-radius:12px;
-  width:260px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.05);
+#strategyList button:hover{
+background:#334155;
 }
 
-.highlight{
-  border:2px solid var(--accent);
+/* RESULT BOX */
+.result-box{
+padding:10px;
+border-radius:8px;
+margin-bottom:8px;
+background:#0f172a;
+border-left:4px solid #22c55e;
 }
 
-/* CTA FINAL */
-.final{
-  background:linear-gradient(135deg,#1a237e,#3949ab);
-  color:white;
-  text-align:center;
-  padding:70px 6%;
+.green{ color:#22c55e; font-weight:bold;}
+.red{ color:#ef4444; font-weight:bold;}
+
+/* CHART */
+canvas{
+background:#020617;
+border-radius:10px;
+padding:10px;
 }
 
-.final a{
-  display:inline-block;
-  margin-top:20px;
-}
-
-/* FAQ */
-.faq{
-  text-align:left;
-  max-width:700px;
-  margin:auto;
-}
-
-.faq div{
-  margin-bottom:15px;
-}
-
-/* FOOTER */
-footer{
-  background:#111;
-  color:#aaa;
-  padding:30px;
-  text-align:center;
-}
-
-/* WHATSAPP BUTTON */
-.whatsapp{
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  background:#25d366;
-  color:white;
-  padding:12px 16px;
-  border-radius:50px;
-  font-weight:600;
+/* TITLES */
+.card h2{
+font-size:16px;
+margin-bottom:10px;
+color:#cbd5f5;
 }
 
 /* MOBILE */
-@media(max-width:768px){
-  .hero{
-    flex-direction:column;
-    text-align:center;
-  }
-  .hero-img{
-    margin-top:30px;
-  }
+@media(max-width:600px){
+h1{font-size:18px;}
 }
 
+/* 🔥 MOBILE READABILITY FIX */
+
+/* GLOBAL FONT SIZE */
+body{
+font-size:16px;
+}
+
+/* HEADINGS */
+h1{
+font-size:22px !important;
+}
+
+.card h2{
+font-size:18px !important;
+}
+
+/* LABELS */
+label{
+font-size:14px !important;
+}
+
+/* INPUTS */
+input, select{
+font-size:16px !important;
+padding:12px !important;
+}
+
+/* BUTTON */
+button{
+font-size:15px !important;
+padding:12px !important;
+}
+
+/* STRATEGY BUTTONS */
+#strategyList button{
+font-size:13px !important;
+padding:8px 10px !important;
+}
+
+/* RESULT TEXT */
+.result-box{
+font-size:15px !important;
+}
+
+/* MOBILE EXTRA BOOST */
+@media(max-width:600px){
+
+body{
+font-size:17px;
+}
+
+h1{
+font-size:20px !important;
+}
+
+.card{
+padding:18px !important;
+}
+
+}
+
+input::placeholder{
+font-size:14px;
+color:#94a3b8;
+}
+
+    /* ===== APP HEADER ===== */
+.app-header{
+position:sticky;
+top:0;
+background:#020617;
+padding:12px;
+text-align:center;
+font-size:18px;
+font-weight:bold;
+z-index:10;
+border-bottom:1px solid #1e293b;
+}
+
+/* ===== CARD IMPROVEMENT ===== */
+.card{
+border-radius:16px !important;
+padding:18px !important;
+margin-bottom:14px !important;
+}
+
+/* ===== INPUT PREMIUM ===== */
+input, select{
+width:100%;
+max-width:100%;
+}
+
+/* ===== BUTTON BIG ===== */
+button{
+width:100%;
+padding:14px !important;
+font-size:16px !important;
+border-radius:10px !important;
+}
+
+/* ===== STRATEGY CHIPS ===== */
+#strategyList{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+}
+
+#strategyList button{
+background:#1e293b;
+border-radius:20px;
+padding:8px 12px !important;
+font-size:13px !important;
+width:auto;
+}
+
+#strategyList button.active{
+background:#22c55e;
+color:#000;
+}
+
+/* ===== RESULT CARDS ===== */
+.result-box{
+background:#020617 !important;
+padding:12px !important;
+border-radius:10px !important;
+font-size:15px !important;
+border-left:4px solid #22c55e;
+}
+
+/* ===== PROFIT LOSS COLORS ===== */
+.green{
+color:#22c55e;
+font-weight:bold;
+font-size:16px;
+}
+
+.red{
+color:#ef4444;
+font-weight:bold;
+font-size:16px;
+}
+
+/* ===== GRAPH CARD ===== */
+canvas{
+width:100% !important;
+max-width:100%;
+height:250px !important;
+}
+
+/* ===== SPACING ===== */
+.card h2{
+margin-bottom:12px !important;
+}
+
+/* ===== MOBILE ===== */
+@media(max-width:600px){
+
+body{
+padding:10px;
+}
+
+h1{
+font-size:18px;
+}
+
+.card{
+padding:16px !important;
+}
+
+}
+
+/* 🔥 STOP SIDE SCROLL */
+html, body{
+max-width:100%;
+overflow-x:hidden;
+}
+
+/* ALL ELEMENTS INSIDE SCREEN */
+*{
+box-sizing:border-box;
+}
+
+/* CONTAINER FIX */
+.container{
+max-width:100%;
+overflow:hidden;
+}
+
+img, table, canvas, div{
+max-width:100%;
+}
+
+    /* 🔥 INPUT ZOOM + SHIFT FIX */
+input, select, textarea{
+font-size:16px !important; /* prevents mobile zoom */
+transform:scale(1);
+}
+
+/* 🔥 FIX RIGHT SIDE SHIFT */
+html, body{
+width:100%;
+overflow-x:hidden;
+position:relative;
+}
+
+/* 🔥 FIX CONTAINER WIDTH ISSUE */
+.container{
+width:100%;
+max-width:100%;
+padding:0;
+margin:0 auto;
+}
+
+/* 🔥 PREVENT ANY ELEMENT OVERFLOW */
+*{
+max-width:100%;
+}
+
+/* 🔥 FIX CARD STRETCH */
+.card{
+width:100%;
+}
+
+/* 🔥 FIX BUTTON STRETCH */
+button{
+width:100%;
+}
+
+/* 🔥 FIX STRATEGY BUTTON WRAP */
+#strategyList{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+justify-content:flex-start;
+}
+body {
+    background: #0f172a;
+}
+
+canvas {
+    background: #020617;
+    border-radius: 10px;
+}
+ 
 </style>
 </head>
 
 <body>
 
-<header>
-  <div class="logo">Swypio Pay</div>
-  <div class="nav">
-    <a href="#">Features</a>
-    <a href="#">Pricing</a>
-    <a href="#">Support</a>
-  </div>
-  <a href="#" class="cta">Get Started</a>
-</header>
+<div class="container">
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-text">
-    <h1>Accept Payments Instantly. Grow Faster.</h1>
-    <p>UPI, QR, Payment Links & APIs — everything you need to run your business smoothly.</p>
+<div class="app-header">
 
-    <div class="hero-buttons">
-      <a href="#" class="primary-btn">Get Started Free</a>
-      <a href="#" class="secondary-btn">Create Account</a>
-    </div>
-  </div>
+<div class="header-title">
+📊 Nifty Strategy Lab
+</div>
 
-  <div class="hero-img"></div>
-</section>
+<div class="header-sub">
+Options Strategy Builder & Analyzer
+</div>
 
-<!-- TRUST -->
-<section class="trust">
-  <h3>Trusted Across India</h3>
-  <div class="stats">
-    <div>10,000+ Businesses</div>
-    <div>₹100Cr+ Processed</div>
-    <div>24/7 Support</div>
-  </div>
-</section>
+</div>
 
-<!-- FEATURES -->
-<section class="section">
-  <h2>All-in-One Payments Platform</h2>
+<!-- MARKET INPUT PANEL -->
+<div class="card">
+<h2>Market Inputs</h2>
 
-  <div class="grid">
-    <div class="card">💸 UPI Payments<br>Instant payments anytime</div>
-    <div class="card">📱 QR Payments<br>Accept anywhere</div>
-    <div class="card">🔗 Payment Links<br>Share & get paid</div>
-    <div class="card">🔁 Subscriptions<br>Auto billing</div>
-    <div class="card">⚡ Instant Payouts</div>
-    <div class="card">🧩 Easy Integration</div>
-  </div>
-</section>
+<label>Spot Price</label>
+<input type="number" id="spot" placeholder="Enter Spot Price">
 
-<!-- STEPS -->
-<section class="section">
-  <h2>Start in Minutes</h2>
+<label>Market Bias</label>
+<select id="bias">
+    <option value="strong_bull">Strong Bullish</option>
+    <option value="mild_bull">Mild Bullish</option>
+    <option value="strong_bear">Strong Bearish</option>
+    <option value="mild_bear">Mild Bearish</option>
+    <option value="sideways">Sideways</option>
+</select>
 
-  <div class="steps">
-    <div class="step">1️⃣ Sign Up</div>
-    <div class="step">2️⃣ Setup QR/Links</div>
-    <div class="step">3️⃣ Get Paid</div>
-  </div>
-</section>
+<label>IV Expectation</label>
+<select id="iv">
+    <option value="up">IV Increase</option>
+    <option value="down">IV Decrease</option>
+    <option value="neutral">Neutral</option>
+</select>
 
-<!-- USE CASES -->
-<section class="section">
-  <h2>Built for Your Business</h2>
+<label>Days to Expiry</label>
+<input type="number" id="dte" placeholder="Days to Expiry">
 
-  <div class="grid">
-    <div class="use">🏪 Retail Shops</div>
-    <div class="use">💻 Freelancers</div>
-    <div class="use">🚚 Delivery Partners</div>
-    <div class="use">🛒 Online Sellers</div>
-  </div>
-</section>
+<label>Lot Size</label>
+<input type="number" id="lot" value="65">
 
-<!-- WHY -->
-<section class="section">
-  <h2>Why Swypio?</h2>
+<button onclick="suggestStrategy()">Suggest Strategy</button>
 
-  <div class="grid">
-    <div class="card">⚡ Instant onboarding</div>
-    <div class="card">💰 Lowest fees</div>
-    <div class="card">📲 Simple UI</div>
-    <div class="card">📞 24/7 support</div>
-  </div>
-</section>
+</div>
 
-<!-- PRICING -->
-<section class="section">
-  <h2>Simple Pricing</h2>
+<!-- STRATEGY LIST -->
+<div class="card">
+<h2>Strategy Suggestions</h2>
+<div id="strategyList"></div>
+</div>
 
-  <div class="pricing">
-    <div class="price">
-      <h3>Free</h3>
-      <p>₹0 Setup</p>
-      <a href="#" class="cta">Start Free</a>
-    </div>
+<!-- STRATEGY BUILDER -->
+<div class="card">
+<h2>Strategy Builder</h2>
+<div id="strategyBuilder"></div>
+</div>
 
-    <div class="price highlight">
-      <h3>Business</h3>
-      <p>Low Fees</p>
-      <a href="#" class="cta">Upgrade</a>
-    </div>
-  </div>
-</section>
+<!-- RESULTS -->
+<div class="card">
+<h2>Strategy Result</h2>
+<div id="results"></div>
 
-<!-- FAQ -->
-<section class="section">
-  <h2>FAQs</h2>
+<label>Margin Used (Optional)</label>
+<input type="number" id="margin" placeholder="Enter Margin Used">
 
-  <div class="faq">
-    <div><b>Is it safe?</b><br>Yes, bank-level security.</div>
-    <div><b>How fast onboarding?</b><br>Within minutes.</div>
-    <div><b>Do I need technical skills?</b><br>No, very simple.</div>
-  </div>
-</section>
+<button onclick="calculateStrategy()">Calculate</button>
+</div>
 
-<!-- FINAL CTA -->
-<section class="final">
-  <h2>Start Accepting Payments Today</h2>
-  <a href="#" class="cta">Get Started Now</a>
-</section>
+<!-- PAYOFF GRAPH -->
+<div class="card">
+<h2>Expiry Payoff Graph</h2>
+<canvas id="payoffChart"></canvas>
+</div>
 
-<!-- FOOTER -->
-<footer>
-  <p>© 2026 Swypio Solutions</p>
-  <p>Privacy • Terms • Contact</p>
-</footer>
+</div>
 
-<!-- WHATSAPP -->
-<a href="#" class="whatsapp">Chat on WhatsApp</a>
+<script>
+let selectedStrategy = "";
+let payoffData = [];
+
+// ===============================
+function suggestStrategy(){
+
+    const bias = document.getElementById("bias").value;
+    const iv = document.getElementById("iv").value;
+
+    let strategies = [];
+
+    if(bias === "strong_bull"){
+        strategies = ["Buy Call","Bull Call Spread","Sell Put","Bull Put Spread","Call Ratio Spread"];
+    }
+    else if(bias === "mild_bull"){
+        strategies = ["Bull Put Spread","Covered Call","Buy Call"];
+    }
+    else if(bias === "strong_bear"){
+        strategies = ["Buy Put","Bear Put Spread","Sell Call","Bear Call Spread","Put Ratio Spread"];
+    }
+    else if(bias === "mild_bear"){
+        strategies = ["Bear Call Spread","Sell Call","Buy Put"];
+    }
+    else{
+        strategies = ["Call Ratio Spread","Put Ratio Spread","Sell Call","Sell Put"];
+    }
+
+    let html = "";
+    strategies.forEach(s=>{
+        html += `<button onclick="selectStrategy(this,'${s}')">${s}</button>`;
+    });
+
+    document.getElementById("strategyList").innerHTML = html;
+}
+
+function selectStrategy(btn,strategy){
+
+    document.querySelectorAll("#strategyList button")
+        .forEach(b=>b.classList.remove("active"));
+
+    btn.classList.add("active");
+
+    loadStrategy(strategy);
+}
+
+// ===============================
+// LOAD STRATEGY INPUT FIELDS
+// ===============================
+function loadStrategy(strategy){
+
+    selectedStrategy = strategy;
+
+    let html = `<h3>${strategy}</h3>`;
+
+    if(strategy.includes("Buy Call") || strategy.includes("Sell Call")){
+        html += `
+        <label>Strike Price</label>
+        <input type="number" id="strike1">
+        <label>Premium</label>
+        <input type="number" id="premium1">`;
+    }
+
+    if(strategy.includes("Buy Put") || strategy.includes("Sell Put")){
+        html += `
+        <label>Strike Price</label>
+        <input type="number" id="strike1">
+        <label>Premium</label>
+        <input type="number" id="premium1">`;
+    }
+
+    if(strategy.includes("Spread") || strategy.includes("Ratio")){
+        html += `
+        <label>Strike 1</label>
+        <input type="number" id="strike1">
+        <label>Premium 1</label>
+        <input type="number" id="premium1">
+        <label>Strike 2</label>
+        <input type="number" id="strike2">
+        <label>Premium 2</label>
+        <input type="number" id="premium2">`;
+    }
+
+    if(strategy === "Covered Call" || strategy === "Protective Put"){
+        html += `
+        <label>Stock Price</label>
+        <input type="number" id="stockPrice">
+        <label>Strike Price</label>
+        <input type="number" id="strike1">
+        <label>Premium</label>
+        <input type="number" id="premium1">`;
+    }
+
+    document.getElementById("strategyBuilder").innerHTML = html;
+}
+
+// ===============================
+// CALCULATION ENGINE
+// ===============================
+function calculateStrategy(){
+
+    const spot = parseFloat(document.getElementById("spot").value);
+    const lot = parseFloat(document.getElementById("lot").value);
+    const margin = parseFloat(document.getElementById("margin").value) || 0;
+
+    let strike1 = parseFloat(document.getElementById("strike1")?.value || 0);
+    let premium1 = parseFloat(document.getElementById("premium1")?.value || 0);
+    let strike2 = parseFloat(document.getElementById("strike2")?.value || 0);
+    let premium2 = parseFloat(document.getElementById("premium2")?.value || 0);
+    let stockPrice = parseFloat(document.getElementById("stockPrice")?.value || 0);
+
+    let maxProfit=0, maxLoss=0, breakeven=0;
+
+    // ===== SINGLE LEG =====
+    if(selectedStrategy === "Buy Call"){
+        maxLoss = premium1 * lot;
+        breakeven = strike1 + premium1;
+        maxProfit = "Unlimited";
+    }
+
+    else if(selectedStrategy === "Buy Put"){
+        maxLoss = premium1 * lot;
+        breakeven = strike1 - premium1;
+        maxProfit = "Unlimited";
+    }
+
+    else if(selectedStrategy === "Sell Call"){
+        maxProfit = premium1 * lot;
+        breakeven = strike1 + premium1;
+        maxLoss = "Unlimited";
+    }
+
+    else if(selectedStrategy === "Sell Put"){
+        maxProfit = premium1 * lot;
+        breakeven = strike1 - premium1;
+        maxLoss = (strike1 - premium1) * lot;
+    }
+
+    // ===== SPREADS =====
+    else if(selectedStrategy === "Bull Call Spread"){
+        let net = premium1 - premium2;
+        maxProfit = ((strike2 - strike1 - net) * lot);
+        maxLoss = net * lot;
+        breakeven = strike1 + net;
+    }
+
+    else if(selectedStrategy === "Bear Put Spread"){
+        let net = premium1 - premium2;
+        maxProfit = ((strike1 - strike2 - net) * lot);
+        maxLoss = net * lot;
+        breakeven = strike1 - net;
+    }
+
+    else if(selectedStrategy === "Bull Put Spread"){
+        let net = premium1 - premium2;
+        maxProfit = net * lot;
+        maxLoss = ((strike1 - strike2 - net) * lot);
+        breakeven = strike1 - net;
+    }
+
+    else if(selectedStrategy === "Bear Call Spread"){
+        let net = premium1 - premium2;
+        maxProfit = net * lot;
+        maxLoss = ((strike2 - strike1 - net) * lot);
+        breakeven = strike1 + net;
+    }
+
+    // ===== COVERED / PROTECTIVE =====
+    else if(selectedStrategy === "Covered Call"){
+        maxProfit = ((strike1 - stockPrice + premium1) * lot);
+        maxLoss = (stockPrice - premium1) * lot;
+        breakeven = stockPrice - premium1;
+    }
+
+    else if(selectedStrategy === "Protective Put"){
+        maxLoss = ((stockPrice - strike1 + premium1) * lot);
+        maxProfit = "Unlimited";
+        breakeven = stockPrice + premium1;
+    }
+
+    // ===== RATIO =====
+    else if(selectedStrategy === "Call Ratio Spread"){
+        maxProfit = "Limited (Range Based)";
+        maxLoss = "Unlimited Above Upper Strike";
+        breakeven = "Multiple";
+    }
+
+    else if(selectedStrategy === "Put Ratio Spread"){
+        maxProfit = "Limited (Range Based)";
+        maxLoss = "Unlimited Below Lower Strike";
+        breakeven = "Multiple";
+    }
+
+    let roi = (margin && typeof maxProfit === "number") ? ((maxProfit/margin)*100).toFixed(2)+"%" : "-";
+
+    document.getElementById("results").innerHTML = `
+        <div class="result-box"><b>Max Profit:</b> <span class="green">${maxProfit}</span></div>
+        <div class="result-box"><b>Max Loss:</b> <span class="red">${maxLoss}</span></div>
+        <div class="result-box"><b>Breakeven:</b> ${breakeven}</div>
+        <div class="result-box"><b>Return % (if margin entered):</b> ${roi}</div>
+    `;
+
+}
+
+    // ===============================
+// PAYOFF GRAPH ENGINE
+// ===============================
+
+let chartInstance = null;
+
+function calculateStrategy(){
+
+    const spot = parseFloat(document.getElementById("spot").value);
+    const lot = parseFloat(document.getElementById("lot").value);
+    const margin = parseFloat(document.getElementById("margin").value) || 0;
+
+    let strike1 = parseFloat(document.getElementById("strike1")?.value || 0);
+    let premium1 = parseFloat(document.getElementById("premium1")?.value || 0);
+    let strike2 = parseFloat(document.getElementById("strike2")?.value || 0);
+    let premium2 = parseFloat(document.getElementById("premium2")?.value || 0);
+    let stockPrice = parseFloat(document.getElementById("stockPrice")?.value || 0);
+
+    let maxProfit=0, maxLoss=0, breakeven=0;
+
+    // === EXISTING CALCULATION LOGIC (keep same as Part 2) ===
+    // (Shortened here for clarity – your previous logic stays above)
+
+    // After calculation, generate payoff
+    generatePayoffChart(spot, lot, strike1, premium1, strike2, premium2, stockPrice);
+}
+
+
+// ===============================
+// PAYOFF CALCULATION
+// ===============================
+function generatePayoffChart(spot, lot, strike1, premium1, strike2, premium2, stockPrice){
+
+    let prices = [];
+    let pnl = [];
+
+    let min = Math.min(strike1, strike2 || strike1) - 500;
+let max = Math.max(strike1, strike2 || strike1) + 500;
+
+for(let price = min; price <= max; price += 25){
+
+        let total = 0;
+
+        // BUY CALL
+        if(selectedStrategy === "Buy Call"){
+            total = Math.max(0, price - strike1) - premium1;
+        }
+
+        // SELL CALL
+        else if(selectedStrategy === "Sell Call"){
+            total = premium1 - Math.max(0, price - strike1);
+        }
+
+        // BUY PUT
+        else if(selectedStrategy === "Buy Put"){
+            total = Math.max(0, strike1 - price) - premium1;
+        }
+
+        // SELL PUT
+        else if(selectedStrategy === "Sell Put"){
+            total = premium1 - Math.max(0, strike1 - price);
+        }
+
+        // BULL CALL SPREAD
+        else if(selectedStrategy === "Bull Call Spread"){
+            total =
+                (Math.max(0, price - strike1) - premium1) +
+                (premium2 - Math.max(0, price - strike2));
+        }
+
+        // BEAR PUT SPREAD
+        else if(selectedStrategy === "Bear Put Spread"){
+            total =
+                (Math.max(0, strike1 - price) - premium1) +
+                (premium2 - Math.max(0, strike2 - price));
+        }
+
+        // BULL PUT SPREAD
+        else if(selectedStrategy === "Bull Put Spread"){
+            total =
+                (premium1 - Math.max(0, strike1 - price)) +
+                (Math.max(0, strike2 - price) - premium2);
+        }
+
+        // BEAR CALL SPREAD
+        else if(selectedStrategy === "Bear Call Spread"){
+            total =
+                (premium1 - Math.max(0, price - strike1)) +
+                (Math.max(0, price - strike2) - premium2);
+        }
+
+        // COVERED CALL
+        else if(selectedStrategy === "Covered Call"){
+            total =
+                (price - stockPrice) +
+                (premium1 - Math.max(0, price - strike1));
+        }
+
+        // PROTECTIVE PUT
+        else if(selectedStrategy === "Protective Put"){
+            total =
+                (price - stockPrice) +
+                (Math.max(0, strike1 - price) - premium1);
+        }
+
+        // CALL RATIO (1 Buy, 2 Sell assumption)
+        else if(selectedStrategy === "Call Ratio Spread"){
+            total =
+                (Math.max(0, price - strike1) - premium1) +
+                2*(premium2 - Math.max(0, price - strike2));
+        }
+
+        // PUT RATIO (1 Buy, 2 Sell)
+        else if(selectedStrategy === "Put Ratio Spread"){
+            total =
+                (Math.max(0, strike1 - price) - premium1) +
+                2*(premium2 - Math.max(0, strike2 - price));
+        }
+
+        prices.push(price);
+        pnl.push(total * lot);
+    }
+
+    drawChart(prices, pnl);
+}
+
+
+// ===============================
+// DRAW CHART
+// ===============================
+function drawChart(prices, pnl){
+
+    const ctx = document.getElementById('payoffChart').getContext('2d');
+
+    if(chartInstance){
+        chartInstance.destroy();
+    }
+
+    // ===== BREAKEVEN DETECTION =====
+    let breakevens = [];
+    for(let i=1; i<pnl.length; i++){
+        if((pnl[i-1] <= 0 && pnl[i] > 0) || (pnl[i-1] >= 0 && pnl[i] < 0)){
+            breakevens.push(prices[i]);
+        }
+    }
+
+    // ===== GRADIENT =====
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, "rgba(0,200,0,0.25)");
+    gradient.addColorStop(0.5, "rgba(255,255,255,0.05)");
+    gradient.addColorStop(1, "rgba(255,0,0,0.25)");
+
+    chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: prices,
+            datasets: [
+            {
+                label: 'P/L at Expiry',
+                data: pnl,
+                borderColor: '#00bfff',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 0,
+                pointHoverRadius: 4
+            },
+
+            // Breakeven Points
+            {
+                label: 'Breakeven',
+                data: breakevens.map(b => 0),
+                borderColor: 'orange',
+                pointBackgroundColor: 'orange',
+                pointRadius: 6,
+                showLine: false
+            }
+            ]
+        },
+
+        options: {
+
+    responsive: true,
+
+    layout: {
+        padding: 10
+    },
+
+    plugins: {
+        legend: {
+            labels: {
+                color: "#ffffff",
+                font: {
+                    size: 12
+                }
+            }
+        },
+
+        tooltip: {
+            backgroundColor: "#111",
+            titleColor: "#fff",
+            bodyColor: "#fff",
+            borderColor: "#444",
+            borderWidth: 1,
+            callbacks: {
+                label: function(context){
+                    return `P/L: ₹ ${context.raw.toFixed(2)}`;
+                }
+            }
+        }
+    },
+
+    scales: {
+
+        x: {
+            ticks: {
+                color: "#aaa"
+            },
+            grid: {
+                color: "rgba(255,255,255,0.05)"
+            },
+            title: {
+                display: true,
+                text: "Price at Expiry",
+                color: "#fff"
+            }
+        },
+
+        y: {
+            ticks: {
+                color: "#aaa",
+                callback: function(value){
+                    return "₹" + value;
+                }
+            },
+            grid: {
+                color: "rgba(255,255,255,0.05)"
+            },
+            title: {
+                display: true,
+                text: "Profit / Loss",
+                color: "#fff"
+            }
+        }
+
+    }
+},
+
+            scales: {
+                x: {
+                    ticks: {
+                        color: "#ccc"
+                    },
+                    title: {
+                        display: true,
+                        text: 'Price at Expiry',
+                        color: "#fff"
+                    }
+                },
+
+                y: {
+                    ticks: {
+                        color: "#ccc",
+                        callback: function(value){
+                            return "₹" + value;
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Profit / Loss',
+                        color: "#fff"
+                    }
+                }
+            }
+        },
+
+        plugins: [
+
+        // ===== ZERO LINE =====
+        {
+            id: 'zeroLine',
+            afterDraw(chart){
+                const yScale = chart.scales.y;
+                const ctx = chart.ctx;
+                const y = yScale.getPixelForValue(0);
+
+                ctx.save();
+                ctx.strokeStyle = "white";
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5,5]);
+                ctx.beginPath();
+                ctx.moveTo(chart.chartArea.left, y);
+                ctx.lineTo(chart.chartArea.right, y);
+                ctx.stroke();
+                ctx.restore();
+            }
+        },
+
+        // ===== BREAKEVEN LINES =====
+        // ===== BREAKEVEN LINES =====
+{
+    id: 'breakevenLines',
+    afterDraw(chart){
+        const ctx = chart.ctx;
+        const xScale = chart.scales.x;
+
+        breakevens.forEach(b=>{
+            const x = xScale.getPixelForValue(b);
+
+            ctx.save();
+            ctx.strokeStyle = "orange";
+            ctx.setLineDash([4,4]);
+
+            ctx.beginPath();
+            ctx.moveTo(x, chart.chartArea.top);
+            ctx.lineTo(x, chart.chartArea.bottom);
+            ctx.stroke();
+
+            ctx.fillStyle = "orange";
+            ctx.fillText(`BE: ${b}`, x-20, chart.chartArea.top + 10);
+
+            ctx.restore();
+        });
+    }
+},   // 👈 VERY IMPORTANT COMMA HERE
+
+// ===== SPOT LINE =====
+{
+    id: 'spotLine',
+    afterDraw(chart){
+        const ctx = chart.ctx;
+        const xScale = chart.scales.x;
+
+        const spot = parseFloat(document.getElementById("spot").value);
+        const x = xScale.getPixelForValue(spot);
+
+        ctx.save();
+        ctx.strokeStyle = "yellow";
+        ctx.setLineDash([6,3]);
+
+        ctx.beginPath();
+        ctx.moveTo(x, chart.chartArea.top);
+        ctx.lineTo(x, chart.chartArea.bottom);
+        ctx.stroke();
+
+        ctx.fillStyle = "yellow";
+        ctx.fillText("SPOT", x-15, chart.chartArea.top + 20);
+
+        ctx.restore();
+    }
+},
+
+// ===== MAX PROFIT & LOSS =====
+{
+    id: 'maxPoints',
+    afterDraw(chart){
+        const ctx = chart.ctx;
+        const xScale = chart.scales.x;
+        const yScale = chart.scales.y;
+
+        const data = chart.data.datasets[0].data;
+
+        let maxProfit = Math.max(...data);
+        let maxLoss = Math.min(...data);
+
+        let profitIndex = data.indexOf(maxProfit);
+        let lossIndex = data.indexOf(maxLoss);
+
+        let xProfit = xScale.getPixelForValue(chart.data.labels[profitIndex]);
+        let yProfit = yScale.getPixelForValue(maxProfit);
+
+        let xLoss = xScale.getPixelForValue(chart.data.labels[lossIndex]);
+        let yLoss = yScale.getPixelForValue(maxLoss);
+
+        ctx.save();
+
+        // GREEN DOT (Max Profit)
+        ctx.fillStyle = "green";
+        ctx.beginPath();
+        ctx.arc(xProfit, yProfit, 5, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.fillText("Max Profit", xProfit - 30, yProfit - 10);
+
+        // RED DOT (Max Loss)
+        ctx.fillStyle = "red";
+        ctx.beginPath();
+        ctx.arc(xLoss, yLoss, 5, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.fillText("Max Loss", xLoss - 30, yLoss + 15);
+
+        ctx.restore();
+    }
+},
+                              
+// ===== STRIKE LINES =====
+{
+    id: 'strikeLines',
+    afterDraw(chart){
+        const ctx = chart.ctx;
+        const xScale = chart.scales.x;
+
+        const strike1 = parseFloat(document.getElementById("strike1")?.value || 0);
+        const strike2 = parseFloat(document.getElementById("strike2")?.value || 0);
+
+        ctx.save();
+
+        // STRIKE 1
+        if(strike1){
+            const x1 = xScale.getPixelForValue(strike1);
+
+            ctx.strokeStyle = "#00ffcc";
+            ctx.setLineDash([3,3]);
+
+            ctx.beginPath();
+            ctx.moveTo(x1, chart.chartArea.top);
+            ctx.lineTo(x1, chart.chartArea.bottom);
+            ctx.stroke();
+
+            ctx.fillStyle = "#00ffcc";
+            ctx.fillText("K1", x1 - 10, chart.chartArea.bottom - 5);
+        }
+
+        // STRIKE 2
+        if(strike2){
+            const x2 = xScale.getPixelForValue(strike2);
+
+            ctx.strokeStyle = "#ff66ff";
+            ctx.setLineDash([3,3]);
+
+            ctx.beginPath();
+            ctx.moveTo(x2, chart.chartArea.top);
+            ctx.lineTo(x2, chart.chartArea.bottom);
+            ctx.stroke();
+
+            ctx.fillStyle = "#ff66ff";
+            ctx.fillText("K2", x2 - 10, chart.chartArea.bottom - 5);
+        }
+
+        ctx.restore();
+    }
+}
+]
+    });
+}
+</script>
 
 </body>
 </html>
