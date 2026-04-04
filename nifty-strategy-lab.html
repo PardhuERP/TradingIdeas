@@ -438,8 +438,6 @@ let selectedStrategy = "";
 let payoffData = [];
 
 // ===============================
-// STRATEGY SUGGESTION ENGINE
-// ===============================
 function suggestStrategy(){
 
     const bias = document.getElementById("bias").value;
@@ -464,15 +462,21 @@ function suggestStrategy(){
     }
 
     let html = "";
-strategies.forEach(s=>{
-    html += `<button onclick="selectStrategy(this,'${s}')">${s}</button>`;
-});
-document.getElementById("strategyList").innerHTML = html;
+    strategies.forEach(s=>{
+        html += `<button onclick="selectStrategy(this,'${s}')">${s}</button>`;
+    });
+
+    document.getElementById("strategyList").innerHTML = html;
+}
 
 function selectStrategy(btn,strategy){
-document.querySelectorAll("#strategyList button").forEach(b=>b.classList.remove("active"));
-btn.classList.add("active");
-loadStrategy(strategy);
+
+    document.querySelectorAll("#strategyList button")
+        .forEach(b=>b.classList.remove("active"));
+
+    btn.classList.add("active");
+
+    loadStrategy(strategy);
 }
 
 // ===============================
