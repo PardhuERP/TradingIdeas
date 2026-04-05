@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Nifty Dashboard</title>
+  <style>
+    body {
+      background: #0f172a;
+      color: white;
+      font-family: Arial;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 15px;
+      width: 300px;
+      margin: auto;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    h2 { margin-bottom: 10px; }
+    .green { color: #22c55e; }
+    .red { color: #ef4444; }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+  <h2>📊 NIFTY</h2>
+  <p id="price">Loading...</p>
+  <p id="change"></p>
+  <hr>
+  <p id="eps"></p>
+  <p id="pe"></p>
+  <p id="status"></p>
+</div>
+
+<script>
+  const url = "YOUR_GAS_URL_HERE"; // 🔥 paste your GAS URL
+
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+
+      document.getElementById("price").innerText = "Price: " + data.price;
+
+      const changeText = data.change + " (" + data.percent + "%)";
+      document.getElementById("change").innerText = changeText;
+
+      if (data.change > 0)
+        document.getElementById("change").classList.add("green");
+      else
+        document.getElementById("change").classList.add("red");
+
+      document.getElementById("eps").innerText = "EPS: " + data.eps;
+      document.getElementById("pe").innerText = "P/E: " + data.pe;
+      document.getElementById("status").innerText = "Status: " + data.status;
+
+    });
+</script>
+
+</body>
+</html>
