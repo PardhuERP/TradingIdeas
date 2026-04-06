@@ -169,7 +169,8 @@ function updateGauge(pe) {
     angle = 120 + ((pe - 22) / (40 - 22)) * 60;
   }
 
-  document.getElementById("needle").style.transform = `rotate(${angle}deg)`;
+ document.getElementById("needle").style.transform =
+  `rotate(${angle - 90}deg) translateX(-50%)`; 
 }
 
 function loadData() {
