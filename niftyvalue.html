@@ -1,90 +1,103 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Nifty Pro Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      background: linear-gradient(135deg, #0f172a, #020617);
-      color: white;
-      font-family: 'Segoe UI', Arial;
-      margin: 0;
-      padding: 20px;
-    }
+<title>Nifty Dashboard</title>
 
-    .container {
-      max-width: 400px;
-      margin: auto;
-    }
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Arial;
+  background: linear-gradient(135deg, #020617, #0f172a);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
 
-    .card {
-      background: rgba(30, 41, 59, 0.9);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      padding: 25px;
-      box-shadow: 0 0 30px rgba(0,0,0,0.6);
-      text-align: center;
-    }
+/* 🔥 FULL SCREEN CONTAINER */
+.container {
+  width: 100%;
+  max-width: 420px;
+  padding: 15px;
+}
 
-    h1 {
-      margin: 0;
-      font-size: 22px;
-      opacity: 0.8;
-    }
+/* 🔥 BIG CARD */
+.card {
+  width: 100%;
+  background: rgba(30, 41, 59, 0.95);
+  border-radius: 25px;
+  padding: 30px 20px;
+  box-shadow: 0 0 40px rgba(0,0,0,0.7);
+  text-align: center;
+}
 
-    .price {
-      font-size: 36px;
-      font-weight: bold;
-      margin: 10px 0;
-    }
+/* TITLE */
+.title {
+  font-size: 20px;
+  opacity: 0.7;
+}
 
-    .change {
-      font-size: 18px;
-      margin-bottom: 15px;
-    }
+/* 🔥 BIG PRICE */
+.price {
+  font-size: 42px;
+  font-weight: bold;
+  margin: 10px 0;
+}
 
-    .green { color: #22c55e; }
-    .red { color: #ef4444; }
+/* CHANGE */
+.change {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
 
-    .divider {
-      height: 1px;
-      background: rgba(255,255,255,0.1);
-      margin: 15px 0;
-    }
+.green { color: #22c55e; }
+.red { color: #ef4444; }
 
-    .row {
-      display: flex;
-      justify-content: space-between;
-      margin: 8px 0;
-      font-size: 16px;
-    }
+/* INFO ROW */
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin: 12px 0;
+  font-size: 18px;
+}
 
-    .label {
-      opacity: 0.7;
-    }
+.label { opacity: 0.6; }
+.value { font-weight: bold; }
 
-    .value {
-      font-weight: bold;
-    }
+/* 🔥 STATUS BAR */
+.status-bar {
+  margin-top: 20px;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: bold;
+}
 
-    .status {
-      margin-top: 15px;
-      padding: 10px;
-      border-radius: 10px;
-      font-weight: bold;
-    }
+.fair {
+  background: rgba(250, 204, 21, 0.2);
+  color: #facc15;
+}
 
-    .fair { background: rgba(250, 204, 21, 0.2); color: #facc15; }
-    .cheap { background: rgba(34,197,94,0.2); color: #22c55e; }
-    .expensive { background: rgba(239,68,68,0.2); color: #ef4444; }
+.cheap {
+  background: rgba(34,197,94,0.2);
+  color: #22c55e;
+}
 
-    .footer {
-      text-align: center;
-      margin-top: 10px;
-      font-size: 12px;
-      opacity: 0.5;
-    }
-  </style>
+.expensive {
+  background: rgba(239,68,68,0.2);
+  color: #ef4444;
+}
+
+/* FOOTER */
+.footer {
+  margin-top: 15px;
+  font-size: 12px;
+  opacity: 0.5;
+}
+</style>
 </head>
 
 <body>
@@ -92,12 +105,10 @@
 <div class="container">
   <div class="card">
 
-    <h1>📊 NIFTY 50</h1>
+    <div class="title">📊 NIFTY 50</div>
 
     <div id="price" class="price">Loading...</div>
     <div id="change" class="change"></div>
-
-    <div class="divider"></div>
 
     <div class="row">
       <div class="label">EPS</div>
@@ -109,48 +120,42 @@
       <div id="pe" class="value"></div>
     </div>
 
-    <div id="statusBox" class="status"></div>
+    <div id="statusBox" class="status-bar"></div>
+
+    <div class="footer">By Pardhu 🚀</div>
 
   </div>
-
-  <div class="footer"> By Pardhu </div>
 </div>
 
 <script>
-  const url = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=nifty";
+const url = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=nifty";
 
-  function loadData() {
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
+function loadData() {
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
 
-        // Price
-        document.getElementById("price").innerText = data.price;
+      document.getElementById("price").innerText = data.price;
 
-        // Change
-        const changeEl = document.getElementById("change");
-        changeEl.innerText = data.change + " (" + data.percent + "%)";
-        changeEl.className = "change " + (data.change >= 0 ? "green" : "red");
+      const changeEl = document.getElementById("change");
+      changeEl.innerText = data.change + " (" + data.percent + "%)";
+      changeEl.className = "change " + (data.change >= 0 ? "green" : "red");
 
-        // EPS & PE
-        document.getElementById("eps").innerText = data.eps;
-        document.getElementById("pe").innerText = data.pe;
+      document.getElementById("eps").innerText = data.eps;
+      document.getElementById("pe").innerText = data.pe;
 
-        // Status styling
-        const statusBox = document.getElementById("statusBox");
-        statusBox.innerText = data.status;
+      const statusBox = document.getElementById("statusBox");
+      statusBox.innerText = data.status;
 
-        if (data.pe < 15) statusBox.className = "status cheap";
-        else if (data.pe <= 22) statusBox.className = "status fair";
-        else statusBox.className = "status expensive";
+      if (data.pe < 15) statusBox.className = "status-bar cheap";
+      else if (data.pe <= 22) statusBox.className = "status-bar fair";
+      else statusBox.className = "status-bar expensive";
 
-      });
-  }
+    });
+}
 
-  loadData();
-
-  // 🔥 Auto refresh every 10 sec
-  setInterval(loadData, 10000);
+loadData();
+setInterval(loadData, 10000);
 </script>
 
 </body>
