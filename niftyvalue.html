@@ -40,24 +40,14 @@
 
 <script>
   const url = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=fiidashboard"; // 🔥 paste your GAS URL
-
-  fetch(url)
+ fetch(url)
     .then(res => res.json())
     .then(data => {
 
-      document.getElementById("price").innerText = "Price: " + data.price;
-
-      const changeText = data.change + " (" + data.percent + "%)";
-      document.getElementById("change").innerText = changeText;
-
-      if (data.change > 0)
-        document.getElementById("change").classList.add("green");
-      else
-        document.getElementById("change").classList.add("red");
-
-      document.getElementById("eps").innerText = "EPS: " + data.eps;
-      document.getElementById("pe").innerText = "P/E: " + data.pe;
-      document.getElementById("status").innerText = "Status: " + data.status;
+      document.getElementById("price").innerText = data.price;
+      document.getElementById("change").innerText = data.change + " (" + data.percent + "%)";
+      document.getElementById("pe").innerText = data.pe;
+      document.getElementById("status").innerText = data.status;
 
     });
 </script>
