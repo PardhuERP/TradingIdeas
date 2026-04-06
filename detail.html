@@ -151,18 +151,27 @@ fetch(url)
 });
 
 // 🔥 LIVE MINI CHART (YAHOO)
-fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`)
+// 🔥 LIVE MINI CHART (FIXED + CLEAN)
+const ctx = document.getElementById("chart").getContext("2d");
+
+fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=1d&interval=5m`)
 .then(res => res.json())
 .then(chartData => {
 
   const result = chartData.chart.result[0];
   const prices = result.indicators.quote[0].close;
 
-  const filtered = prices.slice(-30);
+  // 🔥 REMOVE NULL VALUES
+  const filtered = prices.filter(p => p !== null);
+
+  if (!filtered || filtered.length === 0) {
+    console.log("No chart data");
+    return;
+  }
 
   const isUp = filtered[0] < filtered[filtered.length - 1];
 
-  new Chart(document.getElementById("chart"), {
+  new Chart(ctx, {
     type: 'line',
     data: {
       labels: filtered.map((_, i) => i),
@@ -171,10 +180,13 @@ fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`)
         borderColor: isUp ? "#22c55e" : "#ef4444",
         borderWidth: 2,
         tension: 0.3,
-        fill: false
+        fill: false,
+        pointRadius: 0
       }]
     },
     options: {
+      responsive: true,
+      maintainAspectRatio: false,
       plugins: { legend: { display: false }},
       scales: {
         x: { display: false },
@@ -183,6 +195,9 @@ fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`)
     }
   });
 
+})
+.catch(err => {
+  console.log("Chart error:", err);
 });
 </script>
 
