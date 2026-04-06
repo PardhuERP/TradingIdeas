@@ -108,30 +108,35 @@ body {
 <div class="container" id="grid"></div>
 
 <script>
-const url = "https://script.google.com/macros/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=market";
+ const url = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=market";
+
 let allData = [];
+
+// 🔥 FETCH DATA
 fetch(url)
 .then(res => res.json())
 .then(data => {
-
   allData = data;
-
-  renderCards(data); // default show all
+  renderCards(data);
 });
-  const grid = document.getElementById("grid");
 
-  // 🔥 SORT BY PE (CHEAP → EXPENSIVE)
+// 🔥 RENDER FUNCTION
+function renderCards(data) {
+
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+
+  // SORT BY PE
   data.sort((a, b) => parseFloat(a.pe) - parseFloat(b.pe));
 
   data.forEach(stock => {
 
-    // ✅ SAFETY CHECK
     if (!stock) return;
 
     const card = document.createElement("div");
     card.className = "card";
 
-    // 🔥 CLICK NAVIGATION (UPDATED → symbol)
+    // CLICK NAVIGATION
     card.onclick = () => {
       window.location.href = "detail.html?symbol=" + stock.symbol;
     };
@@ -139,78 +144,12 @@ fetch(url)
     const changeClass = stock.change >= 0 ? "green" : "red";
     const statusClass = stock.status.toLowerCase();
 
-    // 🔥 ALERT BORDER
+    // ALERT BORDER
     if (parseFloat(stock.pe) > 25) {
       card.style.border = "1px solid red";
     }
 
-    function renderCards(data) {
-
-  const grid = document.getElementById("grid");
-  grid.innerHTML = ""; // clear old
-
-  data.sort((a, b) => parseFloat(a.pe) - parseFloat(b.pe));
-
-  data.forEach(stock => {
-
-    const card = document.createElement("div");
-    card.className = "card";
-
-    card.onclick = () => {
-      window.location.href = "detail.html?symbol=" + stock.symbol;
-    };
-
-    const changeClass = stock.change >= 0 ? "green" : "red";
-    const statusClass = stock.status.toLowerCase();
-
-    if (parseFloat(stock.pe) > 25) {
-      card.style.border = "1px solid red";
-    }
-
-    card.innerHTML = `
-      <div>
-        <div class="title">${stock.name}</div>
-        <div class="price">${parseFloat(stock.price).toFixed(2)}</div>
-        <div class="change ${changeClass}">
-          ${stock.change} (${stock.percent}%)
-        </div>
-      </div>
-
-      <div>
-        <div class="row">
-          <span>EPS</span>
-          <span>${stock.eps}</span>
-        </div>
-
-        <div class="row">
-          <span>P/E</span>
-          <span>${stock.pe}</span>
-        </div>
-      </div>
-
-      <div class="status ${statusClass}">
-        ${stock.status}
-      </div>
-    `;
-
-    grid.appendChild(card);
-  });
-
-}
-
-  function applyFilter(type) {
-
-  if (type === "ALL") {
-    renderCards(allData);
-    return;
-  }
-
-  const filtered = allData.filter(s => s.status === type);
-
-  renderCards(filtered);
-}
-
-    // ✅ FORMAT NUMBERS (PRO LOOK)
+    // FORMAT
     const price = parseFloat(stock.price).toFixed(2);
     const change = parseFloat(stock.change).toFixed(2);
     const percent = parseFloat(stock.percent).toFixed(2);
@@ -242,16 +181,26 @@ fetch(url)
       </div>
     `;
 
-    // 🔥 TOUCH EFFECT (SMOOTH UI)
+    // TOUCH EFFECT
     card.style.transition = "0.2s";
     card.onmousedown = () => card.style.transform = "scale(0.97)";
     card.onmouseup = () => card.style.transform = "scale(1)";
 
     grid.appendChild(card);
-
   });
+}
 
-});
+// 🔥 FILTER FUNCTION
+function applyFilter(type) {
+
+  if (type === "ALL") {
+    renderCards(allData);
+    return;
+  }
+
+  const filtered = allData.filter(s => s.status === type);
+  renderCards(filtered);
+}
 </script>
 
 </body>
