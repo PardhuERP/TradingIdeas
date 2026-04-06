@@ -90,51 +90,65 @@ fetch(url)
   const grid = document.getElementById("grid");
 
   // 🔥 SORT BY PE (CHEAP → EXPENSIVE)
-  data.sort((a, b) => a.pe - b.pe);
+  data.sort((a, b) => parseFloat(a.pe) - parseFloat(b.pe));
 
   data.forEach(stock => {
+
+    // ✅ SAFETY CHECK
+    if (!stock) return;
 
     const card = document.createElement("div");
     card.className = "card";
 
-    // 🔥 CLICK NAVIGATION
+    // 🔥 CLICK NAVIGATION (UPDATED → symbol)
     card.onclick = () => {
-      window.location.href = "detail.html?stock=" + stock.name;
+      window.location.href = "detail.html?symbol=" + stock.symbol;
     };
 
     const changeClass = stock.change >= 0 ? "green" : "red";
     const statusClass = stock.status.toLowerCase();
 
     // 🔥 ALERT BORDER
-    if (stock.pe > 25) {
+    if (parseFloat(stock.pe) > 25) {
       card.style.border = "1px solid red";
     }
 
+    // ✅ FORMAT NUMBERS (PRO LOOK)
+    const price = parseFloat(stock.price).toFixed(2);
+    const change = parseFloat(stock.change).toFixed(2);
+    const percent = parseFloat(stock.percent).toFixed(2);
+    const pe = parseFloat(stock.pe).toFixed(2);
+
     card.innerHTML = `
-  <div>
-    <div class="title">${stock.name}</div>
-    <div class="price">${stock.price}</div>
-    <div class="change ${changeClass}">
-      ${stock.change} (${stock.percent}%)
-    </div>
-  </div>
+      <div>
+        <div class="title">${stock.name}</div>
+        <div class="price">${price}</div>
+        <div class="change ${changeClass}">
+          ${change} (${percent}%)
+        </div>
+      </div>
 
-  <div>
-    <div class="row">
-      <span>EPS</span>
-      <span>${stock.eps}</span>
-    </div>
+      <div>
+        <div class="row">
+          <span>EPS</span>
+          <span>${stock.eps}</span>
+        </div>
 
-    <div class="row">
-      <span>P/E</span>
-      <span>${stock.pe}</span>
-    </div>
-  </div>
+        <div class="row">
+          <span>P/E</span>
+          <span>${pe}</span>
+        </div>
+      </div>
 
-  <div class="status ${statusClass}">
-    ${stock.status}
-  </div>
-`;
+      <div class="status ${statusClass}">
+        ${stock.status}
+      </div>
+    `;
+
+    // 🔥 TOUCH EFFECT (SMOOTH UI)
+    card.style.transition = "0.2s";
+    card.onmousedown = () => card.style.transform = "scale(0.97)";
+    card.onmouseup = () => card.style.transform = "scale(1)";
 
     grid.appendChild(card);
 
