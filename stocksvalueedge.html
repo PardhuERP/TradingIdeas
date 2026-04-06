@@ -14,8 +14,14 @@ body {
 .container {
   padding: 10px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
+}
+
+@media (min-width: 600px) {
+  .container {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 /* CARD */
@@ -77,11 +83,15 @@ fetch(url)
 .then(data => {
 
   const grid = document.getElementById("grid");
+  
 
   data.forEach(stock => {
 
     const card = document.createElement("div");
     card.className = "card";
+    card.onclick = () => {
+  window.location.href = "detail.html?stock=" + stock.name;
+};
 
     const changeClass = stock.change >= 0 ? "green" : "red";
     const statusClass = stock.status.toLowerCase();
@@ -98,10 +108,16 @@ fetch(url)
         <span>${stock.eps}</span>
       </div>
 
+      <canvas id="chart_${stock.name}" height="50"></canvas>
+
       <div class="row">
         <span>P/E</span>
         <span>${stock.pe}</span>
       </div>
+
+     if (stock.pe > 25) {
+  card.style.border = "1px solid red";
+} 
 
       <div class="status ${statusClass}">
         ${stock.status}
@@ -109,6 +125,7 @@ fetch(url)
     `;
 
     grid.appendChild(card);
+    result.sort((a, b) => a.pe - b.pe);
   });
 
 });
