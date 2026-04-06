@@ -88,6 +88,16 @@ color:#94a3b8;
 padding:20px;
 }
 
+.buttons{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+}
+
+.buttons button{
+flex:1 1 30%;
+}
+
 </style>
 
 </head>
@@ -101,6 +111,8 @@ padding:20px;
 <button onclick="loadData('R', this)">Nifty 100</button>
 <button onclick="loadData('T', this)">Nifty 200</button>
 <button onclick="loadData('V', this)">Nifty 500</button>
+<button onclick="loadData('W', this)" style="background:#facc15;color:black;">🔥 5X</button>
+<button onclick="loadData('X', this)" style="background:#ef4444;color:white;">🚀 10X</button>
 </div>
 
 <div class="card" id="stockList">
