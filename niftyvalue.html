@@ -3,7 +3,7 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Nifty Dashboard</title>
+<title>ValuEdge Dashboard</title>
 
 <style>
 body {
@@ -17,14 +17,12 @@ body {
   height: 100vh;
 }
 
-/* 🔥 FULL SCREEN CONTAINER */
 .container {
   width: 100%;
   max-width: 420px;
   padding: 15px;
 }
 
-/* 🔥 BIG CARD */
 .card {
   width: 100%;
   background: rgba(30, 41, 59, 0.95);
@@ -34,20 +32,17 @@ body {
   text-align: center;
 }
 
-/* TITLE */
 .title {
   font-size: 20px;
   opacity: 0.7;
 }
 
-/* 🔥 BIG PRICE */
 .price {
   font-size: 42px;
   font-weight: bold;
   margin: 10px 0;
 }
 
-/* CHANGE */
 .change {
   font-size: 18px;
   margin-bottom: 20px;
@@ -56,7 +51,6 @@ body {
 .green { color: #22c55e; }
 .red { color: #ef4444; }
 
-/* INFO ROW */
 .row {
   display: flex;
   justify-content: space-between;
@@ -67,31 +61,22 @@ body {
 .label { opacity: 0.6; }
 .value { font-weight: bold; }
 
-/* 🔥 STATUS BAR */
-.status-bar {
-  margin-top: 20px;
-  padding: 12px;
-  border-radius: 12px;
+/* 🔥 GAUGE */
+.gauge-container {
+  margin: 25px 0;
+}
+
+canvas {
+  width: 100%;
+  height: 150px;
+}
+
+.status-text {
+  margin-top: 10px;
   font-size: 18px;
   font-weight: bold;
 }
 
-.fair {
-  background: rgba(250, 204, 21, 0.2);
-  color: #facc15;
-}
-
-.cheap {
-  background: rgba(34,197,94,0.2);
-  color: #22c55e;
-}
-
-.expensive {
-  background: rgba(239,68,68,0.2);
-  color: #ef4444;
-}
-
-/* FOOTER */
 .footer {
   margin-top: 15px;
   font-size: 12px;
@@ -120,15 +105,59 @@ body {
       <div id="pe" class="value"></div>
     </div>
 
-    <div id="statusBox" class="status-bar"></div>
+    <!-- 🔥 GAUGE -->
+    <div class="gauge-container">
+      <canvas id="gauge"></canvas>
+      <div id="status" class="status-text"></div>
+    </div>
 
-    <div class="footer">By Pardhu 🚀</div>
+    <div class="footer">ValuEdge 🚀</div>
 
   </div>
 </div>
 
 <script>
 const url = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=nifty";
+
+function drawGauge(pe) {
+  const canvas = document.getElementById("gauge");
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = 300;
+  canvas.height = 150;
+
+  const centerX = 150;
+  const centerY = 130;
+  const radius = 100;
+
+  // Background arcs
+  drawArc(ctx, centerX, centerY, radius, Math.PI, Math.PI * 1.33, "#22c55e"); // cheap
+  drawArc(ctx, centerX, centerY, radius, Math.PI * 1.33, Math.PI * 1.66, "#facc15"); // fair
+  drawArc(ctx, centerX, centerY, radius, Math.PI * 1.66, Math.PI * 2, "#ef4444"); // expensive
+
+  // Needle position
+  const maxPE = 40;
+  const angle = Math.PI + (pe / maxPE) * Math.PI;
+
+  const needleLength = 80;
+  const x = centerX + needleLength * Math.cos(angle);
+  const y = centerY + needleLength * Math.sin(angle);
+
+  ctx.beginPath();
+  ctx.moveTo(centerX, centerY);
+  ctx.lineTo(x, y);
+  ctx.strokeStyle = "white";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+}
+
+function drawArc(ctx, x, y, r, start, end, color) {
+  ctx.beginPath();
+  ctx.arc(x, y, r, start, end);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 10;
+  ctx.stroke();
+}
 
 function loadData() {
   fetch(url)
@@ -142,21 +171,4 @@ function loadData() {
       changeEl.className = "change " + (data.change >= 0 ? "green" : "red");
 
       document.getElementById("eps").innerText = data.eps;
-      document.getElementById("pe").innerText = data.pe;
-
-      const statusBox = document.getElementById("statusBox");
-      statusBox.innerText = data.status;
-
-      if (data.pe < 15) statusBox.className = "status-bar cheap";
-      else if (data.pe <= 22) statusBox.className = "status-bar fair";
-      else statusBox.className = "status-bar expensive";
-
-    });
-}
-
-loadData();
-setInterval(loadData, 10000);
-</script>
-
-</body>
-</html>
+      document.getElementById("pe
