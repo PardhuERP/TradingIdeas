@@ -66,24 +66,24 @@ body {
 }
 
 .needle {
-  width: 2px;
-  height: 90px;
+  width: 3px;
+  height: 70px;
   background: white;
   position: absolute;
-  bottom: 0;
+  bottom: 50%;
   left: 50%;
-  transform-origin: bottom;
-  transform: rotate(0deg);
-  transition: 0.5s;
+  transform-origin: bottom center;
+  transform: rotate(0deg) translateX(-50%);
+  transition: 0.5s ease;
 }
 
 .center-dot {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   background: white;
   border-radius: 50%;
   position: absolute;
-  bottom: 0;
+  bottom: 50%;
   left: 50%;
   transform: translate(-50%, 50%);
 }
