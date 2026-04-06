@@ -79,8 +79,8 @@ button {
 }
 
 canvas {
-  width:100%;
-  height:60px;
+  display:block;
+  margin-top:5px;
 }
 </style>
 </head>
@@ -97,7 +97,9 @@ canvas {
 <div id="popup" class="popup"></div>
 
 <script>
+
 const url = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=market";
+
 let globalData = [];
 
 fetch(url)
@@ -113,10 +115,12 @@ function render(data) {
 
   data.forEach(stock => {
 
+    const safeId = stock.name.replace(/\s/g,'');
+
     const card = document.createElement("div");
     card.className = "card";
 
-    if (stock.pe > 25) card.classList.add("alert");
+    if (parseFloat(stock.pe) > 25) card.classList.add("alert");
 
     card.onclick = () => openDetail(stock);
 
@@ -127,7 +131,7 @@ function render(data) {
         ${stock.percent}%
       </div>
 
-      <canvas id="chart-${stock.name}"></canvas>
+      <canvas id="chart-${safeId}"></canvas>
 
       <div class="status ${stock.status.toLowerCase()}">
         ${stock.status}
@@ -136,32 +140,53 @@ function render(data) {
 
     grid.appendChild(card);
 
-    drawChart(stock.mini, `chart-${stock.name}`);
+    drawChart(stock.mini, `chart-${safeId}`);
   });
 }
 
-/* MINI CHART */
+/* 🔥 FINAL CHART FIX */
 function drawChart(data, id) {
+
   const canvas = document.getElementById(id);
+  if (!canvas) return;
+
   const ctx = canvas.getContext("2d");
+
+  // Set internal size
+  canvas.width = 140;
+  canvas.height = 60;
+
+  // Clean data
+  data = (data || []).filter(v => v !== null && v !== undefined);
+
+  if (data.length < 2) return;
 
   const max = Math.max(...data);
   const min = Math.min(...data);
+  const range = (max - min) || 1;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   ctx.beginPath();
 
-  data.forEach((val, i) => {
-    const x = (i / data.length) * canvas.width;
-    const y = canvas.height - ((val - min)/(max-min)) * canvas.height;
+  // Color based on trend
+  ctx.strokeStyle = data[data.length-1] > data[0] ? "#22c55e" : "#ef4444";
+  ctx.lineWidth = 2;
 
-    if(i===0) ctx.moveTo(x,y);
-    else ctx.lineTo(x,y);
+  data.forEach((val, i) => {
+
+    const x = (i / (data.length - 1)) * canvas.width;
+    const y = canvas.height - ((val - min) / range) * canvas.height;
+
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+
   });
 
   ctx.stroke();
 }
 
-/* POPUP DETAIL */
+/* POPUP */
 function openDetail(stock) {
   const popup = document.getElementById("popup");
 
@@ -186,13 +211,14 @@ function closePopup() {
 function sortData(type) {
 
   if(type === "pe") {
-    globalData.sort((a,b) => a.pe - b.pe);
+    globalData.sort((a,b) => parseFloat(a.pe) - parseFloat(b.pe));
   } else {
     globalData.sort((a,b) => b.percent - a.percent);
   }
 
   render(globalData);
 }
+
 </script>
 
 </body>
