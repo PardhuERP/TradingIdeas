@@ -68,6 +68,27 @@ body {
   font-weight: bold;
 }
 
+ .filters {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  justify-content: center;
+}
+
+.filters button {
+  background: #1e293b;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.filters button:hover {
+  background: #334155;
+} 
+
 /* COLORS */
 .cheap { background: rgba(34,197,94,0.15); color: #22c55e; }
 .fair { background: rgba(250,204,21,0.15); color: #facc15; }
@@ -77,16 +98,26 @@ body {
 </head>
 
 <body>
+  <div class="filters">
+  <button onclick="applyFilter('ALL')">All</button>
+  <button onclick="applyFilter('CHEAP')">Cheap</button>
+  <button onclick="applyFilter('FAIR')">Fair</button>
+  <button onclick="applyFilter('EXPENSIVE')">Expensive</button>
+</div>
 
 <div class="container" id="grid"></div>
 
 <script>
-const url = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=market";
-
+const url = "https://script.google.com/macros/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=market";
+let allData = [];
 fetch(url)
 .then(res => res.json())
 .then(data => {
 
+  allData = data;
+
+  renderCards(data); // default show all
+});
   const grid = document.getElementById("grid");
 
   // 🔥 SORT BY PE (CHEAP → EXPENSIVE)
@@ -112,6 +143,72 @@ fetch(url)
     if (parseFloat(stock.pe) > 25) {
       card.style.border = "1px solid red";
     }
+
+    function renderCards(data) {
+
+  const grid = document.getElementById("grid");
+  grid.innerHTML = ""; // clear old
+
+  data.sort((a, b) => parseFloat(a.pe) - parseFloat(b.pe));
+
+  data.forEach(stock => {
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.onclick = () => {
+      window.location.href = "detail.html?symbol=" + stock.symbol;
+    };
+
+    const changeClass = stock.change >= 0 ? "green" : "red";
+    const statusClass = stock.status.toLowerCase();
+
+    if (parseFloat(stock.pe) > 25) {
+      card.style.border = "1px solid red";
+    }
+
+    card.innerHTML = `
+      <div>
+        <div class="title">${stock.name}</div>
+        <div class="price">${parseFloat(stock.price).toFixed(2)}</div>
+        <div class="change ${changeClass}">
+          ${stock.change} (${stock.percent}%)
+        </div>
+      </div>
+
+      <div>
+        <div class="row">
+          <span>EPS</span>
+          <span>${stock.eps}</span>
+        </div>
+
+        <div class="row">
+          <span>P/E</span>
+          <span>${stock.pe}</span>
+        </div>
+      </div>
+
+      <div class="status ${statusClass}">
+        ${stock.status}
+      </div>
+    `;
+
+    grid.appendChild(card);
+  });
+
+}
+
+  function applyFilter(type) {
+
+  if (type === "ALL") {
+    renderCards(allData);
+    return;
+  }
+
+  const filtered = allData.filter(s => s.status === type);
+
+  renderCards(filtered);
+}
 
     // ✅ FORMAT NUMBERS (PRO LOOK)
     const price = parseFloat(stock.price).toFixed(2);
