@@ -83,18 +83,27 @@ fetch(url)
 .then(data => {
 
   const grid = document.getElementById("grid");
-  
+
+  // 🔥 SORT BY PE (CHEAP → EXPENSIVE)
+  data.sort((a, b) => a.pe - b.pe);
 
   data.forEach(stock => {
 
     const card = document.createElement("div");
     card.className = "card";
+
+    // 🔥 CLICK NAVIGATION
     card.onclick = () => {
-  window.location.href = "detail.html?stock=" + stock.name;
-};
+      window.location.href = "detail.html?stock=" + stock.name;
+    };
 
     const changeClass = stock.change >= 0 ? "green" : "red";
     const statusClass = stock.status.toLowerCase();
+
+    // 🔥 ALERT BORDER
+    if (stock.pe > 25) {
+      card.style.border = "1px solid red";
+    }
 
     card.innerHTML = `
       <div class="title">${stock.name}</div>
@@ -108,16 +117,12 @@ fetch(url)
         <span>${stock.eps}</span>
       </div>
 
-      <canvas id="chart_${stock.name}" height="50"></canvas>
-
       <div class="row">
         <span>P/E</span>
         <span>${stock.pe}</span>
       </div>
 
-     if (stock.pe > 25) {
-  card.style.border = "1px solid red";
-} 
+      <canvas id="chart_${stock.name}" height="40"></canvas>
 
       <div class="status ${statusClass}">
         ${stock.status}
@@ -125,7 +130,7 @@ fetch(url)
     `;
 
     grid.appendChild(card);
-    result.sort((a, b) => a.pe - b.pe);
+
   });
 
 });
