@@ -5,113 +5,220 @@
 
 <style>
 body {
-  margin: 0;
+  margin:0;
   font-family: Arial;
-  background: #020617;
-  color: white;
+  background:#020617;
+  color:white;
+}
+
+.topbar {
+  padding:10px;
+  display:flex;
+  justify-content:space-between;
+}
+
+button {
+  background:#1e293b;
+  border:none;
+  color:white;
+  padding:8px 12px;
+  border-radius:8px;
 }
 
 .container {
-  padding: 10px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  padding:10px;
 }
 
-/* CARD */
 .card {
-  background: #1e293b;
-  border-radius: 15px;
-  padding: 15px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+  background:#1e293b;
+  padding:12px;
+  border-radius:15px;
 }
 
-.title {
-  font-size: 14px;
-  opacity: 0.7;
-}
+.price { font-weight:bold; font-size:18px; }
 
-.price {
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.change {
-  font-size: 13px;
-}
-
-.green { color: #22c55e; }
-.red { color: #ef4444; }
-
-.row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  margin-top: 5px;
-}
+.green { color:#22c55e; }
+.red { color:#ef4444; }
 
 .status {
-  margin-top: 8px;
-  padding: 5px;
-  text-align: center;
-  border-radius: 8px;
-  font-size: 12px;
+  margin-top:5px;
+  font-size:12px;
+  text-align:center;
+  padding:4px;
+  border-radius:6px;
 }
 
-.cheap { background: rgba(34,197,94,0.2); color: #22c55e; }
-.fair { background: rgba(250,204,21,0.2); color: #facc15; }
-.expensive { background: rgba(239,68,68,0.2); color: #ef4444; }
+.cheap { background:#064e3b; }
+.fair { background:#713f12; }
+.expensive { background:#7f1d1d; }
 
+/* ALERT */
+.alert {
+  border:2px solid red;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  50% { opacity:0.5; }
+}
+
+/* POPUP */
+.popup {
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  background:#020617;
+  padding:20px;
+  border-top-left-radius:20px;
+  border-top-right-radius:20px;
+  display:none;
+}
+
+canvas {
+  display:block;
+  margin-top:5px;
+}
 </style>
 </head>
 
 <body>
 
-<div class="container" id="grid"></div>
+<div class="topbar">
+  <button onclick="sortData('pe')">Sort PE</button>
+  <button onclick="sortData('change')">Sort Move</button>
+</div>
+
+<div id="grid" class="container"></div>
+
+<div id="popup" class="popup"></div>
 
 <script>
+
 const url = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=market";
+
+let globalData = [];
 
 fetch(url)
 .then(res => res.json())
 .then(data => {
+  globalData = data;
+  render(data);
+});
 
+function render(data) {
   const grid = document.getElementById("grid");
+  grid.innerHTML = "";
 
   data.forEach(stock => {
+
+    const safeId = stock.name.replace(/\s/g,'');
 
     const card = document.createElement("div");
     card.className = "card";
 
-    const changeClass = stock.change >= 0 ? "green" : "red";
-    const statusClass = stock.status.toLowerCase();
+    if (parseFloat(stock.pe) > 25) card.classList.add("alert");
+
+    card.onclick = () => openDetail(stock);
 
     card.innerHTML = `
-      <div class="title">${stock.name}</div>
+      <div>${stock.name}</div>
       <div class="price">${stock.price}</div>
-      <div class="change ${changeClass}">
-        ${stock.change} (${stock.percent}%)
+      <div class="${stock.change >=0 ? 'green':'red'}">
+        ${stock.percent}%
       </div>
 
-      <div class="row">
-        <span>EPS</span>
-        <span>${stock.eps}</span>
-      </div>
+      <canvas id="chart-${safeId}"></canvas>
 
-      <div class="row">
-        <span>P/E</span>
-        <span>${stock.pe}</span>
-      </div>
-
-      <div class="status ${statusClass}">
+      <div class="status ${stock.status.toLowerCase()}">
         ${stock.status}
       </div>
     `;
 
     grid.appendChild(card);
+
+    drawChart(stock.mini, `chart-${safeId}`);
+  });
+}
+
+/* 🔥 FINAL CHART FIX */
+function drawChart(data, id) {
+
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+
+  // Set internal size
+  canvas.width = 140;
+  canvas.height = 60;
+
+  // Clean data
+  data = (data || []).filter(v => v !== null && v !== undefined);
+
+  if (data.length < 2) return;
+
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = (max - min) || 1;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.beginPath();
+
+  // Color based on trend
+  ctx.strokeStyle = data[data.length-1] > data[0] ? "#22c55e" : "#ef4444";
+  ctx.lineWidth = 2;
+
+  data.forEach((val, i) => {
+
+    const x = (i / (data.length - 1)) * canvas.width;
+    const y = canvas.height - ((val - min) / range) * canvas.height;
+
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+
   });
 
-});
+  ctx.stroke();
+}
+
+/* POPUP */
+function openDetail(stock) {
+  const popup = document.getElementById("popup");
+
+  popup.innerHTML = `
+    <h2>${stock.name}</h2>
+    <p>Price: ${stock.price}</p>
+    <p>EPS: ${stock.eps}</p>
+    <p>PE: ${stock.pe}</p>
+    <p>Status: ${stock.status}</p>
+    <br>
+    <button onclick="closePopup()">Close</button>
+  `;
+
+  popup.style.display = "block";
+}
+
+function closePopup() {
+  document.getElementById("popup").style.display = "none";
+}
+
+/* SORT */
+function sortData(type) {
+
+  if(type === "pe") {
+    globalData.sort((a,b) => parseFloat(a.pe) - parseFloat(b.pe));
+  } else {
+    globalData.sort((a,b) => b.percent - a.percent);
+  }
+
+  render(globalData);
+}
+
 </script>
 
 </body>
