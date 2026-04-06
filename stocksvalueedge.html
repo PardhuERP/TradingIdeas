@@ -6,101 +6,130 @@
 <style>
 body {
   margin: 0;
-  font-family: Arial;
   background: #020617;
   color: white;
+  font-family: Arial;
 }
 
-.container {
+/* HEADER */
+.header {
   padding: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+select {
+  background: #1e293b;
+  color: white;
+  border: none;
+  padding: 5px;
+}
+
+/* GRID */
+.grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+  padding: 10px;
 }
 
 /* CARD */
 .card {
   background: #1e293b;
-  border-radius: 15px;
-  padding: 15px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+  padding: 12px;
+  border-radius: 12px;
+  cursor: pointer;
 }
 
-.title {
-  font-size: 14px;
-  opacity: 0.7;
-}
-
-.price {
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.change {
-  font-size: 13px;
-}
+.price { font-size: 18px; font-weight: bold; }
 
 .green { color: #22c55e; }
 .red { color: #ef4444; }
 
-.row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  margin-top: 5px;
-}
-
 .status {
-  margin-top: 8px;
-  padding: 5px;
-  text-align: center;
-  border-radius: 8px;
+  margin-top: 5px;
   font-size: 12px;
+  text-align: center;
+  padding: 4px;
+  border-radius: 6px;
 }
 
-.cheap { background: rgba(34,197,94,0.2); color: #22c55e; }
-.fair { background: rgba(250,204,21,0.2); color: #facc15; }
-.expensive { background: rgba(239,68,68,0.2); color: #ef4444; }
+.cheap { background:#22c55e33; color:#22c55e; }
+.fair { background:#facc1533; color:#facc15; }
+.expensive { background:#ef444433; color:#ef4444; }
 
+/* MODAL */
+.modal {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(0,0,0,0.9);
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+
+.modal-content {
+  background:#1e293b;
+  padding:20px;
+  border-radius:15px;
+  width:90%;
+  max-width:400px;
+}
 </style>
 </head>
 
 <body>
 
-<div class="container" id="grid"></div>
+<div class="header">
+  <h3>Nifty 50 Dashboard</h3>
+
+  <select onchange="sortData(this.value)">
+    <option value="default">Default</option>
+    <option value="pe">Sort by PE</option>
+  </select>
+</div>
+
+<div id="grid" class="grid"></div>
+
+<!-- MODAL -->
+<div id="modal" class="modal" onclick="closeModal()">
+  <div class="modal-content" id="modalContent"></div>
+</div>
 
 <script>
-const url = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=market";
 
-fetch(url)
-.then(res => res.json())
-.then(data => {
+const url = "YOUR_GAS_URL?action=nifty50";
+let globalData = [];
 
+function loadData() {
+  fetch(url)
+  .then(res => res.json())
+  .then(data => {
+    globalData = data;
+    render(data);
+  });
+}
+
+function render(data) {
   const grid = document.getElementById("grid");
+  grid.innerHTML = "";
 
   data.forEach(stock => {
-
-    const card = document.createElement("div");
-    card.className = "card";
 
     const changeClass = stock.change >= 0 ? "green" : "red";
     const statusClass = stock.status.toLowerCase();
 
+    const alert = stock.pe > 25 ? "⚠️" : "";
+
+    const card = document.createElement("div");
+    card.className = "card";
+
     card.innerHTML = `
-      <div class="title">${stock.name}</div>
+      <div>${stock.name} ${alert}</div>
       <div class="price">${stock.price}</div>
-      <div class="change ${changeClass}">
+      <div class="${changeClass}">
         ${stock.change} (${stock.percent}%)
-      </div>
-
-      <div class="row">
-        <span>EPS</span>
-        <span>${stock.eps}</span>
-      </div>
-
-      <div class="row">
-        <span>P/E</span>
-        <span>${stock.pe}</span>
       </div>
 
       <div class="status ${statusClass}">
@@ -108,10 +137,57 @@ fetch(url)
       </div>
     `;
 
+    card.onclick = () => openModal(stock);
+
     grid.appendChild(card);
   });
+}
 
-});
+function openModal(stock) {
+
+  document.getElementById("modal").style.display = "flex";
+
+  document.getElementById("modalContent").innerHTML = `
+    <h2>${stock.name}</h2>
+    <p>Price: ${stock.price}</p>
+    <p>P/E: ${stock.pe}</p>
+    <p>Status: ${stock.status}</p>
+
+    <canvas id="chart" height="100"></canvas>
+  `;
+
+  drawChart();
+}
+
+function closeModal() {
+  document.getElementById("modal").style.display = "none";
+}
+
+function sortData(type) {
+  if (type === "pe") {
+    globalData.sort((a,b) => a.pe - b.pe);
+  }
+  render(globalData);
+}
+
+/* MINI CHART */
+function drawChart() {
+  const canvas = document.getElementById("chart");
+  const ctx = canvas.getContext("2d");
+
+  ctx.beginPath();
+  ctx.moveTo(0,50);
+
+  for(let i=0;i<10;i++){
+    ctx.lineTo(i*30, Math.random()*100);
+  }
+
+  ctx.strokeStyle = "lime";
+  ctx.stroke();
+}
+
+loadData();
+
 </script>
 
 </body>
