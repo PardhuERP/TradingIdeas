@@ -120,6 +120,11 @@ body {
       <div class="label">P/E</div>
       <div id="pe" class="value"></div>
     </div>
+    <div style="display:flex; justify-content:space-between; font-size:12px;">
+  <span>Cheap</span>
+  <span>Fair</span>
+  <span>Expensive</span>
+</div>
 
     <!-- 🔥 GAUGE -->
     <div class="gauge">
@@ -147,11 +152,22 @@ body {
 const url = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=nifty";
 
 function updateGauge(pe) {
+
   let angle = 0;
 
-  // Map PE (0–40) → angle (0–180)
-  if (pe > 40) pe = 40;
-  angle = (pe / 40) * 180;
+  if (pe <= 15) {
+    // Cheap zone (0° → 60°)
+    angle = (pe / 15) * 60;
+  } 
+  else if (pe <= 22) {
+    // Fair zone (60° → 120°)
+    angle = 60 + ((pe - 15) / (22 - 15)) * 60;
+  } 
+  else {
+    // Expensive zone (120° → 180°)
+    if (pe > 40) pe = 40;
+    angle = 120 + ((pe - 22) / (40 - 22)) * 60;
+  }
 
   document.getElementById("needle").style.transform = `rotate(${angle}deg)`;
 }
