@@ -2,8 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>ValuEdge Dashboard</title>
+<title>Nifty Dashboard Pro</title>
 
 <style>
 body {
@@ -24,29 +23,22 @@ body {
 }
 
 .card {
-  width: 100%;
   background: rgba(30, 41, 59, 0.95);
   border-radius: 25px;
-  padding: 30px 20px;
+  padding: 25px;
   box-shadow: 0 0 40px rgba(0,0,0,0.7);
   text-align: center;
 }
 
-.title {
-  font-size: 20px;
-  opacity: 0.7;
-}
+.title { font-size: 18px; opacity: 0.7; }
 
 .price {
-  font-size: 42px;
+  font-size: 40px;
   font-weight: bold;
   margin: 10px 0;
 }
 
-.change {
-  font-size: 18px;
-  margin-bottom: 20px;
-}
+.change { font-size: 16px; margin-bottom: 15px; }
 
 .green { color: #22c55e; }
 .red { color: #ef4444; }
@@ -54,31 +46,55 @@ body {
 .row {
   display: flex;
   justify-content: space-between;
-  margin: 12px 0;
-  font-size: 18px;
+  margin: 10px 0;
 }
 
 .label { opacity: 0.6; }
 .value { font-weight: bold; }
 
 /* 🔥 GAUGE */
-.gauge-container {
-  margin: 25px 0;
+.gauge {
+  width: 200px;
+  height: 100px;
+  margin: 20px auto;
+  position: relative;
 }
 
-canvas {
+.gauge svg {
   width: 100%;
-  height: 150px;
+  height: 100%;
 }
 
-.status-text {
+.needle {
+  width: 2px;
+  height: 90px;
+  background: white;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform-origin: bottom;
+  transform: rotate(0deg);
+  transition: 0.5s;
+}
+
+.center-dot {
+  width: 10px;
+  height: 10px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 50%);
+}
+
+.status {
   margin-top: 10px;
-  font-size: 18px;
   font-weight: bold;
 }
 
 .footer {
-  margin-top: 15px;
+  margin-top: 10px;
   font-size: 12px;
   opacity: 0.5;
 }
@@ -92,7 +108,7 @@ canvas {
 
     <div class="title">📊 NIFTY 50</div>
 
-    <div id="price" class="price">Loading...</div>
+    <div id="price" class="price">--</div>
     <div id="change" class="change"></div>
 
     <div class="row">
@@ -101,15 +117,26 @@ canvas {
     </div>
 
     <div class="row">
-      <div class="label">P/E Ratio</div>
+      <div class="label">P/E</div>
       <div id="pe" class="value"></div>
     </div>
 
     <!-- 🔥 GAUGE -->
-    <div class="gauge-container">
-      <canvas id="gauge"></canvas>
-      <div id="status" class="status-text"></div>
+    <div class="gauge">
+      <svg viewBox="0 0 200 100">
+        <!-- Cheap -->
+        <path d="M10 100 A90 90 0 0 1 70 20" stroke="#22c55e" stroke-width="15" fill="none"/>
+        <!-- Fair -->
+        <path d="M70 20 A90 90 0 0 1 130 20" stroke="#facc15" stroke-width="15" fill="none"/>
+        <!-- Expensive -->
+        <path d="M130 20 A90 90 0 0 1 190 100" stroke="#ef4444" stroke-width="15" fill="none"/>
+      </svg>
+
+      <div id="needle" class="needle"></div>
+      <div class="center-dot"></div>
     </div>
+
+    <div id="status" class="status"></div>
 
     <div class="footer">ValuEdge 🚀</div>
 
@@ -119,44 +146,14 @@ canvas {
 <script>
 const url = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=nifty";
 
-function drawGauge(pe) {
-  const canvas = document.getElementById("gauge");
-  const ctx = canvas.getContext("2d");
+function updateGauge(pe) {
+  let angle = 0;
 
-  canvas.width = 300;
-  canvas.height = 150;
+  // Map PE (0–40) → angle (0–180)
+  if (pe > 40) pe = 40;
+  angle = (pe / 40) * 180;
 
-  const centerX = 150;
-  const centerY = 130;
-  const radius = 100;
-
-  // Background arcs
-  drawArc(ctx, centerX, centerY, radius, Math.PI, Math.PI * 1.33, "#22c55e"); // cheap
-  drawArc(ctx, centerX, centerY, radius, Math.PI * 1.33, Math.PI * 1.66, "#facc15"); // fair
-  drawArc(ctx, centerX, centerY, radius, Math.PI * 1.66, Math.PI * 2, "#ef4444"); // expensive
-
-  // Needle position
-  const maxPE = 40;
-  const angle = Math.PI + (pe / maxPE) * Math.PI;
-
-  const needleLength = 80;
-  const x = centerX + needleLength * Math.cos(angle);
-  const y = centerY + needleLength * Math.sin(angle);
-
-  ctx.beginPath();
-  ctx.moveTo(centerX, centerY);
-  ctx.lineTo(x, y);
-  ctx.strokeStyle = "white";
-  ctx.lineWidth = 3;
-  ctx.stroke();
-}
-
-function drawArc(ctx, x, y, r, start, end, color) {
-  ctx.beginPath();
-  ctx.arc(x, y, r, start, end);
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 10;
-  ctx.stroke();
+  document.getElementById("needle").style.transform = `rotate(${angle}deg)`;
 }
 
 function loadData() {
@@ -171,4 +168,17 @@ function loadData() {
       changeEl.className = "change " + (data.change >= 0 ? "green" : "red");
 
       document.getElementById("eps").innerText = data.eps;
-      document.getElementById("pe
+      document.getElementById("pe").innerText = data.pe;
+
+      document.getElementById("status").innerText = data.status;
+
+      updateGauge(parseFloat(data.pe));
+    });
+}
+
+loadData();
+setInterval(loadData, 10000);
+</script>
+
+</body>
+</html>
