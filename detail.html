@@ -2,7 +2,6 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Stock Detail</title>
 
 <style>
@@ -14,11 +13,15 @@ body {
   padding: 15px;
 }
 
-/* HEADER */
-.header {
-  margin-bottom: 15px;
+/* BACK */
+.back {
+  margin-bottom: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  opacity: 0.7;
 }
 
+/* HEADER */
 .title {
   font-size: 18px;
   opacity: 0.7;
@@ -82,11 +85,11 @@ canvas {
 
 <body>
 
-<div class="header">
-  <div id="name" class="title">--</div>
-  <div id="price" class="price">--</div>
-  <div id="change" class="change"></div>
-</div>
+<div class="back" onclick="history.back()">⬅ Back</div>
+
+<div class="title" id="name">--</div>
+<div class="price" id="price">--</div>
+<div class="change" id="change"></div>
 
 <div class="card">
   <div class="row">
@@ -109,19 +112,25 @@ canvas {
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-// 🔥 GET STOCK NAME FROM URL
+
+// 🔥 GET SYMBOL FROM URL
 const params = new URLSearchParams(window.location.search);
-const stock = params.get("stock");
+const symbol = params.get("symbol");
 
-// 🔥 GAS API
-const url = "YOUR_GAS_URL?action=market";
+// 🔥 YOUR GAS URL
+const url = "?action=market";
 
-// 🔥 LOAD DATA
+// 🔥 LOAD BASIC DATA
 fetch(url)
 .then(res => res.json())
 .then(data => {
 
-  const s = data.find(x => x.name === stock);
+  const s = data.find(x => x.symbol === symbol);
+
+  if (!s) {
+    document.body.innerHTML = "Stock not found";
+    return;
+  }
 
   document.getElementById("name").innerText = s.name;
   document.getElementById("price").innerText = s.price;
@@ -139,27 +148,39 @@ fetch(url)
 
 });
 
-// 🔥 MINI CHART (DEMO RANDOM — next we connect live)
-const ctx = document.getElementById("chart");
+// 🔥 LIVE MINI CHART (YAHOO)
+fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`)
+.then(res => res.json())
+.then(chartData => {
 
-new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: ["1","2","3","4","5","6","7"],
-    datasets: [{
-      data: [10,12,9,14,18,16,20],
-      borderColor: "#22c55e",
-      borderWidth: 2,
-      tension: 0.3
-    }]
-  },
-  options: {
-    plugins: { legend: { display: false }},
-    scales: {
-      x: { display: false },
-      y: { display: false }
+  const result = chartData.chart.result[0];
+  const prices = result.indicators.quote[0].close;
+
+  const filtered = prices.slice(-30);
+
+  const isUp = filtered[0] < filtered[filtered.length - 1];
+
+  new Chart(document.getElementById("chart"), {
+    type: 'line',
+    data: {
+      labels: filtered.map((_, i) => i),
+      datasets: [{
+        data: filtered,
+        borderColor: isUp ? "#22c55e" : "#ef4444",
+        borderWidth: 2,
+        tension: 0.3,
+        fill: false
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false }},
+      scales: {
+        x: { display: false },
+        y: { display: false }
+      }
     }
-  }
+  });
+
 });
 </script>
 
