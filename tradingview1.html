@@ -1,166 +1,173 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Trading Dashboard</title>
-  <script src="https://s3.tradingview.com/tv.js"></script>
+<!DOCTYPE html>  
+<html>  
+<head>  
+  <title>Trading Dashboard</title>  
+  <script src="https://s3.tradingview.com/tv.js"></script>  
+  
+  <style>  
+    body {  
+      background: black;  
+      color: white;  
+      font-family: Arial;  
+    }  
+  
+    .stock {  
+      padding: 10px;  
+      border-bottom: 1px solid #333;  
+      cursor: pointer;  
+    }  
+  
+    .stock:hover {  
+      background: #111;  
+    }  
+  
+    .spike {  
+      color: #00e6e6;  
+      font-weight: bold;  
+    }  
+  
+    .buy {  
+      color: #00ff00;  
+      font-weight: bold;  
+    }  
+  
+    .sell {  
+      color: #ff4444;  
+      font-weight: bold;  
+    }  
+  
+    .highvol {  
+      background: rgba(0,255,0,0.08);  
+    }  
+  </style>  
+</head>  
 
-  <style>
-    body {
-      background: black;
-      color: white;
-      font-family: Arial;
-    }
+<body>  
 
-    .stock {
-      padding: 10px;
-      border-bottom: 1px solid #333;
-      cursor: pointer;
-    }
+<h2>📊 My Trading Dashboard</h2>  
 
-    .stock:hover {
-      background: #111;
-    }
+<!-- ✅ moved inside body -->
+<audio id="alertSound" src="https://www.soundjay.com/buttons/sounds/beep-01a.mp3"></audio>  
 
-    .spike {
-      color: #00e6e6;
-      font-weight: bold;
-    }
+<div id="stocks">Loading...</div>  
 
-    .buy {
-      color: #00ff00;
-      font-weight: bold;
-    }
+<div id="chart" style="height:400px;margin-top:20px;"></div>  
 
-    .sell {
-      color: #ff4444;
-      font-weight: bold;
-    }
+<script>  
+const API = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=nse";  
 
-    .highvol {
-      background: rgba(0,255,0,0.08);
-    }
-  </style>
-</head>
-  <audio id="alertSound" src="https://www.soundjay.com/buttons/sounds/beep-01a.mp3"></audio>
+let previousSignals = new Set();  
+let lastAlertTime = 0; // 🔔 cooldown control  
 
-<body>
+async function loadData(){  
+  try {  
+    const res = await fetch(API);  
+    const data = await res.json();  
 
-<h2>📊 My Trading Dashboard</h2>
+    let rows = data.slice(1);  
 
-<div id="stocks">Loading...</div>
+    // 🔥 sort RSI + volume  
+    rows.sort((a, b) => {  
+      const scoreA = (Number(a[5]) || 0) * (Number(a[1]) || 0);  
+      const scoreB = (Number(b[5]) || 0) * (Number(b[1]) || 0);  
+      return scoreB - scoreA;  
+    });  
 
-<div id="chart" style="height:400px;margin-top:20px;"></div>
+    let html = "";  
+    let hasSignal = false;  
+    let currentSignals = new Set();  
 
-<script>
-const API = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=nse";
-let previousSignals = new Set();
-async function loadData(){
-  try {
-    const res = await fetch(API);
-    const data = await res.json();
+    rows.forEach(row => {  
+      const symbol = row[0];  
+      const volume = Number(row[1]) || 0;  
+      const avgVol = Number(row[2]) || 0;  
+      const spike = row[3] || "";  
+      let rsi = row[5];  
+      const signal = row[6] || "";  
 
-    let rows = data.slice(1);
+      rsi = rsi ? Number(rsi).toFixed(2) : "--";  
 
-// sort (same as before)
-rows.sort((a, b) => {
-  const scoreA = (a[5] || 0) * (a[1] || 0);
-  const scoreB = (b[5] || 0) * (b[1] || 0);
-  return scoreB - scoreA;
-});
+      let isSpike = spike !== "" || signal.includes("BUY");  
 
-let html = "";
-let hasSignal = false;
-let currentSignals = new Set();
+      if (isSpike) {  
+        hasSignal = true;  
+        currentSignals.add(symbol);  
 
-rows.forEach(row => {
-  const symbol = row[0];
-  const volume = row[1];
-  const avgVol = row[2];
-  const spike = row[3] || "";
-  let rsi = row[5];
-  const signal = row[6] || "";
+        // 🔔 ALERT with cooldown (5 sec)
+        const now = Date.now();
+        if (!previousSignals.has(symbol) && now - lastAlertTime > 5000) {
+          const sound = document.getElementById("alertSound");
+          if (sound) {
+            sound.currentTime = 0;
+            sound.play().catch(() => {}); // avoid autoplay error
+          }
+          lastAlertTime = now;
+        }
 
-  rsi = rsi ? Number(rsi).toFixed(2) : "--";
+        let signalClass = "";  
+        if(signal.includes("BUY")) signalClass = "buy";  
+        if(signal.includes("SELL")) signalClass = "sell";  
 
-  // detect spike condition
-  let isSpike = spike !== "" || signal.includes("BUY");
+        let volClass = "";  
+        if (avgVol && volume > 2 * avgVol) volClass = "highvol";  
 
-  if (isSpike) {
-    hasSignal = true;
-    currentSignals.add(symbol);
+        html += `  
+          <div class="stock ${volClass}" onclick="openChart('${symbol}')">  
+            <b>${symbol}</b> | Vol: ${volume} | RSI: ${rsi}  
+            <br>  
+            <span class="spike">${spike}</span>  
+            <span class="${signalClass}">${signal}</span>  
+          </div>  
+        `;  
+      }  
+    });  
 
-    // 🔔 NEW ALERT DETECT
-    if (!previousSignals.has(symbol)) {
-      document.getElementById("alertSound").play();
-    }
+    previousSignals = currentSignals;  
 
-    let signalClass = "";
-    if(signal.includes("BUY")) signalClass = "buy";
-    if(signal.includes("SELL")) signalClass = "sell";
+    // 🔥 fallback  
+    if (!hasSignal) {  
+      html = "<h3>📊 Top Volume Stocks</h3>";  
 
-    let volClass = "";
-    if (avgVol && volume > 2 * avgVol) volClass = "highvol";
+      rows.sort((a, b) => (Number(b[1]) || 0) - (Number(a[1]) || 0));  
 
-    html += `
-      <div class="stock ${volClass}" onclick="openChart('${symbol}')">
-        <b>${symbol}</b> | Vol: ${volume} | RSI: ${rsi}
-        <br>
-        <span class="spike">${spike}</span>
-        <span class="${signalClass}">${signal}</span>
-      </div>
-    `;
-  }
-});
+      rows.slice(0, 5).forEach(row => {  
+        const symbol = row[0];  
+        const volume = row[1];  
+        let rsi = row[5];  
 
-// update memory
-previousSignals = currentSignals;
+        rsi = rsi ? Number(rsi).toFixed(2) : "--";  
 
-// fallback (same as before)
-if (!hasSignal) {
-  html = "<h3>📊 Top Volume Stocks</h3>";
+        html += `  
+          <div class="stock" onclick="openChart('${symbol}')">  
+            <b>${symbol}</b> | Vol: ${volume} | RSI: ${rsi}  
+          </div>  
+        `;  
+      });  
+    }  
 
-  rows.sort((a, b) => (b[1] || 0) - (a[1] || 0));
+    document.getElementById("stocks").innerHTML = html;  
 
-  rows.slice(0, 5).forEach(row => {
-    const symbol = row[0];
-    const volume = row[1];
-    let rsi = row[5];
+  } catch (err) {  
+    document.getElementById("stocks").innerHTML = "❌ Error loading data";  
+    console.error(err);  
+  }  
+}  
 
-    rsi = rsi ? Number(rsi).toFixed(2) : "--";
+function openChart(symbol){  
+  const tvUrl = "https://www.tradingview.com/chart/?symbol=NSE:" + symbol;  
 
-    html += `
-      <div class="stock" onclick="openChart('${symbol}')">
-        <b>${symbol}</b> | Vol: ${volume} | RSI: ${rsi}
-      </div>
-    `;
-  });
-}
+  try {  
+    window.open(tvUrl, "_blank");  
+  } catch(e) {  
+    const invUrl = "https://www.investing.com/search/?q=" + symbol;  
+    window.open(invUrl, "_blank");  
+  }  
+}  
 
-    document.getElementById("stocks").innerHTML = html;
+setInterval(loadData, 60000);  
+loadData();  
 
-  } catch (err) {
-    document.getElementById("stocks").innerHTML = "❌ Error loading data";
-    console.error(err);
-  }
-}
+</script>  
 
-// 📈 Chart
-function openChart(symbol){
-  const tvUrl = "https://www.tradingview.com/chart/?symbol=NSE:" + symbol;
-
-  try {
-    window.open(tvUrl, "_blank");
-  } catch(e) {
-    const invUrl = "https://www.investing.com/search/?q=" + symbol;
-    window.open(invUrl, "_blank");
-  }
-}
-
-// 🔄 Auto refresh
-setInterval(loadData, 60000);
-loadData();
-
-</script>
-
-</body>
+</body>  
 </html>
