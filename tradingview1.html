@@ -142,21 +142,14 @@ async function loadData(){
 
 // 📈 Chart
 function openChart(symbol){
-  document.getElementById("chart").innerHTML = "";
+  const tvUrl = "https://www.tradingview.com/chart/?symbol=NSE:" + symbol;
 
-  new TradingView.widget({
-  container_id: "chart",
-  autosize: true,
-  symbol: "NSE:" + symbol,
-  interval: "5",
-  timezone: "Asia/Kolkata",
-  theme: "dark",
-  style: "1",
-  locale: "en",
-  enable_publishing: false,
-  hide_top_toolbar: false,
-  studies: ["RSI@tv-basicstudies","EMA@tv-basicstudies"]
-});
+  try {
+    window.open(tvUrl, "_blank");
+  } catch(e) {
+    const invUrl = "https://www.investing.com/search/?q=" + symbol;
+    window.open(invUrl, "_blank");
+  }
 }
 
 // 🔄 Auto refresh
