@@ -67,21 +67,23 @@ async function loadData(){
   // ✅ Fix RSI format
   rsi = rsi ? Number(rsi).toFixed(2) : "--";
 
-    if(spike || signal.includes("BUY"))
+  // ✅ FILTER (ONLY STRONG STOCKS)
+  if (spike || signal.includes("BUY")) {
 
-  // ✅ Signal color
-  let signalClass = "";
-  if(signal.includes("BUY")) signalClass = "buy";
-  if(signal.includes("SELL")) signalClass = "sell";
+    // ✅ Signal color
+    let signalClass = "";
+    if(signal.includes("BUY")) signalClass = "buy";
+    if(signal.includes("SELL")) signalClass = "sell";
 
-  html += `
-    <div class="stock" onclick="openChart('${symbol}')">
-      <b>${symbol}</b> | Vol: ${volume} | RSI: ${rsi}
-      <br>
-      <span class="spike">${spike}</span>
-      <span class="${signalClass}">${signal}</span>
-    </div>
-  `;
+    html += `
+      <div class="stock" onclick="openChart('${symbol}')">
+        <b>${symbol}</b> | Vol: ${volume} | RSI: ${rsi}
+        <br>
+        <span class="spike">${spike}</span>
+        <span class="${signalClass}">${signal}</span>
+      </div>
+    `;
+  }
 });
 
     document.getElementById("stocks").innerHTML = html;
