@@ -68,7 +68,7 @@ async function loadData(){
   rsi = rsi ? Number(rsi).toFixed(2) : "--";
 
   // ✅ FILTER (ONLY STRONG STOCKS)
-  if (spike || signal.includes("BUY")) {
+  if (spike !== "" || (signal && signal.includes("BUY"))) {
 
     // ✅ Signal color
     let signalClass = "";
