@@ -96,13 +96,21 @@ async function loadData(){
         // 🔔 ALERT with cooldown (5 sec)
         const now = Date.now();
         if (!previousSignals.has(symbol) && now - lastAlertTime > 5000) {
-          const sound = document.getElementById("alertSound");
-          if (sound) {
-            sound.currentTime = 0;
-            sound.play().catch(() => {}); // avoid autoplay error
-          }
-          lastAlertTime = now;
-        }
+
+  const sound = document.getElementById("alertSound");
+  if (sound) {
+    sound.currentTime = 0;
+    sound.play().catch(() => {});
+  }
+
+  // 🔥 POPUP ALERT
+  showPopup(`🔥 ${symbol} Spike / BUY Signal`);
+
+  // 📲 TELEGRAM ALERT
+  sendTelegramAlert(symbol);
+
+  lastAlertTime = now;
+}
 
         let signalClass = "";  
         if(signal.includes("BUY")) signalClass = "buy";  
@@ -152,6 +160,27 @@ async function loadData(){
     console.error(err);  
   }  
 }  
+
+  function showPopup(message){
+  const popup = document.createElement("div");
+  popup.innerText = message;
+
+  popup.style.position = "fixed";
+  popup.style.top = "20px";
+  popup.style.right = "20px";
+  popup.style.background = "#111";
+  popup.style.color = "#00ffcc";
+  popup.style.padding = "10px 15px";
+  popup.style.border = "1px solid #00ffcc";
+  popup.style.borderRadius = "5px";
+  popup.style.zIndex = 9999;
+
+  document.body.appendChild(popup);
+
+  setTimeout(() => {
+    popup.remove();
+  }, 4000);
+}
 
 function openChart(symbol){  
   const tvUrl = "https://www.tradingview.com/chart/?symbol=NSE:" + symbol;  
