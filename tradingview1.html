@@ -22,17 +22,19 @@
     }
 
     .spike {
-      color: #00ffcc;
-      font-weight: bold;
-    }
+  color: #00e6e6;
+  font-weight: bold;
+}
 
-    .buy {
-      color: #00ff00;
-    }
+.buy {
+  color: #00ff00;
+  font-weight: bold;
+}
 
-    .sell {
-      color: #ff4444;
-    }
+.sell {
+  color: #ff4444;
+  font-weight: bold;
+}
   </style>
 </head>
 
@@ -56,25 +58,31 @@ async function loadData(){
     let html = "";
 
     data.slice(1).forEach(row => {
-      const symbol = row[0];
-      const volume = row[1];
-      const spike = row[3] || "";
-      const rsi = row[5] || "";
-      const signal = row[6] || "";
+  const symbol = row[0];
+  const volume = row[1];
+  const spike = row[3] || "";
+  let rsi = row[5];
+  const signal = row[6] || "";
 
-      let signalClass = "";
-      if(signal.includes("BUY")) signalClass = "buy";
-      if(signal.includes("SELL")) signalClass = "sell";
+  // ✅ Fix RSI format
+  rsi = rsi ? Number(rsi).toFixed(2) : "--";
 
-      html += `
-        <div class="stock" onclick="openChart('${symbol}')">
-          <b>${symbol}</b> | Vol: ${volume} | RSI: ${rsi}
-          <br>
-          <span class="spike">${spike}</span>
-          <span class="${signalClass}">${signal}</span>
-        </div>
-      `;
-    });
+    if(spike || signal.includes("BUY"))
+
+  // ✅ Signal color
+  let signalClass = "";
+  if(signal.includes("BUY")) signalClass = "buy";
+  if(signal.includes("SELL")) signalClass = "sell";
+
+  html += `
+    <div class="stock" onclick="openChart('${symbol}')">
+      <b>${symbol}</b> | Vol: ${volume} | RSI: ${rsi}
+      <br>
+      <span class="spike">${spike}</span>
+      <span class="${signalClass}">${signal}</span>
+    </div>
+  `;
+});
 
     document.getElementById("stocks").innerHTML = html;
 
