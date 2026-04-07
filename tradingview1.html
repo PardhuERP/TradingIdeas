@@ -22,19 +22,23 @@
     }
 
     .spike {
-  color: #00e6e6;
-  font-weight: bold;
-}
+      color: #00e6e6;
+      font-weight: bold;
+    }
 
-.buy {
-  color: #00ff00;
-  font-weight: bold;
-}
+    .buy {
+      color: #00ff00;
+      font-weight: bold;
+    }
 
-.sell {
-  color: #ff4444;
-  font-weight: bold;
-}
+    .sell {
+      color: #ff4444;
+      font-weight: bold;
+    }
+
+    .highvol {
+      background: rgba(0,255,0,0.08);
+    }
   </style>
 </head>
 
@@ -49,41 +53,84 @@
 <script>
 const API = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=nse";
 
-// 🔄 Load Data
 async function loadData(){
   try {
     const res = await fetch(API);
     const data = await res.json();
 
+    let rows = data.slice(1);
+
+    // 🔥 SORT by RSI + Volume combo
+    rows.sort((a, b) => {
+      const scoreA = (a[5] || 0) * (a[1] || 0);
+      const scoreB = (b[5] || 0) * (b[1] || 0);
+      return scoreB - scoreA;
+    });
+
     let html = "";
+    let hasSignal = false;
 
-    data.slice(1).forEach(row => {
-  const symbol = row[0];
-  const volume = row[1];
-  const spike = row[3] || "";
-  let rsi = row[5];
-  const signal = row[6] || "";
+    rows.forEach(row => {
+      const symbol = row[0];
+      const volume = row[1];
+      const avgVol = row[2]; // avg volume from sheet
+      const spike = row[3] || "";
+      let rsi = row[5];
+      const signal = row[6] || "";
 
-  // ✅ Fix RSI format
-  rsi = rsi ? Number(rsi).toFixed(2) : "--";
+      rsi = rsi ? Number(rsi).toFixed(2) : "--";
 
-  
+      // 🔥 Volume > 2x highlight
+      let volClass = "";
+      if (avgVol && volume > 2 * avgVol) {
+        volClass = "highvol";
+      }
 
-    // ✅ Signal color
-    let signalClass = "";
-    if(signal.includes("BUY")) signalClass = "buy";
-    if(signal.includes("SELL")) signalClass = "sell";
+      if (spike !== "" || signal.includes("BUY")) {
+        hasSignal = true;
 
-    html += `
-      <div class="stock" onclick="openChart('${symbol}')">
-        <b>${symbol}</b> | Vol: ${volume} | RSI: ${rsi}
-        <br>
-        <span class="spike">${spike}</span>
-        <span class="${signalClass}">${signal}</span>
-      </div>
-    `;
-  
-});
+        let signalClass = "";
+        if(signal.includes("BUY")) signalClass = "buy";
+        if(signal.includes("SELL")) signalClass = "sell";
+
+        html += `
+          <div class="stock ${volClass}" onclick="openChart('${symbol}')">
+            <b>${symbol}</b> | Vol: ${volume} | RSI: ${rsi}
+            <br>
+            <span class="spike">${spike}</span>
+            <span class="${signalClass}">${signal}</span>
+          </div>
+        `;
+      }
+    });
+
+    // 🔥 FALLBACK → TOP 5 VOLUME
+    if (!hasSignal) {
+      html = "<h3>📊 Top Volume Stocks</h3>";
+
+      // sort by volume
+      rows.sort((a, b) => (b[1] || 0) - (a[1] || 0));
+
+      rows.slice(0, 5).forEach(row => {
+        const symbol = row[0];
+        const volume = row[1];
+        const avgVol = row[2];
+        let rsi = row[5];
+
+        rsi = rsi ? Number(rsi).toFixed(2) : "--";
+
+        let volClass = "";
+        if (avgVol && volume > 2 * avgVol) {
+          volClass = "highvol";
+        }
+
+        html += `
+          <div class="stock ${volClass}" onclick="openChart('${symbol}')">
+            <b>${symbol}</b> | Vol: ${volume} | RSI: ${rsi}
+          </div>
+        `;
+      });
+    }
 
     document.getElementById("stocks").innerHTML = html;
 
@@ -93,7 +140,7 @@ async function loadData(){
   }
 }
 
-// 📈 Open Chart
+// 📈 Chart
 function openChart(symbol){
   document.getElementById("chart").innerHTML = "";
 
@@ -111,10 +158,8 @@ function openChart(symbol){
   });
 }
 
-// 🔄 Auto Refresh every 60 sec
+// 🔄 Auto refresh
 setInterval(loadData, 60000);
-
-// 🚀 First Load
 loadData();
 
 </script>
