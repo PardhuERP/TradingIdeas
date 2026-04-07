@@ -41,6 +41,7 @@
     }
   </style>
 </head>
+  <audio id="alertSound" src="https://www.soundjay.com/buttons/sounds/beep-01a.mp3"></audio>
 
 <body>
 
@@ -52,7 +53,7 @@
 
 <script>
 const API = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=nse";
-
+let previousSignals = new Set();
 async function loadData(){
   try {
     const res = await fetch(API);
@@ -60,77 +61,80 @@ async function loadData(){
 
     let rows = data.slice(1);
 
-    // 🔥 SORT by RSI + Volume combo
-    rows.sort((a, b) => {
-      const scoreA = (a[5] || 0) * (a[1] || 0);
-      const scoreB = (b[5] || 0) * (b[1] || 0);
-      return scoreB - scoreA;
-    });
+// sort (same as before)
+rows.sort((a, b) => {
+  const scoreA = (a[5] || 0) * (a[1] || 0);
+  const scoreB = (b[5] || 0) * (b[1] || 0);
+  return scoreB - scoreA;
+});
 
-    let html = "";
-    let hasSignal = false;
+let html = "";
+let hasSignal = false;
+let currentSignals = new Set();
 
-    rows.forEach(row => {
-      const symbol = row[0];
-      const volume = row[1];
-      const avgVol = row[2]; // avg volume from sheet
-      const spike = row[3] || "";
-      let rsi = row[5];
-      const signal = row[6] || "";
+rows.forEach(row => {
+  const symbol = row[0];
+  const volume = row[1];
+  const avgVol = row[2];
+  const spike = row[3] || "";
+  let rsi = row[5];
+  const signal = row[6] || "";
 
-      rsi = rsi ? Number(rsi).toFixed(2) : "--";
+  rsi = rsi ? Number(rsi).toFixed(2) : "--";
 
-      // 🔥 Volume > 2x highlight
-      let volClass = "";
-      if (avgVol && volume > 2 * avgVol) {
-        volClass = "highvol";
-      }
+  // detect spike condition
+  let isSpike = spike !== "" || signal.includes("BUY");
 
-      if (spike !== "" || signal.includes("BUY")) {
-        hasSignal = true;
+  if (isSpike) {
+    hasSignal = true;
+    currentSignals.add(symbol);
 
-        let signalClass = "";
-        if(signal.includes("BUY")) signalClass = "buy";
-        if(signal.includes("SELL")) signalClass = "sell";
-
-        html += `
-          <div class="stock ${volClass}" onclick="openChart('${symbol}')">
-            <b>${symbol}</b> | Vol: ${volume} | RSI: ${rsi}
-            <br>
-            <span class="spike">${spike}</span>
-            <span class="${signalClass}">${signal}</span>
-          </div>
-        `;
-      }
-    });
-
-    // 🔥 FALLBACK → TOP 5 VOLUME
-    if (!hasSignal) {
-      html = "<h3>📊 Top Volume Stocks</h3>";
-
-      // sort by volume
-      rows.sort((a, b) => (b[1] || 0) - (a[1] || 0));
-
-      rows.slice(0, 5).forEach(row => {
-        const symbol = row[0];
-        const volume = row[1];
-        const avgVol = row[2];
-        let rsi = row[5];
-
-        rsi = rsi ? Number(rsi).toFixed(2) : "--";
-
-        let volClass = "";
-        if (avgVol && volume > 2 * avgVol) {
-          volClass = "highvol";
-        }
-
-        html += `
-          <div class="stock ${volClass}" onclick="openChart('${symbol}')">
-            <b>${symbol}</b> | Vol: ${volume} | RSI: ${rsi}
-          </div>
-        `;
-      });
+    // 🔔 NEW ALERT DETECT
+    if (!previousSignals.has(symbol)) {
+      document.getElementById("alertSound").play();
     }
+
+    let signalClass = "";
+    if(signal.includes("BUY")) signalClass = "buy";
+    if(signal.includes("SELL")) signalClass = "sell";
+
+    let volClass = "";
+    if (avgVol && volume > 2 * avgVol) volClass = "highvol";
+
+    html += `
+      <div class="stock ${volClass}" onclick="openChart('${symbol}')">
+        <b>${symbol}</b> | Vol: ${volume} | RSI: ${rsi}
+        <br>
+        <span class="spike">${spike}</span>
+        <span class="${signalClass}">${signal}</span>
+      </div>
+    `;
+  }
+});
+
+// update memory
+previousSignals = currentSignals;
+
+// fallback (same as before)
+if (!hasSignal) {
+  html = "<h3>📊 Top Volume Stocks</h3>";
+
+  rows.sort((a, b) => (b[1] || 0) - (a[1] || 0));
+
+  rows.slice(0, 5).forEach(row => {
+    const symbol = row[0];
+    const volume = row[1];
+    let rsi = row[5];
+
+    rsi = rsi ? Number(rsi).toFixed(2) : "--";
+
+    html += `
+      <div class="stock" onclick="openChart('${symbol}')">
+        <b>${symbol}</b> | Vol: ${volume} | RSI: ${rsi}
+      </div>
+    `;
+  });
+}
 
     document.getElementById("stocks").innerHTML = html;
 
