@@ -182,6 +182,17 @@ async function loadData(){
   }, 4000);
 }
 
+function sendTelegramAlert(symbol){
+  const token = "8793429092:AAGd6JAer0ghmxS6y4VbtxBIKvnAprI8TCg";
+  const chatId = "6354505660";
+
+  const message = `🔥 ${symbol} Spike detected`;
+
+  const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+
+  fetch(url).catch(err => console.log(err));
+}
+
 function openChart(symbol){  
   const tvUrl = "https://www.tradingview.com/chart/?symbol=NSE:" + symbol;  
 
