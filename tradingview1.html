@@ -3,43 +3,111 @@
 <head>
   <title>Trading Dashboard</title>
   <script src="https://s3.tradingview.com/tv.js"></script>
+
+  <style>
+    body {
+      background: black;
+      color: white;
+      font-family: Arial;
+    }
+
+    .stock {
+      padding: 10px;
+      border-bottom: 1px solid #333;
+      cursor: pointer;
+    }
+
+    .stock:hover {
+      background: #111;
+    }
+
+    .spike {
+      color: #00ffcc;
+      font-weight: bold;
+    }
+
+    .buy {
+      color: #00ff00;
+    }
+
+    .sell {
+      color: #ff4444;
+    }
+  </style>
 </head>
 
-<body style="background:black;color:white">
+<body>
 
 <h2>📊 My Trading Dashboard</h2>
 
-<div id="stocks"></div>
+<div id="stocks">Loading...</div>
 
-<div id="chart" style="height:400px;"></div>
+<div id="chart" style="height:400px;margin-top:20px;"></div>
 
 <script>
 const API = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=nse";
 
+// 🔄 Load Data
 async function loadData(){
-  const res = await fetch(API);
-  const data = await res.json();
+  try {
+    const res = await fetch(API);
+    const data = await res.json();
 
-  let html = "";
+    let html = "";
 
-  data.slice(1).forEach(row => {
-    const symbol = row[0];
-    const volume = row[1];
-    const spike = row[3];
-    const rsi = row[5];
-    const signal = row[6];
+    data.slice(1).forEach(row => {
+      const symbol = row[0];
+      const volume = row[1];
+      const spike = row[3] || "";
+      const rsi = row[5] || "";
+      const signal = row[6] || "";
 
-    html += `
-      <div onclick="openChart('${symbol}')"
-        style="padding:10px;border-bottom:1px solid #333">
-        <b>${symbol}</b> | Vol: ${volume} | RSI: ${rsi}
-        <br>${spike} ${signal}
-      </div>
-    `;
-  });
+      let signalClass = "";
+      if(signal.includes("BUY")) signalClass = "buy";
+      if(signal.includes("SELL")) signalClass = "sell";
 
-  document.getElementById("stocks").innerHTML = html;
+      html += `
+        <div class="stock" onclick="openChart('${symbol}')">
+          <b>${symbol}</b> | Vol: ${volume} | RSI: ${rsi}
+          <br>
+          <span class="spike">${spike}</span>
+          <span class="${signalClass}">${signal}</span>
+        </div>
+      `;
+    });
+
+    document.getElementById("stocks").innerHTML = html;
+
+  } catch (err) {
+    document.getElementById("stocks").innerHTML = "❌ Error loading data";
+    console.error(err);
+  }
 }
+
+// 📈 Open Chart
+function openChart(symbol){
+  document.getElementById("chart").innerHTML = "";
+
+  new TradingView.widget({
+    container_id: "chart",
+    symbol: "NSE:" + symbol,
+    interval: "5",
+    theme: "dark",
+    style: "1",
+    locale: "en",
+    studies: [
+      "RSI@tv-basicstudies",
+      "EMA@tv-basicstudies"
+    ]
+  });
+}
+
+// 🔄 Auto Refresh every 60 sec
+setInterval(loadData, 60000);
+
+// 🚀 First Load
+loadData();
+
 </script>
 
 </body>
