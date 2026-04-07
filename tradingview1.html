@@ -145,17 +145,18 @@ function openChart(symbol){
   document.getElementById("chart").innerHTML = "";
 
   new TradingView.widget({
-    container_id: "chart",
-    symbol: "NSE:" + symbol,
-    interval: "5",
-    theme: "dark",
-    style: "1",
-    locale: "en",
-    studies: [
-      "RSI@tv-basicstudies",
-      "EMA@tv-basicstudies"
-    ]
-  });
+  container_id: "chart",
+  autosize: true,
+  symbol: "NSE:" + symbol,
+  interval: "5",
+  timezone: "Asia/Kolkata",
+  theme: "dark",
+  style: "1",
+  locale: "en",
+  enable_publishing: false,
+  hide_top_toolbar: false,
+  studies: ["RSI@tv-basicstudies","EMA@tv-basicstudies"]
+});
 }
 
 // 🔄 Auto refresh
