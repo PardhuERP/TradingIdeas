@@ -24,34 +24,22 @@ async function loadData(){
 
   data.slice(1).forEach(row => {
     const symbol = row[0];
-    const price = row[1];
-    const volume = row[2];
-    const signal = row[5];
+    const volume = row[1];
+    const spike = row[3];
+    const rsi = row[5];
+    const signal = row[6];
 
     html += `
       <div onclick="openChart('${symbol}')"
-           style="padding:10px;border-bottom:1px solid gray;cursor:pointer">
-        ${symbol} | ₹${price} | Vol: ${volume} | ${signal}
+        style="padding:10px;border-bottom:1px solid #333">
+        <b>${symbol}</b> | Vol: ${volume} | RSI: ${rsi}
+        <br>${spike} ${signal}
       </div>
     `;
   });
 
   document.getElementById("stocks").innerHTML = html;
 }
-
-function openChart(symbol){
-  document.getElementById("chart").innerHTML = "";
-
-  new TradingView.widget({
-    container_id: "chart",
-    symbol: "NSE:" + symbol,
-    interval: "5",
-    theme: "dark",
-    studies: ["RSI@tv-basicstudies", "EMA@tv-basicstudies"]
-  });
-}
-
-loadData();
 </script>
 
 </body>
