@@ -98,13 +98,54 @@ body {
   font-size: 12px;
   opacity: 0.5;
 }
+
+  .card {
+  position: relative;
+}
 </style>
 </head>
 
 <body>
 
 <div class="container">
+  
   <div class="card">
+    <!-- 🔥 NIFTY MINI GAUGE -->
+<div id="miniGauge" style="
+  position:absolute;
+  top:15px;
+  right:15px;
+  width:90px;
+  height:90px;
+">
+
+  <div style="font-size:10px; text-align:center; opacity:0.7;">NIFTY</div>
+
+  <svg viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="40" stroke="#1e293b" stroke-width="8" fill="none"/>
+    
+    <circle id="progressCircle"
+      cx="50" cy="50" r="40"
+      stroke="#22c55e"
+      stroke-width="8"
+      fill="none"
+      stroke-dasharray="251"
+      stroke-dashoffset="251"
+      transform="rotate(-90 50 50)"
+    />
+  </svg>
+
+  <div id="miniValue" style="
+    position:absolute;
+    top:35px;
+    left:0;
+    width:100%;
+    text-align:center;
+    font-size:12px;
+    font-weight:bold;
+  ">--</div>
+
+</div>
 
     <div class="title">📊 NIFTY 50</div>
 
@@ -173,6 +214,30 @@ function updateGauge(pe) {
   `rotate(${angle - 90}deg) translateX(-50%)`; 
 }
 
+ function updateMiniGauge(value){
+
+  const circle = document.getElementById("progressCircle");
+  const text = document.getElementById("miniValue");
+
+  // normalize (0.5 → 1.5 range)
+  let percent = Math.min(Math.max(value, 0.5), 1.5);
+
+  // convert to 0–100%
+  percent = (percent - 0.5) / 1.0;
+
+  const circumference = 251;
+  const offset = circumference - (percent * circumference);
+
+  circle.style.strokeDashoffset = offset;
+
+  // color logic
+  if(value > 1.2) circle.style.stroke = "#22c55e"; // green
+  else if(value < 0.8) circle.style.stroke = "#ef4444"; // red
+  else circle.style.stroke = "#facc15"; // yellow
+
+  text.innerText = value.toFixed(2);
+} 
+
 function loadData() {
   fetch(url)
     .then(res => res.json())
@@ -190,6 +255,7 @@ function loadData() {
       document.getElementById("status").innerText = data.status;
 
       updateGauge(parseFloat(data.pe));
+      updateMiniGauge(parseFloat(data.niftyValue));
     });
 }
 
