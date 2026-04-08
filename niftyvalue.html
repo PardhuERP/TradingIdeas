@@ -192,37 +192,47 @@ body {
 <script>
 const url = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=nifty";
 
+// 🎯 PE GAUGE
 function updateGauge(pe) {
 
   let angle = 0;
 
-  if (pe <= 15) {
-    // Cheap zone (0° → 60°)
-    angle = (pe / 15) * 60;
-  } 
-  else if (pe <= 22) {
-    // Fair zone (60° → 120°)
-    angle = 60 + ((pe - 15) / (22 - 15)) * 60;
-  } 
+  if (pe <= 15) angle = (pe / 15) * 60;
+  else if (pe <= 22) angle = 60 + ((pe - 15) / 7) * 60;
   else {
-    // Expensive zone (120° → 180°)
     if (pe > 40) pe = 40;
-    angle = 120 + ((pe - 22) / (40 - 22)) * 60;
+    angle = 120 + ((pe - 22) / 18) * 60;
   }
 
- document.getElementById("needle").style.transform =
-  `rotate(${angle - 90}deg) translateX(-50%)`; 
+  document.getElementById("needle").style.transform =
+    `rotate(${angle - 90}deg) translateX(-50%)`;
 }
 
- function updateMiniGauge(value){
+
+// 🔥 LABEL + ARROW
+function getLabel(v){
+  if(v > 1.2) return "🔥 STRONG";
+  if(v >= 1) return "NORMAL";
+  if(v >= 0.8) return "WEAK";
+  return "❌ BEAR";
+}
+
+function getArrow(v){
+  if(v > 1.2) return "↑";
+  if(v < 0.8) return "↓";
+  return "→";
+}
+
+
+// 🔥 MINI GAUGE
+function updateMiniGauge(value){
+
+  if(!value || isNaN(value)) return; // 🛑 safety
 
   const circle = document.getElementById("progressCircle");
   const text = document.getElementById("miniValue");
 
-  // normalize (0.5 → 1.5 range)
   let percent = Math.min(Math.max(value, 0.5), 1.5);
-
-  // convert to 0–100%
   percent = (percent - 0.5) / 1.0;
 
   const circumference = 251;
@@ -230,18 +240,33 @@ function updateGauge(pe) {
 
   circle.style.strokeDashoffset = offset;
 
-  // color logic
-  if(value > 1.2) circle.style.stroke = "#22c55e"; // green
-  else if(value < 0.8) circle.style.stroke = "#ef4444"; // red
-  else circle.style.stroke = "#facc15"; // yellow
+  // 🎨 color
+  let color = "#facc15";
 
-  text.innerText = value.toFixed(2);
-} 
+  if(value > 1.2) color = "#22c55e";
+  else if(value < 0.8) color = "#ef4444";
 
+  circle.style.stroke = color;
+
+  // 🔥 glow
+  circle.style.filter = "drop-shadow(0 0 6px " + color + ")";
+
+  // 🧠 label + value
+  text.innerHTML = `
+    <div style="font-size:10px">${getArrow(value)} ${getLabel(value)}</div>
+    <div>${value.toFixed(2)}</div>
+  `;
+}
+
+
+// 🚀 LOAD DATA
 function loadData() {
+
   fetch(url)
     .then(res => res.json())
     .then(data => {
+
+      console.log("API:", data); // debug
 
       document.getElementById("price").innerText = data.price;
 
@@ -251,17 +276,27 @@ function loadData() {
 
       document.getElementById("eps").innerText = data.eps;
       document.getElementById("pe").innerText = data.pe;
-
       document.getElementById("status").innerText = data.status;
 
       updateGauge(parseFloat(data.pe));
-      updateMiniGauge(parseFloat(data.niftyValue));
+
+      // 🔥 SAFE CALL
+      if(data.niftyValue !== undefined){
+        updateMiniGauge(Number(data.niftyValue));
+      }
+
+    })
+    .catch(err => {
+      console.error("API Error:", err);
     });
 }
 
+
+// 🔄 AUTO REFRESH
 loadData();
 setInterval(loadData, 10000);
 </script>
+      
 
 </body>
 </html>
