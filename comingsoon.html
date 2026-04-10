@@ -131,6 +131,20 @@ p {
     <div class="tag">AI Predictions</div>
   </div>
 
+  <div id="ticker" style="
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: #020617;
+  color: #00ffae;
+  padding: 10px;
+  font-weight: bold;
+  text-align: center;
+  z-index: 999;
+">
+Loading market data...
+</div>
+
   <div class="countdown" id="countdown">
     Launching Soon...
   </div>
@@ -141,25 +155,37 @@ p {
     Built for Traders 💹 | Stay Ahead of the Market
   </div>
 </div>
-
 <script>
-// Simple countdown (optional)
-const launchDate = new Date();
-launchDate.setDate(launchDate.getDate() + 5);
+async function loadTicker() {
+  try {
+    const res = await fetch("https://www.nseindia.com/api/allIndices", {
+      headers: { "User-Agent": "Mozilla/5.0" }
+    });
 
-const countdown = document.getElementById("countdown");
+    const data = await res.json();
 
-setInterval(() => {
-  const now = new Date();
-  const diff = launchDate - now;
+    const nifty = data.data.find(i => i.index === "NIFTY 50");
+    const bank = data.data.find(i => i.index === "NIFTY BANK");
+    const sensex = data.data.find(i => i.index === "SENSEX");
 
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hrs = Math.floor((diff / (1000 * 60 * 60)) % 24);
-  const mins = Math.floor((diff / (1000 * 60)) % 60);
+    document.getElementById("ticker").innerHTML = `
+      📈 NIFTY: ${nifty?.last || '-'} |
+      🏦 BANKNIFTY: ${bank?.last || '-'} |
+      💹 SENSEX: ${sensex?.last || '-'}
+    `;
+  } catch (err) {
+    document.getElementById("ticker").innerHTML = "⚠️ Market data unavailable";
+    console.log(err);
+  }
+}
 
-  countdown.innerHTML = `${days}d ${hrs}h ${mins}m remaining`;
-}, 1000);
+// Load immediately
+loadTicker();
+
+// Refresh every 5 sec
+setInterval(loadTicker, 5000);
 </script>
+
 
 </body>
 </html>
