@@ -235,13 +235,92 @@ function getArrow(v){
 
 
 // 🔥 MINI GAUGE
-function updateMiniGauge(value){
+function updateMiniGauge({value, priceChange, prevClose}){
 
-  if(!value || isNaN(value)) return; // 🛑 safety
+  if(!value || isNaN(value)) return;
 
   const circle = document.getElementById("progressCircle");
   const text = document.getElementById("miniValue");
 
+  // 📊 CALCULATIONS
+  let gapPercent = (priceChange / prevClose) * 100;
+
+  // ⏰ TIME PHASE
+  const now = new Date();
+  const hour = now.getHours();
+  const minute = now.getMinutes();
+  const totalMin = hour * 60 + minute;
+
+  let phase = "MAIN";
+  if(totalMin < 570) phase = "PRE";        // before 9:30
+  else if(totalMin < 630) phase = "EARLY"; // 9:30–10:30
+
+  // 🎯 SIGNAL LOGIC
+  let signal = "";
+  let color = "#facc15"; // default yellow
+
+  if(phase === "PRE"){
+    if(gapPercent > 0.5){
+      signal = "GAP UP – WAIT";
+      color = "#22c55e";
+    }
+    else if(gapPercent < -0.5){
+      signal = "GAP DOWN – WAIT";
+      color = "#ef4444";
+    }
+    else{
+      signal = "NEUTRAL OPEN";
+      color = "#facc15";
+    }
+  }
+
+  else if(phase === "EARLY"){
+    if(gapPercent > 0.5 && value > 1.2){
+      signal = "STRONG BULL";
+      color = "#16a34a";
+    }
+    else if(gapPercent > 0.5){
+      signal = "WEAK BULL";
+      color = "#86efac";
+    }
+    else if(gapPercent < -0.5 && value > 1.2){
+      signal = "STRONG BEAR";
+      color = "#dc2626";
+    }
+    else if(gapPercent < -0.5){
+      signal = "WEAK BEAR";
+      color = "#f87171";
+    }
+    else{
+      signal = "SIDEWAYS";
+      color = "#facc15";
+    }
+  }
+
+  else{
+    if(value > 1.5 && gapPercent > 0){
+      signal = "STRONG BULL TREND 🚀";
+      color = "#22c55e";
+    }
+    else if(value > 1.5 && gapPercent < 0){
+      signal = "STRONG BEAR TREND 🔻";
+      color = "#ef4444";
+    }
+    else if(value < 0.8 && gapPercent > 0){
+      signal = "BULL TRAP ⚠️";
+      color = "#eab308";
+    }
+    else if(value < 0.8 && gapPercent < 0){
+      signal = "BEAR TRAP ⚠️";
+      color = "#eab308";
+    }
+    else{
+      signal = "RANGE MARKET";
+      color = "#facc15";
+    }
+  }
+
+  // 🎯 GAUGE CALCULATION
   let percent = Math.min(Math.max(value, 0.5), 1.5);
   percent = (percent - 0.5) / 1.0;
 
@@ -249,24 +328,36 @@ function updateMiniGauge(value){
   const offset = circumference - (percent * circumference);
 
   circle.style.strokeDashoffset = offset;
-
-  // 🎨 color
-  let color = "#facc15";
-
-  if(value > 1.2) color = "#22c55e";
-  else if(value < 0.8) color = "#ef4444";
-
   circle.style.stroke = color;
-
-  // 🔥 glow
   circle.style.filter = "drop-shadow(0 0 6px " + color + ")";
 
-  // 🧠 label + value
+  // 🧠 DISPLAY
   text.innerHTML = `
-    <div style="font-size:10px">${getArrow(value)} ${getLabel(value)}</div>
+    <div style="font-size:10px">
+      ${getArrow(gapPercent)} ${signal}
+    </div>
     <div>${value.toFixed(2)}</div>
   `;
 }
+
+  function getArrow(gap){
+  if(gap > 0.5) return "⬆️";
+  if(gap < -0.5) return "⬇️";
+  return "➡️";
+}
+
+  function getColor(signal){
+
+  if(signal.includes("STRONG BULL")) return "green";
+  if(signal.includes("WEAK BULL")) return "lightgreen";
+
+  if(signal.includes("STRONG BEAR")) return "red";
+  if(signal.includes("WEAK BEAR")) return "orange";
+
+  if(signal.includes("TRAP")) return "yellow";
+
+  return "gray";
+}  
 
 
 // 🚀 LOAD DATA
