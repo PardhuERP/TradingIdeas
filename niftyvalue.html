@@ -227,38 +227,29 @@ function getLabel(v){
   return "❌ BEAR";
 }
 
-function getArrow(v){
-  if(v > 1.2) return "↑";
-  if(v < 0.8) return "↓";
-  return "→";
-}
-
 
 // 🔥 MINI GAUGE
 function updateMiniGauge({value, priceChange, prevClose}){
 
-  if(!value || isNaN(value)) return;
+  if(!value || !prevClose) return;
 
   const circle = document.getElementById("progressCircle");
   const text = document.getElementById("miniValue");
 
-  // 📊 CALCULATIONS
   let gapPercent = (priceChange / prevClose) * 100;
 
   // ⏰ TIME PHASE
   const now = new Date();
-  const hour = now.getHours();
-  const minute = now.getMinutes();
-  const totalMin = hour * 60 + minute;
+  const totalMin = now.getHours()*60 + now.getMinutes();
 
   let phase = "MAIN";
-  if(totalMin < 570) phase = "PRE";        // before 9:30
-  else if(totalMin < 630) phase = "EARLY"; // 9:30–10:30
+  if(totalMin < 570) phase = "PRE";
+  else if(totalMin < 630) phase = "EARLY";
 
-  // 🎯 SIGNAL LOGIC
   let signal = "";
-  let color = "#facc15"; // default yellow
+  let color = "#facc15";
 
+  // 🔥 PRE MARKET (IGNORE VOLUME)
   if(phase === "PRE"){
     if(gapPercent > 0.5){
       signal = "GAP UP – WAIT";
@@ -274,30 +265,44 @@ function updateMiniGauge({value, priceChange, prevClose}){
     }
   }
 
+  // ⚡ EARLY MARKET
   else if(phase === "EARLY"){
+
     if(gapPercent > 0.5 && value > 1.2){
-      signal = "STRONG BULL";
+      signal = "STRONG BULL 🟢";
       color = "#16a34a";
     }
+    else if(gapPercent > 0.5 && value < 0.8){
+      signal = "BULL TRAP ⚠️";
+      color = "#eab308";
+    }
     else if(gapPercent > 0.5){
-      signal = "WEAK BULL";
+      signal = "WEAK BULL 🟡";
       color = "#86efac";
     }
+
     else if(gapPercent < -0.5 && value > 1.2){
-      signal = "STRONG BEAR";
+      signal = "STRONG BEAR 🔴";
       color = "#dc2626";
     }
+    else if(gapPercent < -0.5 && value < 0.8){
+      signal = "BEAR TRAP ⚠️";
+      color = "#eab308";
+    }
     else if(gapPercent < -0.5){
-      signal = "WEAK BEAR";
+      signal = "WEAK BEAR 🟠";
       color = "#f87171";
     }
+
     else{
       signal = "SIDEWAYS";
       color = "#facc15";
     }
   }
 
+  // 🚀 MAIN MARKET
   else{
+
     if(value > 1.5 && gapPercent > 0){
       signal = "STRONG BULL TREND 🚀";
       color = "#22c55e";
@@ -315,12 +320,12 @@ function updateMiniGauge({value, priceChange, prevClose}){
       color = "#eab308";
     }
     else{
-      signal = "RANGE MARKET";
+      signal = "RANGE MARKET 🔄";
       color = "#facc15";
     }
   }
 
-  // 🎯 GAUGE CALCULATION
+  // 🎯 GAUGE
   let percent = Math.min(Math.max(value, 0.5), 1.5);
   percent = (percent - 0.5) / 1.0;
 
@@ -329,13 +334,11 @@ function updateMiniGauge({value, priceChange, prevClose}){
 
   circle.style.strokeDashoffset = offset;
   circle.style.stroke = color;
-  circle.style.filter = "drop-shadow(0 0 6px " + color + ")";
+  circle.style.filter = `drop-shadow(0 0 6px ${color})`;
 
-  // 🧠 DISPLAY
+  // 🧠 DISPLAY (CLEAN)
   text.innerHTML = `
-    <div style="font-size:10px">
-      ${getArrow(gapPercent)} ${signal}
-    </div>
+    <div style="font-size:10px">${getArrow(gapPercent)} ${signal}</div>
     <div>${value.toFixed(2)}</div>
   `;
 }
@@ -383,7 +386,11 @@ function loadData() {
 
       // 🔥 SAFE CALL
       if(data.niftyValue !== undefined){
-        updateMiniGauge(Number(data.niftyValue));
+        updateMiniGauge({
+  value: Number(data.niftyValue),
+  priceChange: Number(data.change),
+  prevClose: Number(data.price) - Number(data.change)
+});
       }
 
     })
