@@ -158,9 +158,7 @@ Loading market data...
 <script>
 async function loadTicker() {
   try {
-    await fetch("https://www.nseindia.com");
-const res = await fetch("https://www.nseindia.com/api/allIndices", {headers: { "User-Agent": "Mozilla/5.0" }
-    });
+    const res = await fetch("https://api.allorigins.win/raw?url=https://www.nseindia.com/api/allIndices");
 
     const data = await res.json();
 
@@ -179,13 +177,9 @@ const res = await fetch("https://www.nseindia.com/api/allIndices", {headers: { "
   }
 }
 
-// Load immediately
 loadTicker();
-
-// Refresh every 5 sec
 setInterval(loadTicker, 5000);
 </script>
-
 
 </body>
 </html>
