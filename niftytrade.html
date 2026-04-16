@@ -1,98 +1,114 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nifty Dashboard</title>
 
-<title>Nifty Dashboard</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #111;
+      color: #fff;
+      text-align: center;
+      margin: 0;
+    }
 
-<style>
+    h2 { margin: 15px; }
 
-body {
-  font-family: Arial;
-  background: #111;
-  color: #fff;
-  margin: 0;
-  overflow: hidden; /* 💣 NO SCROLL */
-}
+    .card {
+      background: #1e1e1e;
+      margin: 10px;
+      padding: 15px;
+      border-radius: 12px;
+    }
 
-/* 🔥 FULL SCREEN GRID */
-.container {
-  display: grid;
-  grid-template-rows: auto auto 1fr;
-  height: 100vh;
-}
+    .title { color: #00ffcc; }
+    .value { font-size: 22px; font-weight: bold; }
 
-/* HEADER */
-.header {
-  text-align: center;
-  padding: 10px;
-  font-size: 18px;
-  background: #000;
-}
+    .meter {
+      width: 90%;
+      height: 20px;
+      background: #333;
+      margin: 20px auto;
+      border-radius: 10px;
+    }
 
-/* METER */
-.meter-box {
-  padding: 10px;
-  text-align: center;
-}
+    .meter-fill {
+      height: 100%;
+      border-radius: 10px;
+    }
 
-.meter {
-  width: 90%;
-  height: 15px;
-  background: #333;
-  margin: auto;
-  border-radius: 10px;
-}
-
-.meter-fill {
+    /* 🔥 FULL SCREEN FIX */
+html, body {
   height: 100%;
-  border-radius: 10px;
+  overflow: hidden; /* ❌ no scroll */
 }
 
-/* CARDS GRID */
-.grid {
+/* 🔥 MAIN LAYOUT */
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 🔥 TITLE FIX */
+h2 {
+  margin: 5px;
+  font-size: 18px;
+}
+
+/* 🔥 GRID SYSTEM */
+#data {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  padding: 8px;
+  gap: 6px;
+  padding: 5px;
+  flex: 1;
+  overflow: hidden;
 }
 
-/* CARD */
+/* 🔥 CARD OPTIMIZE */
 .card {
-  background: #1e1e1e;
+  margin: 0;
+  padding: 8px;
   border-radius: 10px;
-  padding: 10px;
-  text-align: center;
 }
 
+/* 🔥 TEXT FIT */
 .title {
   font-size: 12px;
-  color: #00ffcc;
 }
 
 .value {
   font-size: 16px;
-  font-weight: bold;
 }
 
-</style>
+/* 🔥 METER COMPACT */
+#meter .card {
+  margin: 5px;
+  padding: 8px;
+}
+
+.meter {
+  height: 12px;
+  margin: 10px auto;
+}
+  </style>
 </head>
 
 <body>
 
-<div class="container">
+<div style="height:100%; display:flex; flex-direction:column;">
 
-  <div class="header">📊 NIFTY LIVE</div>
+<h2>📊 NIFTY LIVE </h2>
 
-  <div id="meter"></div>
-
-  <div id="data" class="grid"></div>
+<div id="meter"></div>
+<div id="data"></div>
 
 </div>
 
 <script>
 
-const API_URL = "PASTE_YOUR_GAS_URL";
+const API_URL = "https://script.google.com/macros/s/AKfycbxjp_AwI5w-cr9K8oNauKLBCkUpqZT5uAEbgE0zS2l4ggzqX8crV6UnHnneE6m30U9a/exec";
 
 function loadData() {
 
@@ -105,11 +121,8 @@ function loadData() {
 
       data.forEach(row => {
 
-        let value = row[1];
-
         if (row[0] === "Strength") {
           strength = Math.round(row[1]);
-          value = strength;
         }
 
         let color = "#fff";
@@ -122,23 +135,24 @@ function loadData() {
         html += `
           <div class="card">
             <div class="title">${row[0]}</div>
-            <div class="value" style="color:${color}">${value}</div>
+            <div class="value" style="color:${color}">${row[0] === "Strength" ? Math.round(row[1]) : row[1]}</div>
           </div>
         `;
       });
 
       document.getElementById("data").innerHTML = html;
 
-      // 💣 METER
+      // 🔥 Meter
       const meterHTML = `
-        <div class="meter-box">
+        <div class="card">
+          <div class="title">Strength</div>
           <div class="meter">
             <div class="meter-fill" style="
               width:${Math.min(Math.abs(strength),100)}%;
               background:${strength >= 0 ? "lime" : "red"};
             "></div>
           </div>
-          <div>${strength}</div>
+          <div class="value">${strength}</div>
         </div>
       `;
 
@@ -146,7 +160,7 @@ function loadData() {
     });
 }
 
-// 🔄 AUTO UPDATE
+// 🔄 Auto refresh
 setInterval(loadData, 5000);
 loadData();
 
