@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nifty Dashboard</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #111;
+      color: #fff;
+      text-align: center;
+      margin: 0;
+    }
+
+    h2 { margin: 15px; }
+
+    .card {
+      background: #1e1e1e;
+      margin: 10px;
+      padding: 15px;
+      border-radius: 12px;
+    }
+
+    .title { color: #00ffcc; }
+    .value { font-size: 22px; font-weight: bold; }
+
+    .meter {
+      width: 90%;
+      height: 20px;
+      background: #333;
+      margin: 20px auto;
+      border-radius: 10px;
+    }
+
+    .meter-fill {
+      height: 100%;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>📊 NIFTY LIVE DASHBOARD</h2>
+
+<div id="meter"></div>
+<div id="data"></div>
+
+<script>
+
+const API_URL = "PASTE_YOUR_GAS_URL_HERE";
+
+function loadData() {
+
+  fetch(API_URL)
+    .then(res => res.json())
+    .then(data => {
+
+      let html = "";
+      let strength = 0;
+
+      data.forEach(row => {
+
+        if (row[0] === "Strength") {
+          strength = Math.round(row[1]);
+        }
+
+        let color = "#fff";
+
+        if (row[0] === "Signal") {
+          if (row[1].includes("BOOM")) color = "lime";
+          else if (row[1].includes("CRASH")) color = "red";
+        }
+
+        html += `
+          <div class="card">
+            <div class="title">${row[0]}</div>
+            <div class="value" style="color:${color}">${row[1]}</div>
+          </div>
+        `;
+      });
+
+      document.getElementById("data").innerHTML = html;
+
+      // 🔥 Meter
+      const meterHTML = `
+        <div class="card">
+          <div class="title">Strength</div>
+          <div class="meter">
+            <div class="meter-fill" style="
+              width:${Math.min(Math.abs(strength),100)}%;
+              background:${strength >= 0 ? "lime" : "red"};
+            "></div>
+          </div>
+          <div class="value">${strength}</div>
+        </div>
+      `;
+
+      document.getElementById("meter").innerHTML = meterHTML;
+    });
+}
+
+// 🔄 Auto refresh
+setInterval(loadData, 5000);
+loadData();
+
+</script>
+
+</body>
+</html>
