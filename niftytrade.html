@@ -38,60 +38,61 @@
       border-radius: 10px;
     }
 
-    /* 🔥 FULL SCREEN FIX */
+    /* 🔥 FULL SCREEN LOCK */
 html, body {
   height: 100%;
-  overflow: hidden; /* ❌ no scroll */
+  overflow: hidden;
 }
 
-/* 🔥 MAIN LAYOUT */
-body {
+/* 🔥 MAIN CONTAINER */
+body > div {
+  height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* 🔥 TITLE FIX */
+/* 🔥 TITLE COMPACT */
 h2 {
-  margin: 5px;
-  font-size: 18px;
+  margin: 4px;
+  font-size: 16px;
 }
 
-/* 🔥 GRID SYSTEM */
+/* 🔥 METER FIX HEIGHT */
+#meter {
+  flex: 0 0 auto;
+}
+
+/* 🔥 GRID AUTO FIT */
 #data {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-  padding: 5px;
   flex: 1;
-  overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  padding: 6px;
 }
 
-/* 🔥 CARD OPTIMIZE */
+/* 🔥 CARD AUTO SIZE */
 .card {
   margin: 0;
-  padding: 8px;
-  border-radius: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-/* 🔥 TEXT FIT */
+/* 🔥 TEXT BALANCE */
 .title {
   font-size: 12px;
 }
 
 .value {
-  font-size: 16px;
+  font-size: 18px;
 }
 
-/* 🔥 METER COMPACT */
-#meter .card {
-  margin: 5px;
-  padding: 8px;
-}
-
-.meter {
-  height: 12px;
-  margin: 10px auto;
-}
+    #data .card:last-child {
+  grid-column: span 2;
+    }
   </style>
 </head>
 
