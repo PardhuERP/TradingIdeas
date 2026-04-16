@@ -76,7 +76,7 @@ function loadData() {
         html += `
           <div class="card">
             <div class="title">${row[0]}</div>
-            <div class="value" style="color:${color}">${row[1]}</div>
+            <div class="value" style="color:${color}">${row[0] === "Strength" ? Math.round(row[1]) : row[1]}</div>
           </div>
         `;
       });
