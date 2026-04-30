@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Q4 Results Dashboard</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: white;
+    margin: 0;
+    padding: 10px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+}
+
+.card {
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
+
+.green { background: #064e3b; }
+.red { background: #7f1d1d; }
+.yellow { background: #78350f; }
+
+.card h3 {
+    margin: 0 0 10px 0;
+}
+
+.badge {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.bull { background: #22c55e; }
+.bear { background: #ef4444; }
+.neutral { background: #f59e0b; }
+
+</style>
+</head>
+
+<body>
+
+<h1>📊 Q4 Results Dashboard</h1>
+
+<div class="container">
+
+<!-- STRONG -->
+<div class="card green">
+<h3>Laurus Labs</h3>
+<span class="badge bull">Bullish</span>
+<p>Profit ↑, Revenue ↑, Margin ↑</p>
+</div>
+
+<div class="card green">
+<h3>Kajaria Ceramics</h3>
+<span class="badge bull">Bullish</span>
+<p>Profit ↑, EBITDA ↑, Buyback announced</p>
+</div>
+
+<div class="card green">
+<h3>Adani Ports</h3>
+<span class="badge bull">Bullish</span>
+<p>Revenue ↑ 26%, EBITDA ↑</p>
+</div>
+
+<div class="card green">
+<h3>Force Motors</h3>
+<span class="badge bull">Bullish</span>
+<p>Profit ↑, Dividend announced</p>
+</div>
+
+<div class="card green">
+<h3>Granules India</h3>
+<span class="badge bull">Bullish</span>
+<p>Profit ↑, EBITDA ↑</p>
+</div>
+
+<!-- WEAK -->
+<div class="card red">
+<h3>Dr Lal Pathlabs</h3>
+<span class="badge bear">Bearish</span>
+<p>Profit ↓, Margin ↓</p>
+</div>
+
+<div class="card red">
+<h3>KSB</h3>
+<span class="badge bear">Bearish</span>
+<p>Profit ↓, EBITDA ↓</p>
+</div>
+
+<div class="card red">
+<h3>Edelweiss</h3>
+<span class="badge bear">Bearish</span>
+<p>Profit ↓, Revenue ↓</p>
+</div>
+
+<div class="card red">
+<h3>HEG</h3>
+<span class="badge bear">Bearish</span>
+<p>Loss vs Profit</p>
+</div>
+
+<div class="card red">
+<h3>Motilal Oswal</h3>
+<span class="badge bear">Bearish</span>
+<p>Loss increased</p>
+</div>
+
+<!-- MIXED -->
+<div class="card yellow">
+<h3>Nalco</h3>
+<span class="badge neutral">Neutral</span>
+<p>Profit below expectation</p>
+</div>
+
+<div class="card yellow">
+<h3>Bajaj Finserv</h3>
+<span class="badge neutral">Neutral</span>
+<p>Growth but below estimate</p>
+</div>
+
+<div class="card yellow">
+<h3>HUL</h3>
+<span class="badge neutral">Neutral</span>
+<p>Profit ↑, Margin ↓</p>
+</div>
+
+<div class="card yellow">
+<h3>Syngene</h3>
+<span class="badge neutral">Neutral</span>
+<p>Profit ↓, Revenue ↑</p>
+</div>
+
+<div class="card yellow">
+<h3>MOIL</h3>
+<span class="badge neutral">Neutral</span>
+<p>Profit ↓, Revenue ↑</p>
+</div>
+
+</div>
+
+</body>
+</html>
