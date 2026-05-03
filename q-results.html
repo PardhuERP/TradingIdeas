@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  background: #0f172a;
+  color: white;
+  font-family: Arial;
+  padding: 10px;
+}
+
+h2 { text-align: center; }
+
+input, select {
+  padding: 8px;
+  margin: 5px;
+  border-radius: 6px;
+  border: none;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #1e293b;
+}
+
+th, td {
+  padding: 10px;
+  text-align: center;
+}
+
+th { background: #334155; }
+
+tr:hover { background: #475569; }
+
+.bull { color: #22c55e; }
+.bear { color: #ef4444; }
+.side { color: #facc15; }
+.rev { color: #38bdf8; }
+
+</style>
+</head>
+
+<body>
+
+<h2>📊 Stock Results</h2>
+
+<input id="search" placeholder="Search..." onkeyup="render()">
+<select id="filter" onchange="render()">
+  <option value="">All</option>
+  <option>🟢</option>
+  <option>🔴</option>
+  <option>⚖️</option>
+  <option>🔄</option>
+</select>
+
+<table>
+<thead>
+<tr>
+<th>Stock</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th><th>Signal</th><th>Price</th>
+</tr>
+</thead>
+<tbody id="body"></tbody>
+</table>
+
+<script>
+
+const API = "https://script.google.com/macros/s/AKfycbxf-N88GUrcqTZ82D-F4R5vi_ljRsyXkYb_mXKp040vb4x7Jh1K4AfEVPXaGw0gz7PE/exec";
+
+let data = [];
+
+async function load() {
+  let res = await fetch(API);
+  data = await res.json();
+  render();
+}
+
+function render() {
+
+  let s = document.getElementById("search").value.toUpperCase();
+  let f = document.getElementById("filter").value;
+
+  let html = "";
+
+  data.forEach(d => {
+
+    if (s && !d.stock.toUpperCase().includes(s)) return;
+    if (f && !d.signal.includes(f)) return;
+
+    let cls = "side";
+    if (d.signal.includes("Bullish")) cls = "bull";
+    if (d.signal.includes("Bearish")) cls = "bear";
+    if (d.signal.includes("Reversal")) cls = "rev";
+
+    html += `
+      <tr>
+        <td>${d.stock}</td>
+        <td>${d.q1}</td>
+        <td>${d.q2}</td>
+        <td>${d.q3}</td>
+        <td>${d.q4}</td>
+        <td class="${cls}">${d.signal}</td>
+        <td>${d.price}</td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("body").innerHTML = html;
+}
+
+load();
+
+</script>
+
+</body>
+</html>
