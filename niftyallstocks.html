@@ -205,17 +205,29 @@ let minDelivery=parseFloat(document.getElementById("minDelivery").value) || 0;
 
 let minTurnover=parseFloat(document.getElementById("minTurnover").value) || 0;
 
-let filtered=stocks.filter(s=>{
+let filtered = stocks.filter(s => {
+
+let stock = s.stock.toUpperCase();
+
+let isETF =
+stock.includes("ETF") ||
+stock.includes("BEES") ||
+stock.includes("LIQUID") ||
+stock.includes("BOND") ||
+stock.includes("GOLD") ||
+stock.includes("SILVER");
 
 return (
-s.stock.toUpperCase().includes(search) &&
-Number(s.price)>=minPrice &&
-Number(s.price)<=maxPrice &&
-Number(s.deliveryPer)>=minDelivery &&
-Number(s.turnover)>=minTurnover
+!isETF &&
+stock.includes(search) &&
+Number(s.price) >= minPrice &&
+Number(s.price) <= maxPrice &&
+Number(s.deliveryPer) >= minDelivery &&
+Number(s.turnover) >= minTurnover
 );
 
 });
+  
 
 filtered.forEach(s=>{
 
