@@ -65,6 +65,10 @@ input, select {
 <option value="Growth">Growth</option>
 <option value="Regular">Regular</option>
 <option value="Dividend">Dividend</option>
+<select id="taxFilter" onchange="applyFilter()">
+<option value="all">All Funds</option>
+<option value="tax">Tax Benefit (ELSS)</option>
+</select>
 </select>
 
 <input type="number" id="navMin" placeholder="Min NAV" oninput="applyFilter()">
@@ -132,6 +136,7 @@ function applyFilter(){
 const search = document.getElementById("search").value.toLowerCase();
 const period = document.getElementById("period").value;
 const type = document.getElementById("type").value;
+const taxFilter = document.getElementById("taxFilter").value;
 
 const navMin = parseFloat(document.getElementById("navMin").value) || 0;
 const navMax = parseFloat(document.getElementById("navMax").value) || Infinity;
@@ -147,6 +152,14 @@ const years = f.years || 0;
 
 if(search && !name.includes(search)) return false;
 if(type !== "all" && f.Type !== type) return false;
+if(
+  taxFilter === "tax" &&
+  !(
+    (f.Name || "").toUpperCase().includes("ELSS") ||
+    (f.Name || "").toUpperCase().includes("TAX") ||
+    (f.Category || "").toUpperCase().includes("ELSS")
+  )
+) return false;
 if(nav < navMin || nav > navMax) return false;
 if(startNav < startNavMin) return false;
 if(years < yearsMin) return false;
