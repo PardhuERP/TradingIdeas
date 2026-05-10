@@ -67,9 +67,12 @@ input, select {
 <option value="Dividend">Dividend</option>
 </select>
 
-<select id="taxFilter" onchange="applyFilter()">
-<option value="all">All Funds</option>
-<option value="tax">Tax Benefit (ELSS)</option>
+<select id="categoryFilter" onchange="applyFilter()">
+<option value="all">All Categories</option>
+<option value="equity">Equity</option>
+<option value="debt">Debt</option>
+<option value="hybrid">Hybrid</option>
+<option value="elss">Tax Saver (ELSS)</option>
 </select>
 
 <input type="number" id="navMin" placeholder="Min NAV" oninput="applyFilter()">
@@ -137,6 +140,7 @@ function applyFilter(){
 const search = document.getElementById("search").value.toLowerCase();
 const period = document.getElementById("period").value;
 const type = document.getElementById("type").value;
+const categoryFilter = document.getElementById("categoryFilter").value;
 const taxFilter = document.getElementById("taxFilter").value;
 
 const navMin = parseFloat(document.getElementById("navMin").value) || 0;
@@ -153,13 +157,32 @@ const years = f.years || 0;
 
 if(search && !name.includes(search)) return false;
 if(type !== "all" && f.Type !== type) return false;
-if(
-  taxFilter === "tax" &&
-  !(
-    (f.Name || "").toUpperCase().includes("ELSS") ||
-    (f.Name || "").toUpperCase().includes("TAX") ||
-    (f.Category || "").toUpperCase().includes("ELSS")
-  )
+const category = (f.Category || "").toLowerCase();
+const name = (f.Name || "").toLowerCase();
+
+if(categoryFilter === "equity" && !category.includes("equity")) return false;
+
+if(categoryFilter === "debt" &&
+!(
+category.includes("debt") ||
+category.includes("bond") ||
+category.includes("income")
+)
+) return false;
+
+if(categoryFilter === "hybrid" &&
+!(
+category.includes("hybrid") ||
+category.includes("balanced")
+)
+) return false;
+
+if(categoryFilter === "elss" &&
+!(
+name.includes("elss") ||
+name.includes("tax") ||
+category.includes("elss")
+)
 ) return false;
 if(nav < navMin || nav > navMax) return false;
 if(startNav < startNavMin) return false;
