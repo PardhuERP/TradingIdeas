@@ -141,7 +141,6 @@ const search = document.getElementById("search").value.toLowerCase();
 const period = document.getElementById("period").value;
 const type = document.getElementById("type").value;
 const categoryFilter = document.getElementById("categoryFilter").value;
-const taxFilter = document.getElementById("taxFilter").value;
 
 const navMin = parseFloat(document.getElementById("navMin").value) || 0;
 const navMax = parseFloat(document.getElementById("navMax").value) || Infinity;
@@ -157,6 +156,7 @@ const years = f.years || 0;
 
 if(search && !name.includes(search)) return false;
 if(type !== "all" && f.Type !== type) return false;
+
 const category = (f.Category || "").toLowerCase();
 const name = (f.Name || "").toLowerCase();
 
