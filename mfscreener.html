@@ -150,15 +150,15 @@ const yearsMin = parseFloat(document.getElementById("yearsMin").value) || 0;
 let filtered = allData.filter(f => {
 
 const name = (f.Name || "").toLowerCase();
+const category = (f.Category || "").toLowerCase();
+
 const nav = parseFloat(f.NAV) || 0;
 const startNav = parseFloat(f["Start NAV"]) || 0;
 const years = f.years || 0;
 
 if(search && !name.includes(search)) return false;
-if(type !== "all" && f.Type !== type) return false;
 
-const category = (f.Category || "").toLowerCase();
-const name = (f.Name || "").toLowerCase();
+if(type !== "all" && f.Type !== type) return false;
 
 if(categoryFilter === "equity" && !category.includes("equity")) return false;
 
@@ -184,14 +184,19 @@ name.includes("tax") ||
 category.includes("elss")
 )
 ) return false;
+
 if(nav < navMin || nav > navMax) return false;
+
 if(startNav < startNavMin) return false;
+
 if(years < yearsMin) return false;
 
 return true;
+
 });
 
 display(filtered);
+
 }
 
 function display(data){
