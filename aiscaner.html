@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport"
+content="width=device-width,initial-scale=1">
+
+<title>RAO AI Scanner</title>
+
+<style>
+
+body{
+margin:0;
+padding:10px;
+font-family:Arial;
+background:#0f172a;
+color:white;
+}
+
+.title{
+font-size:24px;
+font-weight:bold;
+margin-bottom:15px;
+}
+
+.card{
+
+background:#1e293b;
+
+padding:15px;
+
+margin-bottom:15px;
+
+border-radius:18px;
+
+box-shadow:0 0 8px rgba(0,0,0,.4);
+
+}
+
+.stock{
+font-size:22px;
+font-weight:bold;
+}
+
+.signal{
+
+margin-top:8px;
+
+font-size:18px;
+
+font-weight:bold;
+
+color:#00ff88;
+
+}
+
+.score{
+
+font-size:18px;
+
+color:gold;
+
+}
+
+.row{
+
+margin-top:6px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="title">
+
+🚀 RAO AI Scanner
+
+</div>
+
+<div id="out">
+
+Loading...
+
+</div>
+
+<script>
+
+async function load(){
+
+const url=
+"https://script.google.com/macros/s/AKfycby7Lm8V2NinzsOoDhSWMDp61tqV_6KD3WKjidao6awFEdaoggOIrgxTH-Ras3L9YyjZXA/exec?action=scan?action=scan";
+
+const r=
+await fetch(url);
+
+const data=
+await r.json();
+
+let html="";
+
+data.forEach(x=>{
+
+html+=`
+
+<div class="card">
+
+<div class="stock">
+
+${x.Stock}
+
+</div>
+
+<div class="signal">
+
+${x.Signal}
+
+</div>
+
+<div class="score">
+
+💪 Score:
+${x.Score}/10
+
+</div>
+
+<div class="row">
+
+📌 Close:
+${Number(x.Close).toFixed(2)}
+
+</div>
+
+<div class="row">
+
+📊 RSI:
+${Number(x.RSI).toFixed(1)}
+
+</div>
+
+<div class="row">
+
+📦 Volume:
+${(x.Volume/100000).toFixed(1)}L
+
+</div>
+
+<div class="row">
+
+⚡ Avg:
+${(x.AvgVol10/100000).toFixed(1)}L
+
+</div>
+
+<div class="row">
+
+EMA10:
+${x.EMA10.toFixed(0)}
+
+</div>
+
+<div class="row">
+
+EMA20:
+${x.EMA20.toFixed(0)}
+
+</div>
+
+<div class="row">
+
+EMA50:
+${x.EMA50.toFixed(0)}
+
+</div>
+
+<div class="row">
+
+EMA200:
+${x.EMA200.toFixed(0)}
+
+</div>
+
+</div>
+
+`;
+
+});
+
+document.getElementById(
+"out"
+).innerHTML=html;
+
+}
+
+load();
+
+setInterval(load,60000);
+
+</script>
+
+</body>
+</html>
