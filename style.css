@@ -32,8 +32,64 @@ color:black;
 }
 
 .logo{
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.logo-icon{
+width:55px;
+height:55px;
+
+background:linear-gradient(
+135deg,
+#0a8f4c,
+#12c06a
+);
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+border-radius:50%;
+
+font-size:28px;
+
+box-shadow:
+0 8px 20px rgba(10,143,76,.35);
+
+}
+
+.logo-text{
+display:flex;
+flex-direction:column;
+line-height:1;
+}
+
+.logo-text .top{
+
+font-size:30px;
 font-weight:700;
-font-size:22px;
+
+color:#0f172a;
+
+letter-spacing:1px;
+}
+
+.logo-text .bottom{
+
+margin-top:6px;
+
+font-size:13px;
+
+font-weight:500;
+
+letter-spacing:3px;
+
+text-transform:uppercase;
+
+color:#0a8f4c;
+
 }
 
 .call-btn{
