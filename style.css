@@ -100,20 +100,28 @@ border-radius:10px;
 }
 
 .hero{
+
 height:90vh;
 
 background:
-linear-gradient(rgba(0,0,0,.5),
-rgba(0,0,0,.5)),
-url("https://images.unsplash.com/photo-1581578731548-c64695cc6952");
+linear-gradient(
+rgba(0,0,0,.65),
+rgba(0,0,0,.65)
+),
 
+url("https://images.unsplash.com/photo-1621905252507-b35492cc74b4");
+
+background-position:center;
 background-size:cover;
+background-repeat:no-repeat;
+
 display:flex;
 align-items:center;
 justify-content:center;
 
 text-align:center;
 color:white;
+
 }
 
 .hero h1{
@@ -284,6 +292,44 @@ font-size:22px;
 margin-left:10px;
 
 background:#25D366;
+
+}
+
+.pest-icons{
+
+display:flex;
+justify-content:center;
+gap:15px;
+flex-wrap:wrap;
+
+margin:30px 0;
+
+}
+
+.pest-icons span{
+
+background:rgba(255,255,255,.12);
+
+padding:12px 22px;
+
+border-radius:40px;
+
+backdrop-filter:blur(10px);
+
+border:1px solid rgba(255,255,255,.2);
+
+font-size:14px;
+font-weight:600;
+
+transition:.3s;
+
+}
+
+.pest-icons span:hover{
+
+transform:translateY(-5px);
+
+background:#0a8f4c;
 
 }
 
