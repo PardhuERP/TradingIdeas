@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<style>
+body{
+background:#000;
+color:#fff;
+font-family:Arial;
+margin:0;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+padding:8px;
+font-size:12px;
+text-align:center;
+border-bottom:1px solid #222;
+}
+
+th{
+background:#111;
+position:sticky;
+top:0;
+}
+
+.green{
+color:#00ff99;
+}
+
+.gold{
+color:gold;
+}
+</style>
+</head>
+<body>
+
+<h2 style="text-align:center">
+📦 Delivery Dashboard
+</h2>
+
+<table id="tbl">
+<thead>
+<tr>
+<th>Stock</th>
+<th>Avg%</th>
+<th>Price</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<script>
+
+const API =
+"https://YOUR_GAS_URL/exec";
+
+fetch(API + "?action=delivery&t=" + Date.now())
+.then(r=>r.json())
+.then(rows=>{
+
+const tb =
+document.querySelector("#tbl tbody");
+
+rows.forEach(r=>{
+
+tb.innerHTML += `
+<tr>
+<td>${r.Stock}</td>
+<td class="gold">${r.Avg}</td>
+<td class="green">${r.Price}</td>
+</tr>
+`;
+
+});
+
+});
+
+</script>
+
+</body>
+</html>
