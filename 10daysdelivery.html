@@ -9,11 +9,12 @@ body{
   font-family:Arial,sans-serif;
 }
 
-h2{
-  text-align:center;
-  padding:10px;
-  margin:0;
+.header{
   background:#111;
+  padding:12px;
+  text-align:center;
+  font-size:18px;
+  font-weight:bold;
 }
 
 .table-wrap{
@@ -21,15 +22,15 @@ h2{
 }
 
 table{
-  border-collapse:collapse;
-  min-width:1000px;
   width:100%;
+  min-width:1000px;
+  border-collapse:collapse;
 }
 
 th,td{
   padding:8px;
-  font-size:12px;
   text-align:center;
+  font-size:12px;
   border-bottom:1px solid #222;
   white-space:nowrap;
 }
@@ -38,23 +39,26 @@ th{
   background:#111;
   position:sticky;
   top:0;
-  z-index:1;
-}
-
-.gold{
-  color:gold;
-  font-weight:bold;
-}
-
-.green{
-  color:#00ff99;
-  font-weight:bold;
+  z-index:10;
 }
 
 .stock{
   font-weight:bold;
+  color:#fff;
 }
-</style></head><body><h2>📦 Delivery Dashboard</h2><div class="table-wrap">
+
+.avg{
+  color:gold;
+  font-weight:bold;
+}
+
+.price{
+  color:#00ff99;
+  font-weight:bold;
+}
+</style></head><body><div class="header">
+📦 Delivery Dashboard
+</div><div class="table-wrap">
 <table id="tbl"><thead>
 <tr>
 <th>Stock</th>
@@ -77,15 +81,24 @@ th{
 const API =
 "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
 
-fetch(API + "?action=delivery&t=" + Date.now())
+fetch(API + "?action=deliverydashboard&t=" + Date.now())
 .then(r => r.json())
 .then(rows => {
 
 const tb = document.querySelector("#tbl tbody");
-
 tb.innerHTML = "";
 
 rows.forEach(r => {
+
+const stock = String(r.Stock || "").trim();
+
+/* Remove Bonds / Govt Securities */
+if (
+  stock.includes("GS") ||
+  /^\d/.test(stock)
+){
+  return;
+}
 
 tb.innerHTML += `
 <tr>
@@ -102,16 +115,18 @@ tb.innerHTML += `
 <td>${r.D9}</td>
 <td>${r.D10}</td>
 
-<td class="gold">${r.Avg}</td>
-<td class="green">${r.Price}</td>
+<td class="avg">${r.Avg}</td>
+<td class="price">${r.Price}</td>
 </tr>
 `;
 
 });
 
 })
-.catch(err=>{
+.catch(err => {
   console.error(err);
+  document.querySelector("#tbl tbody").innerHTML =
+  '<tr><td colspan="13">Error loading data</td></tr>';
 });
 
 </script></body>
