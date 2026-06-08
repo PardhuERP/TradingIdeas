@@ -1,78 +1,107 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-
-<style>
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Delivery Dashboard</title><style>
 body{
-background:#000;
-color:#fff;
-font-family:Arial;
-margin:0;
+  margin:0;
+  background:#000;
+  color:#fff;
+  font-family:Arial,sans-serif;
+}
+
+h2{
+  text-align:center;
+  padding:10px;
+  margin:0;
+  background:#111;
+}
+
+.table-wrap{
+  overflow-x:auto;
 }
 
 table{
-width:100%;
-border-collapse:collapse;
+  border-collapse:collapse;
+  min-width:1000px;
+  width:100%;
 }
 
 th,td{
-padding:8px;
-font-size:12px;
-text-align:center;
-border-bottom:1px solid #222;
+  padding:8px;
+  font-size:12px;
+  text-align:center;
+  border-bottom:1px solid #222;
+  white-space:nowrap;
 }
 
 th{
-background:#111;
-position:sticky;
-top:0;
-}
-
-.green{
-color:#00ff99;
+  background:#111;
+  position:sticky;
+  top:0;
+  z-index:1;
 }
 
 .gold{
-color:gold;
+  color:gold;
+  font-weight:bold;
 }
-</style>
-</head>
-<body>
 
-<h2 style="text-align:center">
-📦 Delivery Dashboard
-</h2>
+.green{
+  color:#00ff99;
+  font-weight:bold;
+}
 
-<table id="tbl">
-<thead>
+.stock{
+  font-weight:bold;
+}
+</style></head><body><h2>📦 Delivery Dashboard</h2><div class="table-wrap">
+<table id="tbl"><thead>
 <tr>
 <th>Stock</th>
+<th>D1</th>
+<th>D2</th>
+<th>D3</th>
+<th>D4</th>
+<th>D5</th>
+<th>D6</th>
+<th>D7</th>
+<th>D8</th>
+<th>D9</th>
+<th>D10</th>
 <th>Avg%</th>
-<th>Price</th>
+<th>C.Price</th>
 </tr>
-</thead>
-<tbody></tbody>
-</table>
-
-<script>
+</thead><tbody></tbody></table>
+</div><script>
 
 const API =
 "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
 
 fetch(API + "?action=delivery&t=" + Date.now())
-.then(r=>r.json())
-.then(rows=>{
+.then(r => r.json())
+.then(rows => {
 
-const tb =
-document.querySelector("#tbl tbody");
+const tb = document.querySelector("#tbl tbody");
 
-rows.forEach(r=>{
+tb.innerHTML = "";
+
+rows.forEach(r => {
 
 tb.innerHTML += `
 <tr>
-<td>${r.Stock}</td>
+<td class="stock">${r.Stock}</td>
+
+<td>${r.D1}</td>
+<td>${r.D2}</td>
+<td>${r.D3}</td>
+<td>${r.D4}</td>
+<td>${r.D5}</td>
+<td>${r.D6}</td>
+<td>${r.D7}</td>
+<td>${r.D8}</td>
+<td>${r.D9}</td>
+<td>${r.D10}</td>
+
 <td class="gold">${r.Avg}</td>
 <td class="green">${r.Price}</td>
 </tr>
@@ -80,9 +109,10 @@ tb.innerHTML += `
 
 });
 
+})
+.catch(err=>{
+  console.error(err);
 });
 
-</script>
-
-</body>
+</script></body>
 </html>
