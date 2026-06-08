@@ -81,7 +81,7 @@ th{
 const API =
 "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
 
-fetch(API + "?action=deliverydashboard&t=" + Date.now())
+fetch(API + "?action=delivery10d&t=" + Date.now())
 .then(r => r.json())
 .then(rows => {
 
