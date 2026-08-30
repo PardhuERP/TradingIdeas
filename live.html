@@ -347,8 +347,8 @@ function fmt(v){if(v==null||v==="")return"";if(isNaN(v))return v;return Number(v
 
 function fetchData(){fetch(API_URL+"?t="+Date.now()).then(r=>r.json()).then(d=>{API_DATA=d;
   const niftyPrice = Number(d.AY8);
-const niftyChange = Number(d.BA);
-const niftyChangePct = Number(d.BB);
+const niftyChange = Number(d.BA8);
+const niftyChangePct = Number(d.BB8);
 
 document.getElementById("ay8Data").innerText =
     niftyPrice ? niftyPrice.toLocaleString("en-IN") : "No Data";
