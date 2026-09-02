@@ -241,7 +241,9 @@ background:#333;
   <button class="tab active" id="tab-NIFTY50_LIVE" onclick="showTab('NIFTY50_LIVE')">LIVE</button>
   <button class="tab" id="tab-NIFTY50" onclick="showTab('NIFTY50')">3:00 PM</button>  
   <button class="tab" id="tab-NIFTY50_1" onclick="showTab('NIFTY50_1')">3:15 PM</button>  
-  <button class="tab" id="tab-NIFTY50_2" onclick="showTab('NIFTY50_2')">3:27 PM</button>  
+  <button class="tab" id="tab-NIFTY50_2" onclick="showTab('NIFTY50_2')">
+  <span id="liveTime">--:--:--</span>
+</button>  
 </div>  
 
 <div class="refresh-wrap">  
@@ -408,6 +410,23 @@ function closeModal(){document.getElementById("candleModal").style.display="none
 function openTradingView(){
   window.location.href = "tradingview.html";
 }
+
+  function updateLiveTime(){
+  const now = new Date();
+
+  const time = now.toLocaleTimeString("en-IN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true
+  });
+
+  document.getElementById("liveTime").innerText = time;
+}
+
+updateLiveTime();
+setInterval(updateLiveTime, 1000);
+  
   function goBack(){
 window.location.href="index.html";
 }
