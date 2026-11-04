@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101827">
+<title>NIFTY 50 Screener</title>
+<style>
+:root{--bg:#0b1220;--panel:#111c2e;--panel2:#17243a;--line:#26364e;--text:#edf3fc;--muted:#91a2ba;--accent:#63a6ff;--green:#35c98a;--red:#ff7373;--amber:#f5bd58}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#0b1220,#101b2d 60%,#0b1220);color:var(--text);font:14px/1.45 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+.wrap{max-width:1500px;margin:auto;padding:22px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#4e9cff,#735dff);display:grid;place-items:center;font-weight:900;font-size:17px;box-shadow:0 8px 25px #477bdf44}
+h1{font-size:22px;margin:0;letter-spacing:.2px}.sub{color:var(--muted);font-size:12px;margin-top:3px}.status{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px}.dot{width:8px;height:8px;border-radius:50%;background:var(--amber)}.dot.ok{background:var(--green)}.dot.err{background:var(--red)}
+button,select,input{font:inherit;color:inherit}button{border:1px solid var(--line);background:var(--panel2);border-radius:9px;padding:9px 13px;cursor:pointer}button:hover{border-color:var(--accent)}button.primary{background:#2868c7;border-color:#2868c7}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.stat,.panel{background:linear-gradient(180deg,#142137,#111c2e);border:1px solid var(--line);border-radius:14px}.stat{padding:15px 17px}.stat label{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.8px}.stat strong{display:block;font-size:23px;margin-top:4px;font-weight:750}.stat small{color:var(--muted);font-size:11px}
+.panel{padding:16px;margin-bottom:14px}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:13px;flex-wrap:wrap}.panel-head h2{font-size:14px;margin:0}.filters{display:grid;grid-template-columns:2fr repeat(5,minmax(120px,1fr));gap:10px}.field label{display:block;color:var(--muted);font-size:11px;margin:0 0 5px}.field input,.field select{width:100%;height:38px;background:#0c1728;border:1px solid var(--line);border-radius:8px;padding:0 10px;outline:none}.field input:focus,.field select:focus{border-color:var(--accent)}
+.advanced{display:grid;grid-template-columns:repeat(5,minmax(120px,1fr));gap:10px;margin-top:10px}.actions{display:flex;gap:8px;align-items:end}.actions button{height:38px}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;border-collapse:collapse;min-width:1100px;font-variant-numeric:tabular-nums}thead{background:#1a2a42;position:sticky;top:0;z-index:1}th,td{text-align:right;padding:11px 12px;border-bottom:1px solid #24344b;white-space:nowrap}th{font-size:11px;color:#a9bbd3;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;user-select:none}th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:#142137;z-index:2}thead th:first-child{background:#1a2a42;z-index:3}tbody tr:hover td{background:#1a2a42}tbody tr:hover td:first-child{background:#20334e}.symbol{font-weight:750;color:#f1f6ff}.muted{color:var(--muted)}.positive{color:var(--green)}.negative{color:var(--red)}.sort{color:var(--accent);margin-left:4px}.empty{text-align:center!important;padding:35px;color:var(--muted)}.footer{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:11px;padding:10px 2px}.notice{border:1px solid #6e5525;background:#2a2417;color:#f4d99e;padding:11px 13px;border-radius:9px;font-size:12px;margin-bottom:14px;display:none}.notice.show{display:block}.loading{opacity:.6;pointer-events:none}
+@media(max-width:900px){.filters{grid-template-columns:repeat(3,minmax(0,1fr))}.advanced{grid-template-columns:repeat(3,minmax(0,1fr))}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.wrap{padding:13px}.filters,.advanced{grid-template-columns:repeat(2,minmax(0,1fr))}.filters .search{grid-column:1/-1}.stats{gap:8px}.stat{padding:12px}.stat strong{font-size:20px}h1{font-size:19px}.panel{padding:12px}.top{margin-bottom:14px}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <header class="top">
+    <div class="brand"><div class="logo">N50</div><div><h1>NIFTY 50 Screener</h1><div class="sub">Fundamental snapshot · Search · Filter · Sort</div></div></div>
+    <div class="status"><span class="dot" id="statusDot"></span><span id="statusText">Connecting to Google Sheet…</span><button class="primary" id="refreshBtn">↻ Refresh</button></div>
+  </header>
+  <div class="notice" id="notice"></div>
+  <section class="stats">
+    <div class="stat"><label>Stocks loaded</label><strong id="totalCount">—</strong><small>From NIFTY_50_DATA</small></div>
+    <div class="stat"><label>Matching stocks</label><strong id="matchCount">—</strong><small>After applied filters</small></div>
+    <div class="stat"><label>Average PE</label><strong id="avgPE">—</strong><small>For matching stocks</small></div>
+    <div class="stat"><label>Average ROCE</label><strong id="avgROCE">—</strong><small>For matching stocks</small></div>
+  </section>
+  <section class="panel">
+    <div class="panel-head"><h2>Screen your stocks</h2><button id="resetBtn">Reset filters</button></div>
+    <div class="filters">
+      <div class="field search"><label>Search symbol</label><input id="search" placeholder="e.g. HDFCBANK, RELIANCE, SBIN"></div>
+      <div class="field"><label>Sort by</label><select id="sortBy"></select></div>
+      <div class="field"><label>Order</label><select id="sortDir"><option value="desc">High → Low</option><option value="asc">Low → High</option></select></div>
+      <div class="field"><label>Market cap (₹ Cr) min</label><input id="capMin" type="number" min="0" placeholder="Any"></div>
+      <div class="field"><label>Market cap (₹ Cr) max</label><input id="capMax" type="number" min="0" placeholder="Any"></div>
+      <div class="field"><label>Current price min (₹)</label><input id="priceMin" type="number" min="0" placeholder="Any"></div>
+    </div>
+    <div class="advanced">
+      <div class="field"><label>Current price max (₹)</label><input id="priceMax" type="number" min="0" placeholder="Any"></div>
+      <div class="field"><label>PE max</label><input id="peMax" type="number" min="0" placeholder="Any"></div>
+      <div class="field"><label>ROCE min (%)</label><input id="roceMin" type="number" placeholder="Any"></div>
+      <div class="field"><label>ROE min (%)</label><input id="roeMin" type="number" placeholder="Any"></div>
+      <div class="field"><label>Dividend yield min (%)</label><input id="divMin" type="number" min="0" placeholder="Any"></div>
+    </div>
+  </section>
+  <section class="panel">
+    <div class="panel-head"><h2>Stock results <span class="muted" id="resultLabel"></span></h2><span class="muted" id="updatedAt">—</span></div>
+    <div class="table-wrap"><table><thead><tr id="headRow"></tr></thead><tbody id="stockRows"><tr><td class="empty" colspan="11">Waiting for sheet data…</td></tr></tbody></table></div>
+    <div class="footer"><span>Click any column heading to sort. Values are shown as received from your Google Sheet.</span><span id="pageInfo"></span></div>
+  </section>
+</div>
+<script>
+/* Paste your deployed Apps Script Web App URL below. */
+const API_URL = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
+
+const METRICS = ["Market Cap","Current Price","High","Low","PE","Book Value","Dividend Yield","ROCE","ROE","Face Value"];
+const DISPLAY = ["Symbol",...METRICS];
+let stocks = [], sortKey = "Market Cap", sortDir = "desc";
+
+const $ = id => document.getElementById(id);
+const numeric = v => { if(v===null || v===undefined || String(v).trim()==="") return null; const n=Number(String(v).replace(/[,₹%]/g,"").trim()); return Number.isFinite(n)?n:null; };
+const fmt = (v, metric) => {
+  if(v===null || v===undefined || v==="") return "—";
+  const n=numeric(v);
+  if(n===null) return String(v);
+  if(metric==="Market Cap") return n.toLocaleString("en-IN",{maximumFractionDigits:2});
+  if(["PE","ROCE","ROE","Dividend Yield"].includes(metric)) return n.toLocaleString("en-IN",{maximumFractionDigits:2}) + (["ROCE","ROE","Dividend Yield"].includes(metric)?"%":"");
+  return n.toLocaleString("en-IN",{maximumFractionDigits:2});
+};
+function setStatus(text,kind=""){ $("statusText").textContent=text; $("statusDot").className="dot "+kind; }
+function showNotice(msg){$("notice").textContent=msg;$("notice").classList.add("show");}
+function hideNotice(){$("notice").classList.remove("show");}
+function loadData(){
+  if(!API_URL || API_URL.includes("PASTE_YOUR")){setStatus("API URL required","err");showNotice("Setup needed: deploy the supplied Code.gs as a Google Apps Script Web App, then paste its /exec URL into API_URL in this HTML file.");return;}
+  $("app").classList.add("loading");setStatus("Loading sheet…");
+  const callback="niftyScreenerCallback";
+  const old=document.getElementById("sheetJsonp");if(old)old.remove();
+  window[callback]=(payload)=>{
+    $("app").classList.remove("loading");
+    if(!payload || !payload.ok){setStatus("Could not load data","err");showNotice(payload?.error || "Unknown response from Apps Script.");return;}
+    stocks=payload.stocks||[];
+    if(!stocks.length){setStatus("Connected · no rows found","err");showNotice("No stock records found. Confirm the horizontal layout: row 1 has symbols from B1 onwards; column A has metric names from A2 to A11.");}
+    else{hideNotice();setStatus("Connected · "+stocks.length+" stocks","ok");}
+    $("updatedAt").textContent="Updated "+new Date().toLocaleTimeString();
+    populateSort();render();
+  };
+  const script=document.createElement("script");script.id="sheetJsonp";
+  script.onerror=()=>{$("app").classList.remove("loading");setStatus("Connection failed","err");showNotice("Unable to reach Apps Script. Check the deployed Web App URL and access setting (Anyone).");};
+  script.src=API_URL+(API_URL.includes("?")?"&":"?")+"callback="+callback+"&_="+Date.now();
+  document.body.appendChild(script);
+}
+function populateSort(){
+  $("sortBy").innerHTML=METRICS.map(m=>`<option value="${m}">${m}</option>`).join("");
+  $("sortBy").value=sortKey;
+}
+function getFiltered(){
+  const q=$("search").value.trim().toLowerCase();
+  const val=id=>numeric($(id).value);
+  return stocks.filter(s=>{
+    if(q && !s.symbol.toLowerCase().includes(q)) return false;
+    const checks=[["Market Cap","capMin",">="],["Market Cap","capMax","<="],["Current Price","priceMin",">="],["Current Price","priceMax","<="],["PE","peMax","<="],["ROCE","roceMin",">="],["ROE","roeMin",">="],["Dividend Yield","divMin",">="]];
+    for(const [key,id,op] of checks){const f=val(id);if(f===null)continue;const n=numeric(s.values[key]);if(n===null)return false;if(op===">="&&n<f)return false;if(op==="<="&&n>f)return false;}
+    return true;
+  }).sort((a,b)=>{
+    const av=numeric(a.values[sortKey]),bv=numeric(b.values[sortKey]);
+    if(av===null&&bv===null)return a.symbol.localeCompare(b.symbol);
+    if(av===null)return 1;if(bv===null)return -1;
+    return (av-bv)*(sortDir==="asc"?1:-1);
+  });
+}
+function render(){
+  const rows=getFiltered();$("totalCount").textContent=stocks.length;$("matchCount").textContent=rows.length;
+  const avg=key=>{const a=rows.map(s=>numeric(s.values[key])).filter(v=>v!==null);return a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(2):"—";};
+  $("avgPE").textContent=avg("PE");$("avgROCE").textContent=avg("ROCE")+"%";
+  $("resultLabel").textContent="("+rows.length+")";
+  $("headRow").innerHTML=DISPLAY.map(k=>`<th data-key="${k==="Symbol"?"symbol":k}">${k}${sortKey===k?`<span class="sort">${sortDir==="asc"?"↑":"↓"}</span>`:""}</th>`).join("");
+  $("headRow").querySelectorAll("th").forEach(th=>th.addEventListener("click",()=>{const k=th.dataset.key;if(k==="symbol"){sortKey="Symbol";}else sortKey=k;sortDir=sortKey===k?(sortDir==="asc"?"desc":"asc"):"desc";if(sortKey==="Symbol")sortDir="asc";$("sortBy").value=METRICS.includes(sortKey)?sortKey:"Market Cap";render();}));
+  if(!rows.length){$("stockRows").innerHTML=`<tr><td class="empty" colspan="11">No stocks match these filters. Try resetting or widening your criteria.</td></tr>`;}
+  else $("stockRows").innerHTML=rows.map(s=>`<tr><td class="symbol">${escapeHtml(s.symbol)}</td>${METRICS.map(m=>`<td>${escapeHtml(fmt(s.values[m],m))}</td>`).join("")}</tr>`).join("");
+  $("pageInfo").textContent=`Showing ${rows.length} of ${stocks.length} stocks`;
+}
+function escapeHtml(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+["search","capMin","capMax","priceMin","priceMax","peMax","roceMin","roeMin","divMin"].forEach(id=>$(id).addEventListener("input",render));
+$("sortBy").addEventListener("change",e=>{sortKey=e.target.value;render();});
+$("sortDir").addEventListener("change",e=>{sortDir=e.target.value;render();});
+$("resetBtn").addEventListener("click",()=>{["search","capMin","capMax","priceMin","priceMax","peMax","roceMin","roeMin","divMin"].forEach(id=>$(id).value="");sortKey="Market Cap";sortDir="desc";$("sortBy").value=sortKey;$("sortDir").value=sortDir;render();});
+$("refreshBtn").addEventListener("click",loadData);
+populateSort();loadData();
+</script>
+</body>
+</html>
