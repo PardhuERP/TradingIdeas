@@ -12,7 +12,7 @@
   --green:#35c98a;--red:#ff7373;--amber:#f5bd58;
 }
 *{box-sizing:border-box}
-body{margin:0;background:linear-gradient(145deg,#0b1220,#101b2d 60%,#0b1220);color:var(--text);font:14px/1.45 Arial,system-ui,sans-serif}
+body{margin:0;background:radial-gradient(ellipse at 12% 0%,#1a3150 0%,transparent 34%),linear-gradient(145deg,#080f1c,#0e192a 58%,#0a1220);color:var(--text);font:14px/1.45 Arial,system-ui,sans-serif}
 button,input,select{font:inherit;color:inherit}
 .wrap{max-width:1500px;margin:auto;padding:18px}
 .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
@@ -23,11 +23,11 @@ h1{font-size:21px;margin:0}.sub{color:var(--muted);font-size:12px;margin-top:3px
 .status{font-size:12px;color:var(--muted)}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--amber)}
 .dot.ok{background:var(--green)}.dot.err{background:var(--red)}
-button{border:1px solid var(--line);background:var(--panel2);border-radius:8px;padding:9px 12px;cursor:pointer}
+button{border:1px solid #30445f;background:linear-gradient(180deg,#1b2b43,#152238);border-radius:9px;padding:9px 12px;cursor:pointer;transition:.18s ease}
 button:hover{border-color:var(--accent)}
-button.primary{background:#2868c7;border-color:#2868c7}
+button.primary{background:linear-gradient(135deg,#347fe0,#2862ba);border-color:#4388e5;box-shadow:0 5px 15px #2868c733}
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:13px}
-.stat,.panel{background:linear-gradient(180deg,#142137,#111c2e);border:1px solid var(--line);border-radius:13px}
+.stat,.panel{background:linear-gradient(155deg,#15243a,#101a2b 72%);border:1px solid #293b55;border-radius:14px;box-shadow:0 8px 24px #00000018}
 .stat{padding:14px 16px}.stat label{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.8px}
 .stat strong{display:block;font-size:22px;margin-top:4px}.stat small{color:var(--muted);font-size:11px}
 .panel{padding:15px;margin-bottom:13px}
@@ -37,12 +37,12 @@ button.primary{background:#2868c7;border-color:#2868c7}
 .field label{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}
 .field input,.field select{width:100%;height:38px;background:#0c1728;border:1px solid var(--line);border-radius:8px;padding:0 9px;outline:none}
 .field input:focus,.field select:focus{border-color:var(--accent)}
-.range-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
-.range-card{background:#0d192b;border:1px solid #23344c;border-radius:9px;padding:9px}
+.range-grid{display:none;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:12px}.range-grid.open{display:grid}
+.range-card{background:#101d30;border:1px solid #2b3d57;border-radius:10px;padding:10px;box-shadow:inset 0 1px 0 #ffffff08}
 .range-card strong{display:block;font-size:11px;margin-bottom:7px;color:#cbd8e9}
 .range-inputs{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .range-inputs input{min-width:0;width:100%;height:34px;background:#111f33;border:1px solid var(--line);border-radius:6px;padding:0 7px;font-size:12px}
-.toggle-filters{margin-top:11px;color:#b9d5ff;background:transparent}
+.filter-toggle{display:flex;align-items:center;gap:8px}.filter-toggle .count{display:inline-grid;place-items:center;min-width:19px;height:19px;padding:0 5px;border-radius:20px;background:#244a78;color:#dcecff;font-size:10px}.filter-toggle.active{border-color:#5799ee;background:#19365a}.filter-help{font-size:11px;color:var(--muted);margin:10px 1px 0}
 .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:9px}
 table{width:100%;border-collapse:collapse;min-width:1120px;font-variant-numeric:tabular-nums}
 thead{background:#1a2a42}
@@ -91,15 +91,22 @@ tbody tr:hover td{background:#1a2a42}tbody tr:hover td:first-child{background:#2
   </section>
 
   <section class="panel">
-    <div class="panel-head"><h2>Search and sort</h2><button type="button" id="resetBtn">Reset all</button></div>
+    <div class="panel-head">
+      <h2>Search and sort</h2>
+      <div class="top-actions">
+        <button type="button" class="filter-toggle" id="filterToggle" aria-expanded="false" aria-controls="rangeGrid">
+          ⚙ Metric filters <span class="count" id="filterCount">0</span> <span id="filterArrow">⌄</span>
+        </button>
+        <button type="button" id="resetBtn">Reset all</button>
+      </div>
+    </div>
     <div class="filters">
       <div class="field search"><label>Search symbol</label><input id="search" type="search" placeholder="Search ADANIENT, HDFCBANK, RELIANCE…"></div>
       <div class="field"><label>Sort by</label><select id="sortBy"></select></div>
       <div class="field"><label>Sort order</label><select id="sortDir"><option value="desc">High to Low</option><option value="asc">Low to High</option></select></div>
     </div>
-    <div class="panel-head" style="margin:16px 0 9px"><h2>Metric filters</h2><span class="muted" style="font-size:11px">Enter minimum and/or maximum values</span></div>
     <div class="range-grid" id="rangeGrid"></div>
-    <div class="footer"><span>All 10 metrics can be filtered independently.</span><span>Leave a field blank to ignore it.</span></div>
+    <div class="filter-help" id="filterHelp" hidden>Set a minimum, maximum, or both. Filters apply instantly as you type.</div>
   </section>
 
   <section class="panel">
@@ -279,6 +286,7 @@ function getFilteredStocks(){
 }
 
 function render(){
+  updateFilterCount();
   const rows = getFilteredStocks();
   $("totalCount").textContent = stocks.length;
   $("matchCount").textContent = rows.length;
@@ -322,6 +330,24 @@ function render(){
 }
 
 $("search").addEventListener("input",render);
+
+$("filterToggle").addEventListener("click",() => {
+  const isOpen = $("rangeGrid").classList.toggle("open");
+  $("filterToggle").classList.toggle("active",isOpen);
+  $("filterToggle").setAttribute("aria-expanded",String(isOpen));
+  $("filterArrow").textContent = isOpen ? "⌃" : "⌄";
+  $("filterHelp").hidden = !isOpen;
+});
+
+function updateFilterCount(){
+  let count = 0;
+  METRICS.forEach((metric,index) => {
+    if(String($("min_"+index).value).trim() !== "") count++;
+    if(String($("max_"+index).value).trim() !== "") count++;
+  });
+  $("filterCount").textContent = count;
+}
+
 $("sortBy").addEventListener("change",event => {sortKey=event.target.value;render();});
 $("sortDir").addEventListener("change",event => {sortDir=event.target.value;render();});
 $("refreshBtn").addEventListener("click",loadData);
