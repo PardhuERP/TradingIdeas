@@ -1,368 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#101827">
-<title>NIFTY Screener | Tradingbasic</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1424"><title>NIFTY SCANNER | Tradingbasic</title>
 <style>
-:root{
-  --bg:#0b1220;--panel:#111c2e;--panel2:#17243a;--line:#26364e;
-  --text:#edf3fc;--muted:#91a2ba;--accent:#63a6ff;
-  --green:#35c98a;--red:#ff7373;--amber:#f5bd58;
-}
-*{box-sizing:border-box}
-body{margin:0;background:radial-gradient(ellipse at 12% 0%,#1a3150 0%,transparent 34%),linear-gradient(145deg,#080f1c,#0e192a 58%,#0a1220);color:var(--text);font:14px/1.45 Arial,system-ui,sans-serif}
-button,input,select{font:inherit;color:inherit}
-.wrap{max-width:1500px;margin:auto;padding:18px}
-.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
-.brand{display:flex;align-items:center;gap:11px}
-.logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#4e9cff,#735dff);display:grid;place-items:center;font-weight:900;box-shadow:0 8px 25px #477bdf44}
-h1{font-size:21px;margin:0}.sub{color:var(--muted);font-size:12px;margin-top:3px}
-.top-actions,.status{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.status{font-size:12px;color:var(--muted)}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--amber)}
-.dot.ok{background:var(--green)}.dot.err{background:var(--red)}
-button{border:1px solid #30445f;background:linear-gradient(180deg,#1b2b43,#152238);border-radius:9px;padding:9px 12px;cursor:pointer;transition:.18s ease}
-button:hover{border-color:var(--accent)}
-button.primary{background:linear-gradient(135deg,#347fe0,#2862ba);border-color:#4388e5;box-shadow:0 5px 15px #2868c733}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:13px}
-.stat,.panel{background:linear-gradient(155deg,#15243a,#101a2b 72%);border:1px solid #293b55;border-radius:14px;box-shadow:0 8px 24px #00000018}
-.stat{padding:14px 16px}.stat label{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.8px}
-.stat strong{display:block;font-size:22px;margin-top:4px}.stat small{color:var(--muted);font-size:11px}
-.panel{padding:15px;margin-bottom:13px}
-.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
-.panel-head h2{font-size:14px;margin:0}
-.filters{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}
-.field label{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}
-.field input,.field select{width:100%;height:38px;background:#0c1728;border:1px solid var(--line);border-radius:8px;padding:0 9px;outline:none}
-.field input:focus,.field select:focus{border-color:var(--accent)}
-.range-grid{display:none;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:12px}.range-grid.open{display:grid}
-.range-card{background:#101d30;border:1px solid #2b3d57;border-radius:10px;padding:10px;box-shadow:inset 0 1px 0 #ffffff08}
-.range-card strong{display:block;font-size:11px;margin-bottom:7px;color:#cbd8e9}
-.range-inputs{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.range-inputs input{min-width:0;width:100%;height:34px;background:#111f33;border:1px solid var(--line);border-radius:6px;padding:0 7px;font-size:12px}
-.filter-toggle{display:flex;align-items:center;gap:8px}.filter-toggle .count{display:inline-grid;place-items:center;min-width:19px;height:19px;padding:0 5px;border-radius:20px;background:#244a78;color:#dcecff;font-size:10px}.filter-toggle.active{border-color:#5799ee;background:#19365a}.filter-help{font-size:11px;color:var(--muted);margin:10px 1px 0}
-.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:9px}
-table{width:100%;border-collapse:collapse;min-width:1120px;font-variant-numeric:tabular-nums}
-thead{background:#1a2a42}
-th,td{text-align:right;padding:10px 11px;border-bottom:1px solid #24344b;white-space:nowrap}
-th{font-size:10px;color:#a9bbd3;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;user-select:none}
-th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:#142137;z-index:1}
-thead th:first-child{background:#1a2a42;z-index:2}
-tbody tr:hover td{background:#1a2a42}tbody tr:hover td:first-child{background:#20334e}
-.symbol{font-weight:bold;color:#f1f6ff}
-.sort{color:var(--accent);margin-left:4px}
-.empty{text-align:center!important;padding:32px;color:var(--muted)}
-.notice{display:none;border:1px solid #6e5525;background:#2a2417;color:#f4d99e;padding:11px 13px;border-radius:9px;font-size:12px;margin-bottom:13px}
-.notice.show{display:block}.muted{color:var(--muted)}
-.footer{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:11px;padding:10px 2px}
-.loading{opacity:.6;pointer-events:none}
+:root{--bg:#091321;--panel:#122137;--line:#2a3d58;--text:#edf4ff;--muted:#91a3bc;--blue:#62a6ff;--green:#39ce91;--gold:#e9bd67}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% -10%,#1b3555,transparent 38%),linear-gradient(145deg,#08111e,#0e1a2b 60%,#091321);color:var(--text);font:14px/1.45 Arial,system-ui,sans-serif;min-height:100vh}
+button,input,select{font:inherit;color:inherit}button{cursor:pointer}.wrap{max-width:1500px;margin:auto;padding:18px}
+.header{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px}.brand,.header-right,.status,.filter-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.logo{height:43px;width:43px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,#4c9cff,#735cff);font-weight:900}
+h1{font-size:21px;letter-spacing:1.3px;margin:0}.subtitle{font-size:11px;color:var(--muted);margin-top:3px}
+.status{font-size:11px;color:var(--muted);gap:7px}.dot{width:8px;height:8px;border-radius:50%;background:var(--gold)}.dot.ok{background:var(--green)}.dot.err{background:#ff7777}
+.btn,.index-tab{border:1px solid var(--line);border-radius:9px;padding:9px 13px;background:linear-gradient(180deg,#1b2c45,#142239);transition:.15s}.btn:hover,.index-tab:hover{border-color:var(--blue)}
+.btn.primary,.index-tab.active{background:linear-gradient(135deg,#347fe0,#285eae);border-color:#4388e5;color:white}
+.index-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}.index-tab{min-width:75px;color:#b8c9df;font-weight:750}.index-tab:disabled{opacity:.45;cursor:not-allowed;border-style:dashed}.coming{display:block;font-size:9px;color:var(--gold);font-weight:500}
+.notice{display:none;padding:11px 13px;border:1px solid #6e5525;background:#2a2417;color:#f4d99e;border-radius:9px;font-size:12px;margin-bottom:13px}.notice.show{display:block}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:13px}.stat,.panel{background:linear-gradient(155deg,#15263d,#101b2c 75%);border:1px solid #293d58;border-radius:14px;box-shadow:0 8px 24px #0002}.stat{padding:13px 15px}.stat label{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.8px}.stat strong{display:block;font-size:22px;margin-top:4px}.stat small{color:var(--muted);font-size:11px}
+.panel{padding:14px;margin-bottom:13px}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}.panel-head h2{font-size:13px;margin:0;letter-spacing:.3px}
+.filters{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}.field label{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}.field input,.field select{width:100%;height:38px;background:#0b1728;border:1px solid var(--line);border-radius:8px;padding:0 9px;outline:none}.field input:focus,.field select:focus{border-color:var(--blue)}
+.filter-toggle.active{border-color:var(--blue);background:#19385c}.count{display:inline-grid;place-items:center;min-width:19px;height:19px;padding:0 5px;border-radius:20px;background:#244a78;color:#e3f0ff;font-size:10px}
+.range-grid{display:none;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin-top:12px}.range-grid.open{display:grid}.range-card{background:#0d192b;border:1px solid #2b3d57;border-radius:10px;padding:9px}.range-card strong{display:block;font-size:11px;margin-bottom:7px;color:#d6e3f4}.range-inputs{display:grid;grid-template-columns:1fr 1fr;gap:6px}.range-inputs input{min-width:0;width:100%;height:34px;background:#111f33;border:1px solid var(--line);border-radius:6px;padding:0 7px;font-size:12px}
+.filter-help{font-size:11px;color:var(--muted);margin-top:9px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:9px}table{width:100%;border-collapse:collapse;min-width:1120px;font-variant-numeric:tabular-nums}thead{background:#1a2c45}th,td{text-align:right;padding:10px 11px;border-bottom:1px solid #24364f;white-space:nowrap}th{font-size:10px;color:#b4c5da;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;user-select:none}th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:#142238;z-index:1}thead th:first-child{background:#1a2c45;z-index:2}tbody tr:hover td{background:#1a2a41}tbody tr:hover td:first-child{background:#203550}.symbol{font-weight:750;color:#f1f6ff}.sort{color:var(--blue);margin-left:4px}.empty{text-align:center!important;padding:34px;color:var(--muted)}.footer{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:11px;padding:10px 2px}.loading{opacity:.6;pointer-events:none}
 @media(max-width:950px){.range-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:600px){
- .wrap{padding:12px}.filters{grid-template-columns:1fr 1fr}.filters .search{grid-column:1/-1}
- .range-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
- .stat{padding:11px}.stat strong{font-size:19px}h1{font-size:18px}
- .panel{padding:11px}.top{margin-bottom:12px}
-}
-</style>
-</head>
-<body>
-<div class="wrap" id="app">
-  <header class="top">
-    <div class="brand">
-      <div class="logo">N</div>
-      <div><h1>NIFTY Screener</h1><div class="sub">Tradingbasic · Fundamental stock filter</div></div>
-    </div>
-    <div class="top-actions">
-      <button type="button" onclick="goBack()">← Back</button>
-      <div class="status"><span class="dot" id="statusDot"></span><span id="statusText">Connecting…</span></div>
-      <button class="primary" type="button" id="refreshBtn">↻ Refresh</button>
-    </div>
-  </header>
-
-  <div class="notice" id="notice"></div>
-
-  <section class="stats">
-    <div class="stat"><label>Stocks loaded</label><strong id="totalCount">—</strong><small>NIFTY_50_DATA</small></div>
-    <div class="stat"><label>Matching stocks</label><strong id="matchCount">—</strong><small>After filters</small></div>
-    <div class="stat"><label>Average PE</label><strong id="avgPE">—</strong><small>Matching stocks</small></div>
-    <div class="stat"><label>Average ROCE</label><strong id="avgROCE">—</strong><small>Matching stocks</small></div>
-  </section>
-
-  <section class="panel">
-    <div class="panel-head">
-      <h2>Search and sort</h2>
-      <div class="top-actions">
-        <button type="button" class="filter-toggle" id="filterToggle" aria-expanded="false" aria-controls="rangeGrid">
-          ⚙ Metric filters <span class="count" id="filterCount">0</span> <span id="filterArrow">⌄</span>
-        </button>
-        <button type="button" id="resetBtn">Reset all</button>
-      </div>
-    </div>
-    <div class="filters">
-      <div class="field search"><label>Search symbol</label><input id="search" type="search" placeholder="Search ADANIENT, HDFCBANK, RELIANCE…"></div>
-      <div class="field"><label>Sort by</label><select id="sortBy"></select></div>
-      <div class="field"><label>Sort order</label><select id="sortDir"><option value="desc">High to Low</option><option value="asc">Low to High</option></select></div>
-    </div>
-    <div class="range-grid" id="rangeGrid"></div>
-    <div class="filter-help" id="filterHelp" hidden>Set a minimum, maximum, or both. Filters apply instantly as you type.</div>
-  </section>
-
-  <section class="panel">
-    <div class="panel-head">
-      <h2>Stock results <span class="muted" id="resultLabel"></span></h2>
-      <span class="muted" id="updatedAt">Not updated yet</span>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr id="headRow"></tr></thead>
-        <tbody id="stockRows"><tr><td class="empty" colspan="11">Loading stock data…</td></tr></tbody>
-      </table>
-    </div>
-    <div class="footer"><span>Tap a column heading to sort.</span><span id="pageInfo"></span></div>
-  </section>
+@media(max-width:600px){.wrap{padding:11px}.filters{grid-template-columns:1fr 1fr}.filters .search{grid-column:1/-1}.range-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stat{padding:11px}.stat strong{font-size:19px}h1{font-size:18px}.panel{padding:11px}.index-tab{flex:1;padding:10px 12px;min-width:60px}}
+</style></head>
+<body><div class="wrap" id="app">
+<header class="header"><div class="brand"><div class="logo">NS</div><div><h1>NIFTY SCANNER</h1><div class="subtitle">TRADINGBASIC · FUNDAMENTAL STOCK SCREENER</div></div></div>
+<div class="header-right"><button class="btn" onclick="goBack()">← Back</button><div class="status"><span class="dot" id="statusDot"></span><span id="statusText">Connecting…</span></div><button class="btn primary" id="refreshBtn">↻ Refresh</button></div></header>
+<nav class="index-tabs" aria-label="Select NIFTY index">
+<button class="index-tab active" data-index="nifty50" aria-pressed="true">N50</button>
+<button class="index-tab" data-index="nifty100" aria-pressed="false">N100</button>
+<button class="index-tab" disabled>N200<span class="coming">COMING SOON</span></button>
+<button class="index-tab" disabled>N500<span class="coming">COMING SOON</span></button></nav>
+<div class="notice" id="notice"></div>
+<section class="stats">
+<div class="stat"><label>Stocks loaded</label><strong id="totalCount">—</strong><small id="indexCaption">NIFTY 50</small></div>
+<div class="stat"><label>Matching stocks</label><strong id="matchCount">—</strong><small>After filters</small></div>
+<div class="stat"><label>Average PE</label><strong id="avgPE">—</strong><small>Matching stocks</small></div>
+<div class="stat"><label>Average ROCE</label><strong id="avgROCE">—</strong><small>Matching stocks</small></div></section>
+<section class="panel"><div class="panel-head"><h2>SEARCH & SORT</h2><div class="filter-actions">
+<button class="btn filter-toggle" id="filterToggle" aria-expanded="false" aria-controls="rangeGrid">⚙ Filters <span class="count" id="filterCount">0</span><span id="filterArrow">⌄</span></button><button class="btn" id="resetBtn">Reset</button></div></div>
+<div class="filters"><div class="field search"><label>Search stock</label><input id="search" type="search" placeholder="Symbol e.g. ABB, SBIN, RELIANCE"></div>
+<div class="field"><label>Sort by</label><select id="sortBy"></select></div><div class="field"><label>Order</label><select id="sortDir"><option value="desc">High → Low</option><option value="asc">Low → High</option></select></div></div>
+<div class="range-grid" id="rangeGrid"></div><div class="filter-help" id="filterHelp" hidden>Set minimum, maximum, or both. Results update automatically.</div></section>
+<section class="panel"><div class="panel-head"><h2 id="tableTitle">NIFTY 50 STOCKS <span class="muted" id="resultLabel"></span></h2><span class="muted" id="updatedAt">Not updated</span></div>
+<div class="table-wrap"><table><thead><tr id="headRow"></tr></thead><tbody id="stockRows"><tr><td class="empty" colspan="11">Loading stock data…</td></tr></tbody></table></div><div class="footer"><span>Tap a column heading to sort.</span><span id="pageInfo"></span></div></section>
 </div>
-
 <script>
-/* Existing Tradingbasic Apps Script deployment URL. */
-const API_URL = "https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
-const ACTION = "nifty50screener";
-
-const METRICS = [
-  "Market Cap","Current Price","High","Low","PE",
-  "Book Value","Dividend Yield","ROCE","ROE","Face Value"
-];
-const DISPLAY = ["Symbol", ...METRICS];
-
-let stocks = [];
-let sortKey = "Market Cap";
-let sortDir = "desc";
-
-const $ = id => document.getElementById(id);
-
-function goBack(){
-  if (window.history.length > 1) window.history.back();
-  else window.location.href = "index.html";
+/* Existing Tradingbasic GAS deployment; response: {ok:true,nifty50:[],nifty100:[],stocks:[]} */
+const API_URL="https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
+const ACTION="nifty50screener";
+const METRICS=["Market Cap","Current Price","High","Low","PE","Book Value","Dividend Yield","ROCE","ROE","Face Value"];
+const DISPLAY=["Symbol",...METRICS];
+const CONFIG={nifty50:"NIFTY 50",nifty100:"NIFTY 100"};
+let currentIndex="nifty50",allData={nifty50:[],nifty100:[]},stocks=[],sortKey="Market Cap",sortDir="desc";
+const $=id=>document.getElementById(id);
+function goBack(){if(history.length>1)history.back();else location.href="index.html";}
+function num(v){if(v===null||v===undefined)return null;let s=String(v).replace(/[,₹%\s]/g,"").trim();if(!s||s==="-"||s==="—")return null;let n=Number(s);return Number.isFinite(n)?n:null;}
+function esc(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function fmt(v,m){if(v===null||v===undefined||String(v).trim()==="")return "—";let n=num(v);if(n===null)return String(v);let s=n.toLocaleString("en-IN",{maximumFractionDigits:2});return ["Dividend Yield","ROCE","ROE"].includes(m)?s+"%":s;}
+function status(msg,state){$("statusText").textContent=msg;$("statusDot").className="dot"+(state?" "+state:"");}
+function notice(msg){$("notice").textContent=msg;$("notice").classList.add("show");}
+function clearNotice(){$("notice").textContent="";$("notice").classList.remove("show");}
+function normalize(list){if(!Array.isArray(list))return [];return list.map(x=>{let v={};METRICS.forEach(m=>v[m]=(x.values||{})[m]??"");return {symbol:String(x.symbol||x.SYMBOL||"").trim(),values:v};}).filter(x=>x.symbol);}
+function buildUI(){
+$("sortBy").innerHTML=METRICS.map(m=>`<option>${esc(m)}</option>`).join("");
+$("rangeGrid").innerHTML=METRICS.map((m,i)=>`<div class="range-card"><strong>${esc(m)}</strong><div class="range-inputs"><input type="number" step="any" id="min_${i}" placeholder="Min" aria-label="${esc(m)} minimum"><input type="number" step="any" id="max_${i}" placeholder="Max" aria-label="${esc(m)} maximum"></div></div>`).join("");
+METRICS.forEach((m,i)=>{ $("min_"+i).addEventListener("input",render);$("max_"+i).addEventListener("input",render);});
 }
-
-function numeric(value){
-  if(value === null || value === undefined) return null;
-  const cleaned = String(value).replace(/[,₹%\s]/g,"").trim();
-  if(cleaned === "" || cleaned === "-" || cleaned === "—") return null;
-  const number = Number(cleaned);
-  return Number.isFinite(number) ? number : null;
-}
-
-function formatValue(value, metric){
-  if(value === null || value === undefined || String(value).trim() === "") return "—";
-  const number = numeric(value);
-  if(number === null) return String(value);
-  const formatted = number.toLocaleString("en-IN",{maximumFractionDigits:2});
-  return ["Dividend Yield","ROCE","ROE"].includes(metric) ? formatted + "%" : formatted;
-}
-
-function escapeHtml(value){
-  return String(value).replace(/[&<>"']/g, char => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  }[char]));
-}
-
-function setStatus(message, state){
-  $("statusText").textContent = message;
-  $("statusDot").className = "dot" + (state ? " " + state : "");
-}
-
-function showNotice(message){
-  $("notice").textContent = message;
-  $("notice").classList.add("show");
-}
-
-function hideNotice(){
-  $("notice").textContent = "";
-  $("notice").classList.remove("show");
-}
-
-function buildControls(){
-  $("sortBy").innerHTML = METRICS.map(metric =>
-    `<option value="${escapeHtml(metric)}">${escapeHtml(metric)}</option>`
-  ).join("");
-  $("sortBy").value = sortKey;
-
-  $("rangeGrid").innerHTML = METRICS.map((metric,index) => `
-    <div class="range-card">
-      <strong>${escapeHtml(metric)}</strong>
-      <div class="range-inputs">
-        <input type="number" step="any" id="min_${index}" placeholder="Min" aria-label="${escapeHtml(metric)} minimum">
-        <input type="number" step="any" id="max_${index}" placeholder="Max" aria-label="${escapeHtml(metric)} maximum">
-      </div>
-    </div>
-  `).join("");
-
-  METRICS.forEach((metric,index) => {
-    $("min_"+index).addEventListener("input",render);
-    $("max_"+index).addEventListener("input",render);
-  });
-}
-
-function normalizeStocks(payload){
-  // Supports the response format from the Apps Script function:
-  // { date:"...", stocks:[{symbol:"SBIN", values:{...}}] }
-  if(!payload || !Array.isArray(payload.stocks)) return [];
-  return payload.stocks.map(item => {
-    const values = item.values || {};
-    const normalizedValues = {};
-    METRICS.forEach(metric => {
-      normalizedValues[metric] = values[metric] ?? "";
-    });
-    return {
-      symbol: String(item.symbol || item.SYMBOL || "").trim(),
-      values: normalizedValues
-    };
-  }).filter(item => item.symbol);
-}
-
 async function loadData(){
-  $("app").classList.add("loading");
-  setStatus("Loading sheet…","");
-  hideNotice();
-
-  try{
-    const url = API_URL + "?action=" + encodeURIComponent(ACTION) + "&_=" + Date.now();
-    const response = await fetch(url, {method:"GET", redirect:"follow"});
-    if(!response.ok) throw new Error("Server returned HTTP " + response.status);
-
-    const payload = await response.json();
-    if(payload.error) throw new Error(payload.error);
-
-    stocks = normalizeStocks(payload);
-    if(!stocks.length){
-      setStatus("No stock rows found","err");
-      showNotice("The API responded, but no stock rows were returned. Check that NIFTY_50_DATA has symbols in B1 onwards and metric names in A2:A11.");
-    }else{
-      setStatus("Connected · " + stocks.length + " stocks","ok");
-      hideNotice();
-    }
-
-    $("updatedAt").textContent = "Updated " + new Date().toLocaleString("en-IN");
-    render();
-  }catch(error){
-    console.error("NIFTY Screener load error:",error);
-    setStatus("Connection failed","err");
-    showNotice("Could not load screener data. " + error.message + " Check the Apps Script action route and web app deployment permissions.");
-    $("stockRows").innerHTML = `<tr><td class="empty" colspan="11">Unable to load data. Tap Refresh after checking the API.</td></tr>`;
-  }finally{
-    $("app").classList.remove("loading");
-  }
+$("app").classList.add("loading");status("Loading indices…");clearNotice();
+try{
+let r=await fetch(API_URL+"?action="+encodeURIComponent(ACTION)+"&_="+Date.now());
+if(!r.ok)throw Error("HTTP "+r.status);
+let p=await r.json();if(p.ok===false||p.error)throw Error(p.error||"API error");
+allData.nifty50=normalize(p.nifty50||p.stocks||[]);
+allData.nifty100=normalize(p.nifty100||[]);
+if(!allData.nifty50.length&&!allData.nifty100.length)throw Error("No stock data returned. Check GAS response.");
+$("updatedAt").textContent="Updated "+new Date().toLocaleString("en-IN");status("Connected","ok");selectIndex(currentIndex);
+}catch(e){console.error(e);status("Connection failed","err");notice("Unable to load screener data: "+e.message+". Check the existing GAS action and latest deployment.");$("stockRows").innerHTML='<tr><td class="empty" colspan="11">Data unavailable. Tap Refresh after checking the API.</td></tr>';}
+finally{$("app").classList.remove("loading");}
 }
-
-function getFilteredStocks(){
-  const query = $("search").value.trim().toLowerCase();
-
-  return stocks.filter(stock => {
-    if(query && !stock.symbol.toLowerCase().includes(query)) return false;
-
-    for(let i=0;i<METRICS.length;i++){
-      const metric = METRICS[i];
-      const minimum = numeric($("min_"+i).value);
-      const maximum = numeric($("max_"+i).value);
-      const value = numeric(stock.values[metric]);
-
-      if(minimum !== null && (value === null || value < minimum)) return false;
-      if(maximum !== null && (value === null || value > maximum)) return false;
-    }
-    return true;
-  }).sort((a,b) => {
-    if(sortKey === "Symbol"){
-      return a.symbol.localeCompare(b.symbol) * (sortDir === "asc" ? 1 : -1);
-    }
-    const av = numeric(a.values[sortKey]);
-    const bv = numeric(b.values[sortKey]);
-    if(av === null && bv === null) return a.symbol.localeCompare(b.symbol);
-    if(av === null) return 1;
-    if(bv === null) return -1;
-    return (av-bv) * (sortDir === "asc" ? 1 : -1);
-  });
+function resetFilters(shouldRender=true){
+$("search").value="";METRICS.forEach((m,i)=>{$("min_"+i).value="";$("max_"+i).value="";});
+sortKey="Market Cap";sortDir="desc";$("sortBy").value=sortKey;$("sortDir").value=sortDir;if(shouldRender)render();
 }
-
+function selectIndex(key){
+if(!CONFIG[key])return;currentIndex=key;stocks=allData[key]||[];
+document.querySelectorAll(".index-tab[data-index]").forEach(b=>{let a=b.dataset.index===key;b.classList.toggle("active",a);b.setAttribute("aria-pressed",String(a));});
+$("indexCaption").textContent=CONFIG[key];$("tableTitle").innerHTML=CONFIG[key]+" STOCKS <span class=\"muted\" id=\"resultLabel\"></span>";
+resetFilters(false);render();
+}
+function filtered(){
+let q=$("search").value.trim().toLowerCase();
+return stocks.filter(s=>{
+if(q&&!s.symbol.toLowerCase().includes(q))return false;
+for(let i=0;i<METRICS.length;i++){let lo=num($("min_"+i).value),hi=num($("max_"+i).value),v=num(s.values[METRICS[i]]);if(lo!==null&&(v===null||v<lo))return false;if(hi!==null&&(v===null||v>hi))return false;}
+return true;
+}).sort((a,b)=>{
+if(sortKey==="Symbol")return a.symbol.localeCompare(b.symbol)*(sortDir==="asc"?1:-1);
+let x=num(a.values[sortKey]),y=num(b.values[sortKey]);if(x===null&&y===null)return a.symbol.localeCompare(b.symbol);if(x===null)return 1;if(y===null)return -1;return(x-y)*(sortDir==="asc"?1:-1);
+});
+}
 function render(){
-  updateFilterCount();
-  const rows = getFilteredStocks();
-  $("totalCount").textContent = stocks.length;
-  $("matchCount").textContent = rows.length;
-  $("resultLabel").textContent = "(" + rows.length + ")";
-
-  const average = metric => {
-    const values = rows.map(stock => numeric(stock.values[metric])).filter(v => v !== null);
-    return values.length ? (values.reduce((sum,value)=>sum+value,0)/values.length).toFixed(2) : "—";
-  };
-  $("avgPE").textContent = average("PE");
-  const roce = average("ROCE");
-  $("avgROCE").textContent = roce === "—" ? "—" : roce + "%";
-
-  $("headRow").innerHTML = DISPLAY.map(metric => {
-    const key = metric === "Symbol" ? "Symbol" : metric;
-    const indicator = sortKey === key ? `<span class="sort">${sortDir === "asc" ? "↑" : "↓"}</span>` : "";
-    return `<th data-key="${escapeHtml(key)}">${escapeHtml(metric)}${indicator}</th>`;
-  }).join("");
-
-  $("headRow").querySelectorAll("th").forEach(th => {
-    th.addEventListener("click",() => {
-      const key = th.dataset.key;
-      if(sortKey === key) sortDir = sortDir === "asc" ? "desc" : "asc";
-      else {sortKey = key;sortDir = key === "Symbol" ? "asc" : "desc";}
-      if(METRICS.includes(sortKey)) $("sortBy").value = sortKey;
-      render();
-    });
-  });
-
-  if(!rows.length){
-    $("stockRows").innerHTML = `<tr><td class="empty" colspan="11">No stocks match these filters. Try widening your ranges or resetting filters.</td></tr>`;
-  }else{
-    $("stockRows").innerHTML = rows.map(stock => `
-      <tr>
-        <td class="symbol">${escapeHtml(stock.symbol)}</td>
-        ${METRICS.map(metric => `<td>${escapeHtml(formatValue(stock.values[metric],metric))}</td>`).join("")}
-      </tr>
-    `).join("");
-  }
-  $("pageInfo").textContent = "Showing " + rows.length + " of " + stocks.length + " stocks";
+let active=0;METRICS.forEach((m,i)=>{if($("min_"+i).value.trim())active++;if($("max_"+i).value.trim())active++;});$("filterCount").textContent=active;
+let rows=filtered();$("totalCount").textContent=stocks.length;$("matchCount").textContent=rows.length;$("resultLabel").textContent="("+rows.length+")";
+let avg=m=>{let a=rows.map(s=>num(s.values[m])).filter(x=>x!==null);return a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(2):"—";};
+$("avgPE").textContent=avg("PE");let rc=avg("ROCE");$("avgROCE").textContent=rc==="—"?"—":rc+"%";
+$("headRow").innerHTML=DISPLAY.map(m=>`<th data-key="${esc(m)}">${esc(m)}${sortKey===m?`<span class="sort">${sortDir==="asc"?"↑":"↓"}</span>`:""}</th>`).join("");
+$("headRow").querySelectorAll("th").forEach(th=>th.addEventListener("click",()=>{let k=th.dataset.key;if(k===sortKey)sortDir=sortDir==="asc"?"desc":"asc";else{sortKey=k;sortDir=k==="Symbol"?"asc":"desc";}if(METRICS.includes(sortKey))$("sortBy").value=sortKey;render();}));
+$("stockRows").innerHTML=rows.length?rows.map(s=>`<tr><td class="symbol">${esc(s.symbol)}</td>${METRICS.map(m=>`<td>${esc(fmt(s.values[m],m))}</td>`).join("")}</tr>`).join(""):'<tr><td class="empty" colspan="11">No stocks match these filters.</td></tr>';
+$("pageInfo").textContent=`Showing ${rows.length} of ${stocks.length} stocks`;
 }
-
-$("search").addEventListener("input",render);
-
-$("filterToggle").addEventListener("click",() => {
-  const isOpen = $("rangeGrid").classList.toggle("open");
-  $("filterToggle").classList.toggle("active",isOpen);
-  $("filterToggle").setAttribute("aria-expanded",String(isOpen));
-  $("filterArrow").textContent = isOpen ? "⌃" : "⌄";
-  $("filterHelp").hidden = !isOpen;
-});
-
-function updateFilterCount(){
-  let count = 0;
-  METRICS.forEach((metric,index) => {
-    if(String($("min_"+index).value).trim() !== "") count++;
-    if(String($("max_"+index).value).trim() !== "") count++;
-  });
-  $("filterCount").textContent = count;
-}
-
-$("sortBy").addEventListener("change",event => {sortKey=event.target.value;render();});
-$("sortDir").addEventListener("change",event => {sortDir=event.target.value;render();});
-$("refreshBtn").addEventListener("click",loadData);
-$("resetBtn").addEventListener("click",() => {
-  $("search").value = "";
-  METRICS.forEach((metric,index) => {$("min_"+index).value="";$("max_"+index).value="";});
-  sortKey = "Market Cap";
-  sortDir = "desc";
-  $("sortBy").value = sortKey;
-  $("sortDir").value = sortDir;
-  render();
-});
-
-buildControls();
-loadData();
-</script>
-</body>
-</html>
+document.querySelectorAll(".index-tab[data-index]").forEach(b=>b.addEventListener("click",()=>selectIndex(b.dataset.index)));
+$("filterToggle").addEventListener("click",()=>{let open=$("rangeGrid").classList.toggle("open");$("filterToggle").classList.toggle("active",open);$("filterToggle").setAttribute("aria-expanded",String(open));$("filterArrow").textContent=open?"⌃":"⌄";$("filterHelp").hidden=!open;});
+$("search").addEventListener("input",render);$("sortBy").addEventListener("change",e=>{sortKey=e.target.value;render();});$("sortDir").addEventListener("change",e=>{sortDir=e.target.value;render();});
+$("resetBtn").addEventListener("click",()=>resetFilters());$("refreshBtn").addEventListener("click",loadData);
+buildUI();loadData();
+</script></body></html>
