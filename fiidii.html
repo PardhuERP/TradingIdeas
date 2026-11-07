@@ -1,210 +1,522 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+<title>FII DII Dashboard</title>
+
 <style>
-
-body{
-font-family:Arial;
-background:linear-gradient(180deg,#020617,#0f172a);
-color:white;
-margin:0;
-padding:15px;
+* {
+  box-sizing: border-box;
 }
 
-/* GRID FOR 3 BOXES */
-.grid{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:10px;
-margin-bottom:10px;
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(180deg, #020617, #0f172a);
+  color: white;
+  margin: 0;
+  padding: 15px;
 }
 
-.card{
-background:rgba(30,41,59,0.9);
-padding:12px;
-border-radius:12px;
-box-shadow:0 6px 20px rgba(0,0,0,0.4);
-backdrop-filter:blur(6px);
+h2 {
+  text-align: center;
+  margin-bottom: 5px;
 }
 
-.title{
-font-size:15px;
-font-weight:bold;
-margin-bottom:6px;
-text-align:center;
+.subtitle {
+  text-align: center;
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 0;
 }
 
-.row{
-display:flex;
-justify-content:space-between;
-font-size:13px;
-padding:2px 0;
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 15px 0;
 }
 
-.green{color:#22c55e;font-weight:bold;}
-.red{color:#ef4444;font-weight:bold;}
-
-button{
-width:100%;
-padding:10px;
-border:none;
-border-radius:8px;
-background:#1f2937;
-color:white;
-font-weight:bold;
-cursor:pointer;
-margin-top:10px;
+.card {
+  background: rgba(30, 41, 59, 0.95);
+  padding: 12px 8px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  min-width: 0;
 }
 
-button:hover{
-background:#334155;
+.title {
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 10px;
+  color: #e2e8f0;
 }
 
-/* MONTH TABLE */
-.tableCard{
-background:rgba(30,41,59,0.9);
-padding:15px;
-border-radius:12px;
-margin-top:10px;
-overflow-x:auto;
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  font-size: 12px;
+  padding: 5px 0;
+  border-bottom: 1px solid #334155;
 }
 
-table{
-width:100%;
-border-collapse:collapse;
-font-size:13px;
+.row:last-child {
+  border-bottom: none;
 }
 
-th,td{
-padding:6px;
-text-align:center;
-border-bottom:1px solid #374151;
+.green {
+  color: #22c55e;
+  font-weight: bold;
 }
 
-th{
-color:#cbd5f5;
+.red {
+  color: #ef4444;
+  font-weight: bold;
 }
 
+.neutral {
+  color: #e2e8f0;
+  font-weight: bold;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+
+.tableCard {
+  background: rgba(30, 41, 59, 0.95);
+  padding: 12px;
+  border-radius: 12px;
+  margin-top: 15px;
+  overflow-x: auto;
+}
+
+.tableTitle {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+table {
+  width: 100%;
+  min-width: 340px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th, td {
+  padding: 10px 7px;
+  text-align: center;
+  border-bottom: 1px solid #374151;
+}
+
+th {
+  color: #93c5fd;
+  background: #1e293b;
+  position: sticky;
+  top: 0;
+}
+
+.status {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 13px;
+  padding: 12px;
+}
+
+.footer {
+  text-align: center;
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 15px;
+}
+
+@media(max-width: 420px) {
+  body {
+    padding: 10px;
+  }
+
+  .grid {
+    gap: 6px;
+  }
+
+  .card {
+    padding: 10px 6px;
+  }
+
+  .title {
+    font-size: 12px;
+  }
+
+  .row {
+    font-size: 11px;
+  }
+}
 </style>
-
 </head>
 
 <body>
 
-<h2 style="text-align:center;">📊 FII / DII Dashboard</h2>
-<p style="text-align:center; font-size:13px; color:#888; margin-top:-10px;">
-Source: NSE & BSE
+<h2>📊 FII / DII Dashboard</h2>
+
+<p class="subtitle">
+Institutional Cash Market Activity | NSE & BSE
 </p>
 
-<!-- 3 BOX GRID -->
+<!-- SUMMARY CARDS -->
+
 <div class="grid">
-<div id="today" class="card"></div>
-<div id="yesterday" class="card"></div>
-<div id="mtd" class="card"></div>
+
+  <div id="today" class="card">
+    <div class="status">Loading...</div>
+  </div>
+
+  <div id="yesterday" class="card">
+    <div class="status">Loading...</div>
+  </div>
+
+  <div id="mtd" class="card">
+    <div class="status">Loading...</div>
+  </div>
+
 </div>
 
-<button onclick="loadMonthly()">View Monthly Data</button>
+<button id="refreshBtn" onclick="loadDashboard()">
+  🔄 Refresh Dashboard
+</button>
+
+<button id="monthlyBtn" onclick="loadMonthly()">
+  📅 View All Monthly Data
+</button>
 
 <div id="monthly"></div>
 
+<p class="footer">
+Source: Connected Google Apps Script API
+</p>
+
 <script>
 
-const API="https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec?action=fiidashboard";
+// =====================================
+// API URL
+// =====================================
 
-function color(val){
-return Number(val) >= 0 ? "green" : "red";
+const API =
+"https://script.google.com/macros/s/AKfycbxaLJdfOHI2rmDGhI_WdjyWkHrAlycOCepsgORmNnbDXnWzNxtasdGZW3yxftKvWhq8Iw/exec";
+
+
+// =====================================
+// FORMAT FUNCTIONS
+// =====================================
+
+function color(value) {
+
+  const n = Number(value);
+
+  if (!Number.isFinite(n)) return "neutral";
+
+  return n >= 0 ? "green" : "red";
 }
 
-function round(val){
-return Math.round(Number(val));
+
+function round(value) {
+
+  const n = Number(value);
+
+  if (!Number.isFinite(n)) return "—";
+
+  return Math.round(n).toLocaleString("en-IN");
 }
 
-async function load(){
 
-try{
+function formatMonth(value) {
 
-const res = await fetch(API);
-const data = await res.json();
+  if (!value) return "—";
 
-/* TODAY */
-document.getElementById("today").innerHTML=`
-<div class="title">Today</div>
-<div class="row"><span>Dt:</span><span>${data.today.date}</span></div>
-<div class="row"><span>FII</span><span class="${color(data.today.fii)}">${round(data.today.fii)}</span></div>
-<div class="row"><span>DII</span><span class="${color(data.today.dii)}">${round(data.today.dii)}</span></div>
-<div class="row"><span>Net</span><span class="${color(data.today.net)}">${round(data.today.net)}</span></div>
-`;
+  const match = String(value).match(/^(\d{4})-(\d{1,2})$/);
 
-/* YESTERDAY */
-document.getElementById("yesterday").innerHTML=`
-<div class="title">Yesterday</div>
-<div class="row"><span>Dt:</span><span>${data.yesterday.date}</span></div>
-<div class="row"><span>FII</span><span class="${color(data.yesterday.fii)}">${round(data.yesterday.fii)}</span></div>
-<div class="row"><span>DII</span><span class="${color(data.yesterday.dii)}">${round(data.yesterday.dii)}</span></div>
-<div class="row"><span>Net</span><span class="${color(data.yesterday.net)}">${round(data.yesterday.net)}</span></div>
-`;
+  if (match) {
 
-/* MTD */
-document.getElementById("mtd").innerHTML=`
-<div class="title">MTD</div>
-<div class="row"><span>Dt:</span><span>${data.mtd.date}</span></div>
-<div class="row"><span>FII</span><span class="${color(data.mtd.fii)}">${round(data.mtd.fii)}</span></div>
-<div class="row"><span>DII</span><span class="${color(data.mtd.dii)}">${round(data.mtd.dii)}</span></div>
-<div class="row"><span>Net</span><span class="${color(data.mtd.net)}">${round(data.mtd.net)}</span></div>
-`;
+    const year = Number(match[1]);
+    const month = Number(match[2]);
 
-}catch(e){
+    if (month < 1 || month > 12) return value;
 
-document.getElementById("today").innerHTML="Error";
-document.getElementById("yesterday").innerHTML="Error";
-document.getElementById("mtd").innerHTML="Error";
+    const date = new Date(year, month - 1, 1);
 
+    const monthName = date.toLocaleString("en-IN", {
+      month: "short"
+    });
+
+    return monthName + "-" + year;
+  }
+
+  return value;
 }
 
+
+// =====================================
+// SUMMARY CARD
+// =====================================
+
+function createCard(title, item) {
+
+  if (!item) {
+    return `
+      <div class="title">${title}</div>
+      <div class="status">No data available</div>
+    `;
+  }
+
+  return `
+    <div class="title">${title}</div>
+
+    <div class="row">
+      <span>Date</span>
+      <span>${item.date || "—"}</span>
+    </div>
+
+    <div class="row">
+      <span>FII</span>
+      <span class="${color(item.fii)}">
+        ${round(item.fii)}
+      </span>
+    </div>
+
+    <div class="row">
+      <span>DII</span>
+      <span class="${color(item.dii)}">
+        ${round(item.dii)}
+      </span>
+    </div>
+
+    <div class="row">
+      <span>Net</span>
+      <span class="${color(item.net)}">
+        ${round(item.net)}
+      </span>
+    </div>
+  `;
 }
 
-async function loadMonthly(){
 
-const res = await fetch(API.replace("fiidashboard","fiimonthly"));
-const data = await res.json();
+// =====================================
+// LOAD DASHBOARD
+// =====================================
 
-let html = `
-<div class="tableCard">
+async function loadDashboard() {
 
-<div class="title">Monthly Institutional Flow</div>
+  const button = document.getElementById("refreshBtn");
 
-<table>
+  button.disabled = true;
+  button.textContent = "Loading...";
 
-<tr>
-<th>Month</th>
-<th>FII</th>
-<th>DII</th>
-<th>Net</th>
-</tr>
-`;
+  try {
 
-data.forEach(m=>{
-html += `
-<tr>
-<td>${m.month}</td>
-<td class="${color(m.fii)}">${round(m.fii)}</td>
-<td class="${color(m.dii)}">${round(m.dii)}</td>
-<td class="${color(m.net)}">${round(m.net)}</td>
-</tr>
-`;
-});
+    const response = await fetch(
+      API + "?action=fiidashboard"
+    );
 
-html += `</table></div>`;
+    if (!response.ok) {
+      throw new Error("HTTP " + response.status);
+    }
 
-document.getElementById("monthly").innerHTML = html;
+    const data = await response.json();
 
+    if (data.error) {
+      throw new Error(data.error);
+    }
+
+    document.getElementById("today").innerHTML =
+      createCard("Today", data.today);
+
+    document.getElementById("yesterday").innerHTML =
+      createCard("Yesterday", data.yesterday);
+
+    document.getElementById("mtd").innerHTML =
+      createCard("MTD", data.mtd);
+
+  } catch (error) {
+
+    const message = `
+      <div class="status">
+        Unable to load data<br>
+        ${error.message}
+      </div>
+    `;
+
+    document.getElementById("today").innerHTML = message;
+    document.getElementById("yesterday").innerHTML = message;
+    document.getElementById("mtd").innerHTML = message;
+
+  } finally {
+
+    button.disabled = false;
+    button.textContent = "🔄 Refresh Dashboard";
+
+  }
 }
 
-load();
+
+// =====================================
+// LOAD ALL MONTHLY DATA
+// =====================================
+
+async function loadMonthly() {
+
+  const container = document.getElementById("monthly");
+  const button = document.getElementById("monthlyBtn");
+
+  button.disabled = true;
+  button.textContent = "Loading monthly data...";
+
+  container.innerHTML =
+    '<div class="status">Fetching monthly data...</div>';
+
+  try {
+
+    const response = await fetch(
+      API + "?action=fiimonthly"
+    );
+
+    if (!response.ok) {
+      throw new Error("HTTP " + response.status);
+    }
+
+    const data = await response.json();
+
+    if (!Array.isArray(data)) {
+      throw new Error("Unexpected monthly API response");
+    }
+
+    if (data.length === 0) {
+
+      container.innerHTML =
+        '<div class="status">No monthly data available.</div>';
+
+      return;
+    }
+
+    // Newest month first
+
+    data.sort((a, b) =>
+      String(b.month).localeCompare(String(a.month))
+    );
+
+    let html = `
+      <div class="tableCard">
+
+        <div class="tableTitle">
+          📅 Monthly Institutional Flow
+        </div>
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th>FII</th>
+              <th>DII</th>
+              <th>Net</th>
+            </tr>
+          </thead>
+
+          <tbody>
+    `;
+
+    data.forEach(item => {
+
+      html += `
+        <tr>
+
+          <td>
+            <b>${formatMonth(item.month)}</b>
+          </td>
+
+          <td class="${color(item.fii)}">
+            ${round(item.fii)}
+          </td>
+
+          <td class="${color(item.dii)}">
+            ${round(item.dii)}
+          </td>
+
+          <td class="${color(item.net)}">
+            ${round(item.net)}
+          </td>
+
+        </tr>
+      `;
+
+    });
+
+    html += `
+          </tbody>
+        </table>
+
+        <p class="status">
+          Total months available: ${data.length}
+        </p>
+
+      </div>
+    `;
+
+    container.innerHTML = html;
+
+    button.textContent = "📅 Monthly Data Loaded";
+
+  } catch (error) {
+
+    container.innerHTML = `
+      <div class="tableCard">
+        <div class="status">
+          Unable to load monthly data<br>
+          ${error.message}
+        </div>
+      </div>
+    `;
+
+  } finally {
+
+    button.disabled = false;
+
+    if (!container.innerHTML.includes("Monthly Data Loaded")) {
+      button.textContent = "📅 View All Monthly Data";
+    }
+
+  }
+}
+
+
+// =====================================
+// INITIAL LOAD
+// =====================================
+
+loadDashboard();
 
 </script>
 
