@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Market Minds9 - Stock Intelligence</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  padding:16px;
+  font-family:Arial,sans-serif;
+  background:#07111f;
+  color:#e5e7eb;
+}
+header{margin-bottom:22px}
+h2{margin:0;color:#38bdf8}
+.sub{color:#94a3b8;font-size:13px;margin-top:6px}
+.card{
+  background:#111e30;
+  border:1px solid #26364b;
+  border-radius:13px;
+  padding:16px;
+  margin-bottom:14px;
+}
+.label{font-size:13px;color:#94a3b8}
+.value{font-size:24px;font-weight:bold;margin-top:8px}
+input,button{
+  width:100%;
+  padding:13px;
+  border-radius:9px;
+  border:1px solid #334155;
+  font-size:15px;
+}
+input{background:#07111f;color:white}
+button{
+  background:#0284c7;
+  color:white;
+  border:0;
+  font-weight:bold;
+  margin-top:10px;
+}
+#status{color:#fbbf24;font-size:13px}
+.stock{padding:12px 0;border-bottom:1px solid #26364b}
+.stock:last-child{border:0}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>📊 Market Minds9</h2>
+  <div class="sub">Stock Intelligence • Fundamental Screener</div>
+</header>
+
+<div class="card">
+  <div class="label">Stock Database</div>
+  <div class="value" id="totalStocks">--</div>
+  <div class="sub">Stocks available in your Google Sheet</div>
+</div>
+
+<div class="card">
+  <div class="label">Search Stock</div>
+  <input id="search" placeholder="Enter stock symbol..." oninput="filterStocks()">
+  <p id="status">Connecting to Google Sheets...</p>
+</div>
+
+<div class="card">
+  <div class="label">Stock List</div>
+  <div id="stockList">Waiting for backend connection...</div>
+</div>
+
+<script>
+let stocks = [];
+
+function filterStocks(){
+  const q = document.getElementById("search").value.toUpperCase();
+  const filtered = stocks.filter(s => s.symbol.toUpperCase().includes(q));
+  renderStocks(filtered);
+}
+
+function renderStocks(data){
+  const box = document.getElementById("stockList");
+
+  if(!data.length){
+    box.innerHTML = "No stocks found";
+    return;
+  }
+
+  box.innerHTML = data.map(s =>
+    `<div class="stock"><b>${escapeHTML(s.symbol)}</b></div>`
+  ).join("");
+}
+
+function escapeHTML(value){
+  return String(value).replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",
+    '"':"&quot;","'":"&#39;"
+  })[c]);
+}
+
+// Backend connection will be added in the next step.
+document.getElementById("status").textContent =
+  "App interface ready. Backend connection pending.";
+</script>
+
+</body>
+</html>
