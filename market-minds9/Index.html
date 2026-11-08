@@ -94,6 +94,7 @@ function renderStocks(data){
   ).join("");
 }
 
+
 function escapeHTML(value){
   return String(value).replace(/[&<>"']/g, c => ({
     "&":"&amp;","<":"&lt;",">":"&gt;",
@@ -101,10 +102,30 @@ function escapeHTML(value){
   })[c]);
 }
 
-// Backend connection will be added in the next step.
-document.getElementById("status").textContent =
-  "App interface ready. Backend connection pending.";
+const API_URL = "https://script.google.com/macros/s/AKfycbwYmV87n6E3uEipFSpZm6k97DrSgDIL51CsQl3d31JyHMxZQVCLhAfNrdHwL_rseyZs/exec";
+
+function receiveStocks(data) {
+  if (!data || !data.success) {
+    document.getElementById("status").textContent = "API error";
+    return;
+  }
+
+  stocks = data.stocks || [];
+  document.getElementById("totalStocks").textContent = data.total;
+  document.getElementById("status").textContent =
+    "Connected successfully • " + data.total + " stocks";
+
+  renderStocks(stocks);
+}
+
+const script = document.createElement("script");
+script.src = API_URL + "?callback=receiveStocks";
+script.onerror = () => {
+  document.getElementById("status").textContent = "Connection failed";
+};
+document.body.appendChild(script);
 </script>
 
 </body>
 </html>
+
