@@ -1,0 +1,499 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NIFTY 50 Contribution Analyzer</title>
+<style>
+:root{
+--bg:#0b1220;--panel:#111c2e;--line:#26364d;
+--text:#e7eef8;--muted:#91a4bd;
+--green:#20c997;--red:#ff6474
+}
+*{box-sizing:border-box}
+body{
+margin:0;background:var(--bg);color:var(--text);
+font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif
+}
+.wrap{max-width:1400px;margin:auto;padding:18px}
+.top{
+display:flex;justify-content:space-between;align-items:center;
+gap:12px;flex-wrap:wrap;margin-bottom:16px
+}
+h1{font-size:22px;margin:0}
+.sub{color:var(--muted);font-size:12px;margin-top:4px}
+button,select,input{
+background:#0d1727;color:var(--text);
+border:1px solid var(--line);border-radius:9px;
+padding:10px 12px;font:inherit
+}
+button{cursor:pointer;background:#1b2d47}
+button:hover{filter:brightness(1.15)}
+.cards{
+display:grid;grid-template-columns:repeat(4,1fr);
+gap:10px;margin-bottom:14px
+}
+.card,.tablecard{
+background:var(--panel);border:1px solid var(--line);
+border-radius:14px
+}
+.card{padding:14px}
+.k{
+font-size:11px;color:var(--muted);
+text-transform:uppercase;letter-spacing:.08em
+}
+.value{font-size:22px;font-weight:750;margin-top:4px}
+.green{color:var(--green)}
+.red{color:var(--red)}
+.muted{color:var(--muted)}
+.toolbar{
+display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px
+}
+.toolbar input{flex:1;min-width:180px}
+.tables{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.tablecard{overflow:hidden}
+.tablehead{
+padding:14px 16px;border-bottom:1px solid var(--line);
+display:flex;justify-content:space-between;align-items:center
+}
+.tablehead h2{font-size:16px;margin:0}
+.tablehead small{color:var(--muted)}
+.scroll{overflow:auto;max-height:72vh}
+table{width:100%;border-collapse:collapse;min-width:650px}
+th,td{
+padding:10px 12px;border-bottom:1px solid #1e2d42;
+text-align:right;white-space:nowrap
+}
+th{
+position:sticky;top:0;background:#16243a;
+color:var(--muted);font-size:11px;text-transform:uppercase;
+cursor:pointer
+}
+th:first-child,td:first-child,
+th:nth-child(2),td:nth-child(2){text-align:left}
+tbody tr:hover{background:#18263b}
+.symbol{font-weight:700}
+.sector{color:var(--muted)}
+.foot{padding:12px;color:var(--muted);font-size:11px}
+.status{
+padding:6px 10px;border-radius:99px;
+border:1px solid var(--line);font-size:11px
+}
+@media(max-width:850px){
+.tables{grid-template-columns:1fr}
+.cards{grid-template-columns:repeat(2,1fr)}
+.wrap{padding:10px}
+.scroll{max-height:58vh}
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+<header class="top">
+<div>
+<h1>⚡ NIFTY 50 Contribution Analyzer</h1>
+<div class="sub">
+All stocks ranked by index impact • Live data from Google Sheets
+</div>
+</div>
+
+<div style="display:flex;gap:8px;align-items:center">
+<span class="status" id="status">CONNECTING</span>
+<button onclick="loadData()">↻ Refresh</button>
+</div>
+</header>
+
+<!-- SUMMARY CARDS -->
+<section class="cards">
+
+<div class="card">
+<div class="k">NIFTY</div>
+<div class="value" id="nifty">—</div>
+<div class="muted" id="niftychange">—</div>
+</div>
+
+<div class="card">
+<div class="k">Positive Contribution Total</div>
+<div class="value green" id="positive">—</div>
+<div class="muted">Points supporting NIFTY</div>
+</div>
+
+<div class="card">
+<div class="k">Negative Contribution Total</div>
+<div class="value red" id="negative">—</div>
+<div class="muted">Points dragging NIFTY</div>
+</div>
+
+<div class="card">
+<div class="k">Net Contribution</div>
+<div class="value" id="net">—</div>
+<div class="muted" id="coverage">—</div>
+</div>
+
+</section>
+
+<!-- FILTERS -->
+<div class="toolbar">
+
+<input id="search"
+placeholder="Search symbol or sector…"
+oninput="renderTables()">
+
+<select id="sector" onchange="renderTables()">
+<option value="">All sectors</option>
+</select>
+
+<select id="sort" onchange="renderTables()">
+<option value="points">Sort: Contribution Points</option>
+<option value="changePct">Sort: Change %</option>
+<option value="changeRs">Sort: Change ₹</option>
+<option value="symbol">Sort: Symbol</option>
+</select>
+
+</div>
+
+<!-- TABLES -->
+<section class="tables">
+
+<!-- BEARISH -->
+<div class="tablecard">
+
+<div class="tablehead">
+<h2 class="red">🔴 Bearish — Negative Impact</h2>
+<small id="bearcount">0 stocks</small>
+</div>
+
+<div class="scroll">
+<table>
+<thead>
+<tr>
+<th onclick="setSort('symbol')">Symbol</th>
+<th>Sector</th>
+<th onclick="setSort('changePct')">Ch.%</th>
+<th onclick="setSort('changeRs')">Ch. ₹</th>
+<th onclick="setSort('points')">Contribution pts</th>
+</tr>
+</thead>
+<tbody id="bear"></tbody>
+</table>
+</div>
+
+<div class="foot" id="bearfoot"></div>
+
+</div>
+
+<!-- BULLISH -->
+<div class="tablecard">
+
+<div class="tablehead">
+<h2 class="green">🟢 Bullish — Positive Impact</h2>
+<small id="bullcount">0 stocks</small>
+</div>
+
+<div class="scroll">
+<table>
+<thead>
+<tr>
+<th onclick="setSort('symbol')">Symbol</th>
+<th>Sector</th>
+<th onclick="setSort('changePct')">Ch.%</th>
+<th onclick="setSort('changeRs')">Ch. ₹</th>
+<th onclick="setSort('points')">Contribution pts</th>
+</tr>
+</thead>
+<tbody id="bull"></tbody>
+</table>
+</div>
+
+<div class="foot" id="bullfoot"></div>
+
+</div>
+</section>
+
+<div class="foot" style="text-align:center">
+Contribution points use the existing dashboard calculation.
+Unchanged stocks are excluded.
+Last update: <span id="updated">—</span>
+</div>
+
+</div>
+
+<script>
+
+// EXISTING GOOGLE APPS SCRIPT API
+const API="https://script.google.com/macros/s/AKfycbzxYEhYf08-G7kB7IWZ-8c9gsFrXmScjzjc8pdqtrWCEECZzUsLJ7pvfO-dCf8oJ-mn/exec";
+
+let allStocks=[];
+let market={};
+let sortBy="points";
+
+function fmt(n,d=2){
+return Number(n).toLocaleString("en-IN",{
+minimumFractionDigits:d,
+maximumFractionDigits:d
+});
+}
+
+function signed(n,d=2){
+n=Number(n);
+return (n>0?"+":"")+fmt(n,d);
+}
+
+function setSort(k){
+sortBy=k;
+document.getElementById("sort").value=k;
+renderTables();
+}
+
+// LOAD DATA
+function loadData(){
+
+document.getElementById("status").textContent="LOADING";
+
+const cb="cb_"+Date.now();
+const script=document.createElement("script");
+
+window[cb]=data=>{
+
+try{
+
+if(!data||!data.success)
+throw Error("API returned unsuccessful response");
+
+market=data.market||{};
+
+allStocks=(data.stocks||[]).map(r=>({
+
+symbol:r[0],
+company:r[1],
+sector:r[2],
+weight:Number(r[3]),
+prev:Number(r[4]),
+current:Number(r[5]),
+changePct:Number(r[6]),
+changeRs:Number(r[7]),
+contributionPct:Number(r[8]),
+points:Number(r[9]),
+direction:r[10]
+
+}));
+
+updateSummary();
+populateSectors();
+renderTables();
+
+document.getElementById("status").textContent="CONNECTED";
+
+document.getElementById("updated").textContent=
+new Date(data.timestamp||Date.now()).toLocaleString("en-IN");
+
+}catch(e){
+
+document.getElementById("status").textContent="DATA ERROR";
+console.error(e);
+
+}finally{
+
+delete window[cb];
+script.remove();
+
+}
+};
+
+script.onerror=()=>{
+
+document.getElementById("status").textContent="CONNECTION ERROR";
+
+script.remove();
+delete window[cb];
+
+};
+
+script.src=API+"?callback="+cb+"&_="+Date.now();
+
+document.body.appendChild(script);
+
+}
+
+// SUMMARY
+function updateSummary(){
+
+const pos=allStocks
+.filter(x=>x.points>0)
+.reduce((s,x)=>s+x.points,0);
+
+const neg=allStocks
+.filter(x=>x.points<0)
+.reduce((s,x)=>s+x.points,0);
+
+document.getElementById("nifty").textContent=
+fmt(market.niftyCurrent,2);
+
+document.getElementById("niftychange").textContent=
+signed(market.niftyChange,2)+" pts ("+
+signed(market.niftyChangePercent,2)+"%)";
+
+document.getElementById("positive").textContent=
+signed(pos,2);
+
+document.getElementById("negative").textContent=
+signed(neg,2);
+
+document.getElementById("net").textContent=
+signed(pos+neg,2)+" pts";
+
+document.getElementById("net").className=
+"value "+((pos+neg)>=0?"green":"red");
+
+document.getElementById("coverage").textContent=
+market.coverage||allStocks.length+" / 50 stocks";
+
+}
+
+// SECTOR FILTER
+function populateSectors(){
+
+const s=document.getElementById("sector");
+const old=s.value;
+
+const sectors=[
+...new Set(allStocks.map(x=>x.sector).filter(Boolean))
+].sort();
+
+s.innerHTML=
+'<option value="">All sectors</option>'+
+sectors.map(v=>
+`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`
+).join("");
+
+if(sectors.includes(old))
+s.value=old;
+
+}
+
+// HTML SAFETY
+function escapeHtml(v){
+
+return String(v??"").replace(/[&<>"']/g,c=>({
+
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#39;"
+
+}[c]));
+
+}
+
+// RENDER TABLES
+function renderTables(){
+
+const q=document.getElementById("search")
+.value.trim().toLowerCase();
+
+const sector=document.getElementById("sector").value;
+
+let rows=allStocks.filter(x=>
+
+(!q||
+x.symbol.toLowerCase().includes(q)||
+x.company.toLowerCase().includes(q)||
+String(x.sector).toLowerCase().includes(q)
+)&&
+
+(!sector||x.sector===sector)
+
+);
+
+const sorter=(a,b)=>
+
+sortBy==="symbol"
+?a.symbol.localeCompare(b.symbol)
+
+:sortBy==="changePct"
+?b.changePct-a.changePct
+
+:sortBy==="changeRs"
+?b.changeRs-a.changeRs
+
+:b.points-a.points;
+
+// NEGATIVE STOCKS
+const bears=rows
+.filter(x=>x.points<0)
+.sort((a,b)=>
+sortBy==="points"
+?a.points-b.points
+:sorter(a,b)
+);
+
+// POSITIVE STOCKS
+const bulls=rows
+.filter(x=>x.points>0)
+.sort(sorter);
+
+render("bear",bears);
+render("bull",bulls);
+
+document.getElementById("bearcount").textContent=
+bears.length+" stocks";
+
+document.getElementById("bullcount").textContent=
+bulls.length+" stocks";
+
+document.getElementById("bearfoot").textContent=
+"Filtered negative impact: "+
+signed(bears.reduce((s,x)=>s+x.points,0))+" pts";
+
+document.getElementById("bullfoot").textContent=
+"Filtered positive impact: "+
+signed(bulls.reduce((s,x)=>s+x.points,0))+" pts";
+
+}
+
+// TABLE ROWS
+function render(id,rows){
+
+document.getElementById(id).innerHTML=
+
+rows.map(x=>`
+
+<tr>
+
+<td class="symbol">${escapeHtml(x.symbol)}</td>
+
+<td class="sector">${escapeHtml(x.sector)}</td>
+
+<td class="${x.changePct<0?'red':'green'}">
+${signed(x.changePct,2)}%
+</td>
+
+<td class="${x.changeRs<0?'red':'green'}">
+${signed(x.changeRs,2)}
+</td>
+
+<td class="${x.points<0?'red':'green'}">
+<b>${signed(x.points,2)}</b>
+</td>
+
+</tr>
+
+`).join("")||
+
+'<tr><td colspan="5" class="muted" style="text-align:center;padding:24px">No stocks found</td></tr>';
+
+}
+
+// INITIAL LOAD
+loadData();
+
+// AUTO REFRESH EVERY 60 SECONDS
+setInterval(loadData,60000);
+
+</script>
+</body>
+</html>
